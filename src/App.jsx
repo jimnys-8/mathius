@@ -48,28 +48,15 @@ function createQuestion() {
   }
 }
 
-function AdditionBubbles({ leftCount, rightCount }) {
+function BubbleField({ nodesConfig, width = 200, height = 150, radius = 11, className = '' }) {
   const [nodes, setNodes] = useState([])
 
   useEffect(() => {
-    const width = 760
-    const height = 220
-    const radius = 12
-
-    const nextNodes = [
-      ...Array.from({ length: leftCount }, (_, index) => ({
-        id: `left-${index}`,
-        side: 'left',
-        x: width * 0.28,
-        y: height * 0.5,
-      })),
-      ...Array.from({ length: rightCount }, (_, index) => ({
-        id: `right-${index}`,
-        side: 'right',
-        x: width * 0.72,
-        y: height * 0.5,
-      })),
-    ]
+    const nextNodes = nodesConfig.map((node) => ({
+      ...node,
+      x: node.targetX,
+      y: node.targetY,
+    }))
 
     if (nextNodes.length === 0) {
       const emptyFrame = requestAnimationFrame(() => {
@@ -83,11 +70,8 @@ function AdditionBubbles({ leftCount, rightCount }) {
 
     let frame = null
     const simulation = forceSimulation(nextNodes)
-      .force(
-        'x',
-        forceX((node) => (node.side === 'left' ? width * 0.28 : width * 0.72)).strength(0.12),
-      )
-      .force('y', forceY(height * 0.5).strength(0.08))
+      .force('x', forceX((node) => node.targetX).strength(0.15))
+      .force('y', forceY((node) => node.targetY).strength(0.1))
       .force('charge', forceManyBody().strength(3))
       .force('collide', forceCollide(radius + 2).iterations(2))
       .alpha(0.9)
@@ -110,21 +94,76 @@ function AdditionBubbles({ leftCount, rightCount }) {
         cancelAnimationFrame(frame)
       }
     }
-  }, [leftCount, rightCount])
+  }, [nodesConfig, radius])
 
   return (
-    <div className="bubble-viz" aria-hidden="true">
-      <svg viewBox="0 0 760 220" preserveAspectRatio="xMidYMid meet">
+    <div className={`bubble-viz ${className}`.trim()} aria-hidden="true">
+      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet">
         {nodes.map((node) => (
           <circle
             key={node.id}
             cx={node.x}
             cy={node.y}
-            r="12"
-            className={node.side === 'left' ? 'bubble bubble-left' : 'bubble bubble-right'}
+            r={radius}
+            className={node.color === 'purple' ? 'bubble bubble-purple' : 'bubble bubble-orange'}
           />
         ))}
       </svg>
+    </div>
+  )
+}
+
+function buildNodes(count, color, idPrefix, targetX) {
+  return Array.from({ length: count }, (_, index) => ({
+    id: `${idPrefix}-${index}`,
+    color,
+    targetX,
+    targetY: 75,
+  }))
+}
+
+function AdditionGrid({ leftCount, rightCount, inputValue, onInputChange, onEnter, submitted }) {
+  const leftNodes = useMemo(
+    () => buildNodes(leftCount, 'purple', 'left', 90),
+    [leftCount],
+  )
+
+  const rightNodes = useMemo(
+    () => buildNodes(rightCount, 'orange', 'right', 90),
+    [rightCount],
+  )
+
+  const resultNodes = useMemo(
+    () => [
+      ...buildNodes(leftCount, 'purple', 'result-left', 115),
+      ...buildNodes(rightCount, 'orange', 'result-right', 225),
+    ],
+    [leftCount, rightCount],
+  )
+
+  return (
+    <div className="addition-grid">
+      <BubbleField nodesConfig={leftNodes} className="bubble-viz-left" />
+      <span className="equation-sign equation-sign-top">+</span>
+      <BubbleField nodesConfig={rightNodes} className="bubble-viz-right" />
+      <span className="equation-sign equation-sign-top">=</span>
+      <BubbleField nodesConfig={resultNodes} width={340} className="bubble-viz-result" />
+
+      <span className="operand operand-left operand-grid">{leftCount}</span>
+      <span className="equation-sign equation-sign-bottom">+</span>
+      <span className="operand operand-right operand-grid">{rightCount}</span>
+      <span className="equation-sign equation-sign-bottom">=</span>
+      <input
+        type="text"
+        inputMode="numeric"
+        className="answer-input answer-input-grid"
+        value={inputValue}
+        onChange={onInputChange}
+        onKeyDown={onEnter}
+        placeholder="Answer"
+        readOnly={submitted}
+        autoFocus
+      />
     </div>
   )
 }
@@ -171,31 +210,31 @@ function App() {
 
   return (
     <main className="game">
-      <h1 className="question">
-        {isAddition ? (
-          <>
-            <span className="operand operand-left">{question.left}</span>
-            <span className="operator"> + </span>
-            <span className="operand operand-right">{question.right}</span>
-          </>
-        ) : (
-          question.text
-        )}
-      </h1>
-
-      {isAddition && <AdditionBubbles leftCount={question.left} rightCount={question.right} />}
-
-      <input
-        type="text"
-        inputMode="numeric"
-        className="answer-input"
-        value={inputValue}
-        onChange={(event) => setInputValue(event.target.value)}
-        onKeyDown={handleEnter}
-        placeholder="Type your answer"
-        readOnly={submitted}
-        autoFocus
-      />
+      {isAddition ? (
+        <AdditionGrid
+          leftCount={question.left}
+          rightCount={question.right}
+          inputValue={inputValue}
+          onInputChange={(event) => setInputValue(event.target.value)}
+          onEnter={handleEnter}
+          submitted={submitted}
+        />
+      ) : (
+        <>
+          <h1 className="question">{question.text}</h1>
+          <input
+            type="text"
+            inputMode="numeric"
+            className="answer-input"
+            value={inputValue}
+            onChange={(event) => setInputValue(event.target.value)}
+            onKeyDown={handleEnter}
+            placeholder="Type your answer"
+            readOnly={submitted}
+            autoFocus
+          />
+        </>
+      )}
 
       <p className={`result ${submitted ? (isCorrect ? 'correct' : 'incorrect') : ''}`}>
         {resultText}
