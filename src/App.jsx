@@ -105,7 +105,7 @@ function BubbleField({ nodesConfig, width = 200, height = 150, radius = 11, clas
             cx={node.x}
             cy={node.y}
             r={radius}
-            className={node.color === 'purple' ? 'bubble bubble-purple' : 'bubble bubble-orange'}
+            className={`bubble bubble-${node.color}`}
           />
         ))}
       </svg>
@@ -122,36 +122,72 @@ function buildNodes(count, color, idPrefix, targetX) {
   }))
 }
 
-function AdditionGrid({ leftCount, rightCount, inputValue, onInputChange, onEnter, submitted }) {
-  const leftNodes = useMemo(
-    () => buildNodes(leftCount, 'purple', 'left', 90),
-    [leftCount],
-  )
+function EquationGrid({ question, inputValue, onInputChange, onEnter, submitted }) {
+  const isAddition = question.operator === '+'
+  const isSubtraction = question.operator === '-'
+  const leftCount = question.left
+  const rightCount = question.right
 
-  const rightNodes = useMemo(
-    () => buildNodes(rightCount, 'orange', 'right', 90),
-    [rightCount],
-  )
+  const leftNodes = useMemo(() => {
+    if (isAddition) {
+      return buildNodes(leftCount, 'purple', 'left', 90)
+    }
 
-  const resultNodes = useMemo(
-    () => [
-      ...buildNodes(leftCount, 'purple', 'result-left', 115),
-      ...buildNodes(rightCount, 'orange', 'result-right', 225),
-    ],
-    [leftCount, rightCount],
-  )
+    if (isSubtraction) {
+      return [
+        ...buildNodes(question.answer, 'blue', 'left-blue', 65),
+        ...buildNodes(rightCount, 'magenta', 'left-magenta', 125),
+      ]
+    }
+
+    return []
+  }, [isAddition, isSubtraction, leftCount, rightCount, question.answer])
+
+  const rightNodes = useMemo(() => {
+    if (isAddition) {
+      return buildNodes(rightCount, 'orange', 'right', 90)
+    }
+
+    if (isSubtraction) {
+      return buildNodes(rightCount, 'magenta', 'right-magenta', 90)
+    }
+
+    return []
+  }, [isAddition, isSubtraction, rightCount])
+
+  const resultNodes = useMemo(() => {
+    if (isAddition) {
+      return [
+        ...buildNodes(leftCount, 'purple', 'result-left', 115),
+        ...buildNodes(rightCount, 'orange', 'result-right', 225),
+      ]
+    }
+
+    if (isSubtraction) {
+      return buildNodes(question.answer, 'blue', 'result-blue', 170)
+    }
+
+    return []
+  }, [isAddition, isSubtraction, leftCount, rightCount, question.answer])
+
+  const leftOperandClass = isSubtraction
+    ? 'operand operand-left operand-grid operand-blue'
+    : 'operand operand-left operand-grid'
+  const rightOperandClass = isSubtraction
+    ? 'operand operand-right operand-grid operand-magenta'
+    : 'operand operand-right operand-grid'
 
   return (
-    <div className="addition-grid">
+    <div className="equation-grid">
       <BubbleField nodesConfig={leftNodes} className="bubble-viz-left" />
-      <span className="equation-sign equation-sign-top">+</span>
+      <span className="equation-sign equation-sign-top">{question.operator}</span>
       <BubbleField nodesConfig={rightNodes} className="bubble-viz-right" />
       <span className="equation-sign equation-sign-top">=</span>
       <BubbleField nodesConfig={resultNodes} width={340} className="bubble-viz-result" />
 
-      <span className="operand operand-left operand-grid">{leftCount}</span>
-      <span className="equation-sign equation-sign-bottom">+</span>
-      <span className="operand operand-right operand-grid">{rightCount}</span>
+      <span className={leftOperandClass}>{leftCount}</span>
+      <span className="equation-sign equation-sign-bottom">{question.operator}</span>
+      <span className={rightOperandClass}>{rightCount}</span>
       <span className="equation-sign equation-sign-bottom">=</span>
       <input
         type="text"
@@ -173,7 +209,7 @@ function App() {
   const [inputValue, setInputValue] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)
-  const isAddition = question.operator === '+'
+  const hasEquationVisualization = question.operator === '+' || question.operator === '-'
 
   const resultText = useMemo(() => {
     if (!submitted) {
@@ -210,10 +246,9 @@ function App() {
 
   return (
     <main className="game">
-      {isAddition ? (
-        <AdditionGrid
-          leftCount={question.left}
-          rightCount={question.right}
+      {hasEquationVisualization ? (
+        <EquationGrid
+          question={question}
           inputValue={inputValue}
           onInputChange={(event) => setInputValue(event.target.value)}
           onEnter={handleEnter}

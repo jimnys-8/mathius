@@ -37,6 +37,14 @@
   border-color: #f59e2d;
 }
 
+.operand-blue {
+  border-color: #2999ff;
+}
+
+.operand-magenta {
+  border-color: #d946ef;
+}
+
 .bubble-viz {
   width: 100%;
   max-width: 220px;
@@ -47,7 +55,7 @@
   overflow: hidden;
 }
 
-.addition-grid {
+.equation-grid {
   width: min(96vw, 980px);
   display: grid;
   grid-template-columns: minmax(100px, 1fr) auto minmax(100px, 1fr) auto minmax(140px, 1.55fr);
@@ -101,21 +109,31 @@
   stroke: #f59e2d;
 }
 
+.bubble-blue {
+  fill: rgba(41, 153, 255, 0.25);
+  stroke: #2999ff;
+}
+
+.bubble-magenta {
+  fill: rgba(217, 70, 239, 0.24);
+  stroke: #d946ef;
+}
+
 @media (max-width: 860px) {
-  .addition-grid {
+  .equation-grid {
     grid-template-columns: minmax(100px, 1fr) auto minmax(100px, 1fr);
   }
 
-  .addition-grid > :nth-child(4),
-  .addition-grid > :nth-child(5),
-  .addition-grid > :nth-child(9),
-  .addition-grid > :nth-child(10) {
+  .equation-grid > :nth-child(4),
+  .equation-grid > :nth-child(5),
+  .equation-grid > :nth-child(9),
+  .equation-grid > :nth-child(10) {
     grid-column: 1 / -1;
     justify-self: center;
   }
 
-  .addition-grid > :nth-child(4),
-  .addition-grid > :nth-child(9) {
+  .equation-grid > :nth-child(4),
+  .equation-grid > :nth-child(9) {
     margin-top: 0.2rem;
   }
 }
