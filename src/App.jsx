@@ -9,7 +9,7 @@ import {
 import './App.css'
 
 function createQuestion() {
-  const operations = ['+', '-', '*', '/']
+  const operations = ['+', '-', '*', '/', '√']
   const operator = operations[Math.floor(Math.random() * operations.length)]
 
   let left
@@ -33,10 +33,22 @@ function createQuestion() {
     left = Math.floor(Math.random() * 13)
     right = Math.floor(Math.random() * 13)
     answer = left * right
-  } else {
+  } else if (operator === '/') {
     right = Math.floor(Math.random() * 11) + 1
     answer = Math.floor(Math.random() * 13)
     left = right * answer
+  } else {
+    // square root of a perfect square
+    answer = Math.floor(Math.random() * 11) + 2
+    const radicand = answer * answer
+    return {
+      text: `√${radicand}`,
+      left: radicand,
+      right: null,
+      operator,
+      answer,
+      radicand,
+    }
   }
 
   return {
@@ -243,8 +255,8 @@ function GridField({
   height = 150,
   className = '',
   dotClassName = 'grid-dot',
-  highlightFirstRow = false,
-  highlightFirstColumn = false,
+  firstRowClassName = '',
+  firstColumnClassName = '',
 }) {
   const layout = useMemo(() => getGridLayout(rows, cols, width, height), [rows, cols, width, height])
 
@@ -253,10 +265,10 @@ function GridField({
       <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet">
         {layout.nodes.map((node) => {
           let dotClass = dotClassName
-          if (highlightFirstColumn && node.col === 0) {
-            dotClass = 'grid-dot grid-dot-divisor'
-          } else if (highlightFirstRow && node.row === 0) {
-            dotClass = 'grid-dot grid-dot-result'
+          if (firstColumnClassName && node.col === 0) {
+            dotClass = firstColumnClassName
+          } else if (firstRowClassName && node.row === 0) {
+            dotClass = firstRowClassName
           }
 
           return (
@@ -287,6 +299,7 @@ function EquationGrid({ question, inputValue, onInputChange, onEnter, submitted 
   const isSubtraction = question.operator === '-'
   const isMultiplication = question.operator === '*'
   const isDivision = question.operator === '/'
+  const isSqrt = question.operator === '√'
   const leftCount = question.left
   const rightCount = question.right
 
@@ -359,6 +372,37 @@ function EquationGrid({ question, inputValue, onInputChange, onEnter, submitted 
     ? 'bubble-viz-result bubble-viz-result-multiply'
     : 'bubble-viz-result'
 
+  if (isSqrt) {
+    return (
+      <div className="equation-grid equation-grid-sqrt">
+        <GridField
+          rows={question.answer}
+          cols={question.answer}
+          width={200}
+          height={200}
+          className="bubble-viz-square"
+          firstColumnClassName="grid-dot grid-dot-result"
+        />
+        <span className="radical-expr">
+          <span className="radical-sign">√</span>
+          <span className="radical-radicand">{question.radicand}</span>
+        </span>
+        <span className="equation-sign equation-sign-bottom">=</span>
+        <input
+          type="text"
+          inputMode="numeric"
+          className="answer-input answer-input-grid"
+          value={inputValue}
+          onChange={onInputChange}
+          onKeyDown={onEnter}
+          placeholder="Answer"
+          readOnly={submitted}
+          autoFocus
+        />
+      </div>
+    )
+  }
+
   return (
     <div className="equation-grid">
       {isDivision ? (
@@ -368,8 +412,8 @@ function EquationGrid({ question, inputValue, onInputChange, onEnter, submitted 
           width={220}
           height={150}
           className="bubble-viz-left"
-          highlightFirstRow
-          highlightFirstColumn
+          firstColumnClassName="grid-dot grid-dot-divisor"
+          firstRowClassName="grid-dot grid-dot-result"
         />
       ) : (
         <BubbleField nodesConfig={leftNodes} radius={sideRadius} className="bubble-viz-left" />
@@ -440,7 +484,11 @@ function App() {
   const [submitted, setSubmitted] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)
   const hasEquationVisualization =
-    question.operator === '+' || question.operator === '-' || question.operator === '*' || question.operator === '/'
+    question.operator === '+' ||
+    question.operator === '-' ||
+    question.operator === '*' ||
+    question.operator === '/' ||
+    question.operator === '√'
 
   const resultText = useMemo(() => {
     if (!submitted) {

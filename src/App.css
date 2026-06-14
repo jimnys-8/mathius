@@ -107,6 +107,40 @@
   aspect-ratio: 3 / 1;
 }
 
+.bubble-viz-square {
+  max-width: 240px;
+  aspect-ratio: 1 / 1;
+}
+
+.equation-grid-sqrt {
+  grid-template-columns: auto auto auto;
+  justify-content: center;
+}
+
+.equation-grid-sqrt > .bubble-viz-square {
+  grid-column: 1 / -1;
+  justify-self: center;
+}
+
+.radical-expr {
+  display: inline-flex;
+  align-items: flex-start;
+  font-size: clamp(1.6rem, 3.6vw, 2.2rem);
+  font-weight: 700;
+  color: #16202e;
+}
+
+.radical-sign {
+  font-size: 1.3em;
+  line-height: 0.9;
+}
+
+.radical-radicand {
+  border-top: 3px solid currentColor;
+  padding: 0.1em 0.35em 0 0.05em;
+  margin-top: 0.16em;
+}
+
 .bubble-viz-result-multiply {
   max-width: 420px;
   aspect-ratio: 21 / 11;
