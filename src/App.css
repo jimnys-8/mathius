@@ -45,6 +45,14 @@
   border-color: #d946ef;
 }
 
+.operand-cyan {
+  border-color: #22d3ee;
+}
+
+.operand-red {
+  border-color: #ef4444;
+}
+
 .bubble-viz {
   width: 100%;
   max-width: 220px;
@@ -122,6 +130,16 @@
 .bubble-magenta {
   fill: rgba(217, 70, 239, 0.24);
   stroke: #d946ef;
+}
+
+.bubble-cyan {
+  fill: rgba(34, 211, 238, 0.28);
+  stroke: #22d3ee;
+}
+
+.bubble-red {
+  fill: rgba(239, 68, 68, 0.25);
+  stroke: #ef4444;
 }
 
 .multiply-group-shell {

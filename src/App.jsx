@@ -215,6 +215,7 @@ function EquationGrid({ question, inputValue, onInputChange, onEnter, submitted 
   const isAddition = question.operator === '+'
   const isSubtraction = question.operator === '-'
   const isMultiplication = question.operator === '*'
+  const isDivision = question.operator === '/'
   const leftCount = question.left
   const rightCount = question.right
 
@@ -234,8 +235,12 @@ function EquationGrid({ question, inputValue, onInputChange, onEnter, submitted 
       return buildNodes(leftCount, 'blue', 'left-multiply', 90)
     }
 
+    if (isDivision) {
+      return buildNodes(leftCount, 'cyan', 'left-divide', 90)
+    }
+
     return []
-  }, [isAddition, isSubtraction, isMultiplication, leftCount, rightCount, question.answer])
+  }, [isAddition, isSubtraction, isMultiplication, isDivision, leftCount, rightCount, question.answer])
 
   const rightNodes = useMemo(() => {
     if (isAddition) {
@@ -250,8 +255,12 @@ function EquationGrid({ question, inputValue, onInputChange, onEnter, submitted 
       return buildNodes(rightCount, 'orange', 'right-multiply', 90)
     }
 
+    if (isDivision) {
+      return buildNodes(rightCount, 'red', 'right-divide', 90)
+    }
+
     return []
-  }, [isAddition, isSubtraction, isMultiplication, rightCount])
+  }, [isAddition, isSubtraction, isMultiplication, isDivision, rightCount])
 
   const resultNodes = useMemo(() => {
     if (isAddition) {
@@ -265,15 +274,23 @@ function EquationGrid({ question, inputValue, onInputChange, onEnter, submitted 
       return buildNodes(question.answer, 'blue', 'result-blue', 170)
     }
 
-    return []
-  }, [isAddition, isSubtraction, leftCount, rightCount, question.answer])
+    if (isDivision) {
+      return buildNodes(question.answer, 'cyan', 'result-divide', 170)
+    }
 
-  const leftOperandClass = isSubtraction
-    ? 'operand operand-left operand-grid operand-blue'
-    : 'operand operand-left operand-grid'
-  const rightOperandClass = isSubtraction
-    ? 'operand operand-right operand-grid operand-magenta'
-    : 'operand operand-right operand-grid'
+    return []
+  }, [isAddition, isSubtraction, isDivision, leftCount, rightCount, question.answer])
+
+  let leftOperandClass = 'operand operand-left operand-grid'
+  let rightOperandClass = 'operand operand-right operand-grid'
+
+  if (isSubtraction) {
+    leftOperandClass += ' operand-blue'
+    rightOperandClass += ' operand-magenta'
+  } else if (isDivision) {
+    leftOperandClass += ' operand-cyan'
+    rightOperandClass += ' operand-red'
+  }
   const topOperator = symbolForOperator(question.operator)
   const resultWidth = isMultiplication ? 420 : 340
   const resultHeight = isMultiplication ? 220 : 150
@@ -332,7 +349,7 @@ function App() {
   const [submitted, setSubmitted] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)
   const hasEquationVisualization =
-    question.operator === '+' || question.operator === '-' || question.operator === '*'
+    question.operator === '+' || question.operator === '-' || question.operator === '*' || question.operator === '/'
 
   const resultText = useMemo(() => {
     if (!submitted) {
