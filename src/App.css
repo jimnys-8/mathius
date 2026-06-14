@@ -97,6 +97,16 @@
   max-width: 340px;
 }
 
+.bubble-viz-divisor-col {
+  max-width: 84px;
+  aspect-ratio: 2 / 3;
+}
+
+.bubble-viz-divide-result {
+  max-width: 340px;
+  aspect-ratio: 3 / 1;
+}
+
 .bubble-viz-result-multiply {
   max-width: 420px;
   aspect-ratio: 21 / 11;
@@ -153,6 +163,24 @@
   fill: rgba(41, 153, 255, 0.42);
   stroke: #2999ff;
   stroke-width: 1.7;
+}
+
+.grid-dot {
+  fill: rgba(34, 211, 238, 0.26);
+  stroke: #22d3ee;
+  stroke-width: 1.7;
+}
+
+.grid-dot-divisor {
+  fill: rgba(239, 68, 68, 0.42);
+  stroke: #ef4444;
+  stroke-width: 1.7;
+}
+
+.grid-dot-result {
+  fill: rgba(34, 211, 238, 0.62);
+  stroke: #0891b2;
+  stroke-width: 1.9;
 }
 
 @media (max-width: 860px) {

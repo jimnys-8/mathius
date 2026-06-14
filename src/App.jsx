@@ -168,7 +168,15 @@ function getInnerOffsets(count, maxRadius) {
   })
 }
 
-function MultiplicationNestedField({ groups, innerCount, width = 420, height = 220, className = '' }) {
+function NestedGroupField({
+  groups,
+  innerCount,
+  width = 420,
+  height = 220,
+  className = '',
+  shellClassName = 'multiply-group-shell',
+  itemClassName = 'multiply-group-item',
+}) {
   const groupLayout = useMemo(() => getNestedCircleLayout(groups, width, height), [groups, width, height])
 
   return (
@@ -184,7 +192,7 @@ function MultiplicationNestedField({ groups, innerCount, width = 420, height = 2
                 cx={group.cx}
                 cy={group.cy}
                 r={group.outerRadius}
-                className="multiply-group-shell"
+                className={shellClassName}
               />
               {innerOffsets.map((offset, index) => (
                 <circle
@@ -192,10 +200,73 @@ function MultiplicationNestedField({ groups, innerCount, width = 420, height = 2
                   cx={group.cx + offset.x}
                   cy={group.cy + offset.y}
                   r={innerRadius}
-                  className="multiply-group-item"
+                  className={itemClassName}
                 />
               ))}
             </g>
+          )
+        })}
+      </svg>
+    </div>
+  )
+}
+
+function getGridLayout(rows, cols, width, height) {
+  if (rows <= 0 || cols <= 0) {
+    return { nodes: [], radius: 0 }
+  }
+
+  const xGap = width / (cols + 1)
+  const yGap = height / (rows + 1)
+  const radius = Math.max(3.5, Math.min(11, Math.min(xGap, yGap) * 0.4))
+  const nodes = []
+
+  for (let row = 0; row < rows; row += 1) {
+    for (let col = 0; col < cols; col += 1) {
+      nodes.push({
+        id: `cell-${row}-${col}`,
+        cx: xGap * (col + 1),
+        cy: yGap * (row + 1),
+        row,
+        col,
+      })
+    }
+  }
+
+  return { nodes, radius }
+}
+
+function GridField({
+  rows,
+  cols,
+  width = 200,
+  height = 150,
+  className = '',
+  dotClassName = 'grid-dot',
+  highlightFirstRow = false,
+  highlightFirstColumn = false,
+}) {
+  const layout = useMemo(() => getGridLayout(rows, cols, width, height), [rows, cols, width, height])
+
+  return (
+    <div className={`bubble-viz ${className}`.trim()} aria-hidden="true">
+      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet">
+        {layout.nodes.map((node) => {
+          let dotClass = dotClassName
+          if (highlightFirstColumn && node.col === 0) {
+            dotClass = 'grid-dot grid-dot-divisor'
+          } else if (highlightFirstRow && node.row === 0) {
+            dotClass = 'grid-dot grid-dot-result'
+          }
+
+          return (
+            <circle
+              key={node.id}
+              cx={node.cx}
+              cy={node.cy}
+              r={layout.radius}
+              className={dotClass}
+            />
           )
         })}
       </svg>
@@ -235,12 +306,8 @@ function EquationGrid({ question, inputValue, onInputChange, onEnter, submitted 
       return buildNodes(leftCount, 'blue', 'left-multiply', 90)
     }
 
-    if (isDivision) {
-      return buildNodes(leftCount, 'cyan', 'left-divide', 90)
-    }
-
     return []
-  }, [isAddition, isSubtraction, isMultiplication, isDivision, leftCount, rightCount, question.answer])
+  }, [isAddition, isSubtraction, isMultiplication, leftCount, rightCount, question.answer])
 
   const rightNodes = useMemo(() => {
     if (isAddition) {
@@ -255,12 +322,8 @@ function EquationGrid({ question, inputValue, onInputChange, onEnter, submitted 
       return buildNodes(rightCount, 'orange', 'right-multiply', 90)
     }
 
-    if (isDivision) {
-      return buildNodes(rightCount, 'red', 'right-divide', 90)
-    }
-
     return []
-  }, [isAddition, isSubtraction, isMultiplication, isDivision, rightCount])
+  }, [isAddition, isSubtraction, isMultiplication, rightCount])
 
   const resultNodes = useMemo(() => {
     if (isAddition) {
@@ -274,12 +337,8 @@ function EquationGrid({ question, inputValue, onInputChange, onEnter, submitted 
       return buildNodes(question.answer, 'blue', 'result-blue', 170)
     }
 
-    if (isDivision) {
-      return buildNodes(question.answer, 'cyan', 'result-divide', 170)
-    }
-
     return []
-  }, [isAddition, isSubtraction, isDivision, leftCount, rightCount, question.answer])
+  }, [isAddition, isSubtraction, leftCount, rightCount, question.answer])
 
   let leftOperandClass = 'operand operand-left operand-grid'
   let rightOperandClass = 'operand operand-right operand-grid'
@@ -295,24 +354,56 @@ function EquationGrid({ question, inputValue, onInputChange, onEnter, submitted 
   const resultWidth = isMultiplication ? 420 : 340
   const resultHeight = isMultiplication ? 220 : 150
   const resultRadius = 11
-  const sideRadius = isMultiplication ? 9 : 11
+  const sideRadius = isMultiplication || isDivision ? 9 : 11
   const resultClassName = isMultiplication
     ? 'bubble-viz-result bubble-viz-result-multiply'
     : 'bubble-viz-result'
 
   return (
     <div className="equation-grid">
-      <BubbleField nodesConfig={leftNodes} radius={sideRadius} className="bubble-viz-left" />
+      {isDivision ? (
+        <GridField
+          rows={rightCount}
+          cols={question.answer}
+          width={220}
+          height={150}
+          className="bubble-viz-left"
+          highlightFirstRow
+          highlightFirstColumn
+        />
+      ) : (
+        <BubbleField nodesConfig={leftNodes} radius={sideRadius} className="bubble-viz-left" />
+      )}
       <span className="equation-sign equation-sign-top">{topOperator}</span>
-      <BubbleField nodesConfig={rightNodes} radius={sideRadius} className="bubble-viz-right" />
+      {isDivision ? (
+        <GridField
+          rows={rightCount}
+          cols={1}
+          width={70}
+          height={150}
+          className="bubble-viz-right bubble-viz-divisor-col"
+          dotClassName="grid-dot grid-dot-divisor"
+        />
+      ) : (
+        <BubbleField nodesConfig={rightNodes} radius={sideRadius} className="bubble-viz-right" />
+      )}
       <span className="equation-sign equation-sign-top">=</span>
       {isMultiplication ? (
-        <MultiplicationNestedField
+        <NestedGroupField
           groups={rightCount}
           innerCount={leftCount}
           width={resultWidth}
           height={resultHeight}
           className={resultClassName}
+        />
+      ) : isDivision ? (
+        <GridField
+          rows={1}
+          cols={question.answer}
+          width={resultWidth}
+          height={150}
+          className={`${resultClassName} bubble-viz-divide-result`}
+          dotClassName="grid-dot grid-dot-result"
         />
       ) : (
         <BubbleField
