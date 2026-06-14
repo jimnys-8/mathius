@@ -113,13 +113,13 @@
 }
 
 .equation-grid-sqrt {
-  grid-template-columns: auto auto auto;
+  grid-template-columns: minmax(120px, auto) auto minmax(120px, auto);
   justify-content: center;
 }
 
-.equation-grid-sqrt > .bubble-viz-square {
-  grid-column: 1 / -1;
-  justify-self: center;
+.bubble-viz-sqrt-result {
+  max-width: 240px;
+  aspect-ratio: 3 / 1;
 }
 
 .radical-expr {
@@ -137,14 +137,24 @@
 
 .radical-radicand {
   border-top: 5px solid currentColor;
-  padding: 0.1em 0.35em 0 0.05em;
+  padding: 0.05em 0.15em 0 0.05em;
   margin-top: 0.16em;
   margin-left: -2px;
 }
 
-.bubble-viz-result-multiply {
-  max-width: 420px;
-  aspect-ratio: 21 / 11;
+.bubble-viz-factor-row {
+  max-width: 320px;
+  aspect-ratio: 3 / 1;
+}
+
+.bubble-viz-factor-col {
+  max-width: 84px;
+  aspect-ratio: 2 / 3;
+}
+
+.bubble-viz-product {
+  max-width: 320px;
+  aspect-ratio: 1 / 1;
 }
 
 .bubble-viz svg {
@@ -187,19 +197,6 @@
   stroke: #ef4444;
 }
 
-.multiply-group-shell {
-  fill: rgba(245, 158, 45, 0.06);
-  stroke: rgba(245, 158, 45, 0.5);
-  stroke-width: 2.2;
-  stroke-dasharray: 4 4;
-}
-
-.multiply-group-item {
-  fill: rgba(41, 153, 255, 0.42);
-  stroke: #2999ff;
-  stroke-width: 1.7;
-}
-
 .grid-dot {
   fill: rgba(34, 211, 238, 0.26);
   stroke: #22d3ee;
@@ -215,6 +212,24 @@
 .grid-dot-result {
   fill: rgba(34, 211, 238, 0.62);
   stroke: #0891b2;
+  stroke-width: 1.9;
+}
+
+.grid-dot-product {
+  fill: rgba(148, 163, 184, 0.22);
+  stroke: #94a3b8;
+  stroke-width: 1.7;
+}
+
+.grid-dot-factor-a {
+  fill: rgba(41, 153, 255, 0.5);
+  stroke: #2999ff;
+  stroke-width: 1.9;
+}
+
+.grid-dot-factor-b {
+  fill: rgba(245, 158, 45, 0.55);
+  stroke: #f59e2d;
   stroke-width: 1.9;
 }
 
