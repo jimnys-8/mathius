@@ -132,13 +132,14 @@
 
 .radical-sign {
   font-size: 1.3em;
-  line-height: 0.9;
+  line-height: 1.17;
 }
 
 .radical-radicand {
-  border-top: 3px solid currentColor;
+  border-top: 5px solid currentColor;
   padding: 0.1em 0.35em 0 0.05em;
   margin-top: 0.16em;
+  margin-left: -2px;
 }
 
 .bubble-viz-result-multiply {
