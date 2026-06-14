@@ -122,9 +122,99 @@ function buildNodes(count, color, idPrefix, targetX) {
   }))
 }
 
+function getNestedCircleLayout(groupCount, width, height) {
+  if (groupCount <= 0) {
+    return []
+  }
+
+  const columns = Math.min(4, groupCount)
+  const rows = Math.ceil(groupCount / columns)
+  const xGap = width / (columns + 1)
+  const yGap = height / (rows + 1)
+  const outerRadius = Math.max(14, Math.min(28, Math.min(xGap, yGap) * 0.42))
+
+  return Array.from({ length: groupCount }, (_, groupIndex) => {
+    const col = groupIndex % columns
+    const row = Math.floor(groupIndex / columns)
+
+    return {
+      id: `group-${groupIndex}`,
+      cx: xGap * (col + 1),
+      cy: yGap * (row + 1),
+      outerRadius,
+    }
+  })
+}
+
+function getInnerOffsets(count, maxRadius) {
+  if (count <= 0) {
+    return []
+  }
+
+  if (count === 1) {
+    return [{ x: 0, y: 0 }]
+  }
+
+  const goldenAngle = Math.PI * (3 - Math.sqrt(5))
+  return Array.from({ length: count }, (_, index) => {
+    const ratio = Math.sqrt((index + 0.5) / count)
+    const distance = maxRadius * ratio
+    const angle = index * goldenAngle
+
+    return {
+      x: Math.cos(angle) * distance,
+      y: Math.sin(angle) * distance,
+    }
+  })
+}
+
+function MultiplicationNestedField({ groups, innerCount, width = 420, height = 220, className = '' }) {
+  const groupLayout = useMemo(() => getNestedCircleLayout(groups, width, height), [groups, width, height])
+
+  return (
+    <div className={`bubble-viz ${className}`.trim()} aria-hidden="true">
+      <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="xMidYMid meet">
+        {groupLayout.map((group) => {
+          const innerRadius = Math.max(2.8, Math.min(5.4, group.outerRadius * 0.2))
+          const innerOffsets = getInnerOffsets(innerCount, group.outerRadius - innerRadius - 2)
+
+          return (
+            <g key={group.id}>
+              <circle
+                cx={group.cx}
+                cy={group.cy}
+                r={group.outerRadius}
+                className="multiply-group-shell"
+              />
+              {innerOffsets.map((offset, index) => (
+                <circle
+                  key={`${group.id}-inner-${index}`}
+                  cx={group.cx + offset.x}
+                  cy={group.cy + offset.y}
+                  r={innerRadius}
+                  className="multiply-group-item"
+                />
+              ))}
+            </g>
+          )
+        })}
+      </svg>
+    </div>
+  )
+}
+
+function symbolForOperator(operator) {
+  if (operator === '*') {
+    return 'x'
+  }
+
+  return operator
+}
+
 function EquationGrid({ question, inputValue, onInputChange, onEnter, submitted }) {
   const isAddition = question.operator === '+'
   const isSubtraction = question.operator === '-'
+  const isMultiplication = question.operator === '*'
   const leftCount = question.left
   const rightCount = question.right
 
@@ -140,8 +230,12 @@ function EquationGrid({ question, inputValue, onInputChange, onEnter, submitted 
       ]
     }
 
+    if (isMultiplication) {
+      return buildNodes(leftCount, 'blue', 'left-multiply', 90)
+    }
+
     return []
-  }, [isAddition, isSubtraction, leftCount, rightCount, question.answer])
+  }, [isAddition, isSubtraction, isMultiplication, leftCount, rightCount, question.answer])
 
   const rightNodes = useMemo(() => {
     if (isAddition) {
@@ -152,8 +246,12 @@ function EquationGrid({ question, inputValue, onInputChange, onEnter, submitted 
       return buildNodes(rightCount, 'magenta', 'right-magenta', 90)
     }
 
+    if (isMultiplication) {
+      return buildNodes(rightCount, 'orange', 'right-multiply', 90)
+    }
+
     return []
-  }, [isAddition, isSubtraction, rightCount])
+  }, [isAddition, isSubtraction, isMultiplication, rightCount])
 
   const resultNodes = useMemo(() => {
     if (isAddition) {
@@ -176,17 +274,41 @@ function EquationGrid({ question, inputValue, onInputChange, onEnter, submitted 
   const rightOperandClass = isSubtraction
     ? 'operand operand-right operand-grid operand-magenta'
     : 'operand operand-right operand-grid'
+  const topOperator = symbolForOperator(question.operator)
+  const resultWidth = isMultiplication ? 420 : 340
+  const resultHeight = isMultiplication ? 220 : 150
+  const resultRadius = 11
+  const sideRadius = isMultiplication ? 9 : 11
+  const resultClassName = isMultiplication
+    ? 'bubble-viz-result bubble-viz-result-multiply'
+    : 'bubble-viz-result'
 
   return (
     <div className="equation-grid">
-      <BubbleField nodesConfig={leftNodes} className="bubble-viz-left" />
-      <span className="equation-sign equation-sign-top">{question.operator}</span>
-      <BubbleField nodesConfig={rightNodes} className="bubble-viz-right" />
+      <BubbleField nodesConfig={leftNodes} radius={sideRadius} className="bubble-viz-left" />
+      <span className="equation-sign equation-sign-top">{topOperator}</span>
+      <BubbleField nodesConfig={rightNodes} radius={sideRadius} className="bubble-viz-right" />
       <span className="equation-sign equation-sign-top">=</span>
-      <BubbleField nodesConfig={resultNodes} width={340} className="bubble-viz-result" />
+      {isMultiplication ? (
+        <MultiplicationNestedField
+          groups={rightCount}
+          innerCount={leftCount}
+          width={resultWidth}
+          height={resultHeight}
+          className={resultClassName}
+        />
+      ) : (
+        <BubbleField
+          nodesConfig={resultNodes}
+          width={resultWidth}
+          height={resultHeight}
+          radius={resultRadius}
+          className={resultClassName}
+        />
+      )}
 
       <span className={leftOperandClass}>{leftCount}</span>
-      <span className="equation-sign equation-sign-bottom">{question.operator}</span>
+      <span className="equation-sign equation-sign-bottom">{topOperator}</span>
       <span className={rightOperandClass}>{rightCount}</span>
       <span className="equation-sign equation-sign-bottom">=</span>
       <input
@@ -209,7 +331,8 @@ function App() {
   const [inputValue, setInputValue] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [isCorrect, setIsCorrect] = useState(false)
-  const hasEquationVisualization = question.operator === '+' || question.operator === '-'
+  const hasEquationVisualization =
+    question.operator === '+' || question.operator === '-' || question.operator === '*'
 
   const resultText = useMemo(() => {
     if (!submitted) {
