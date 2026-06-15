@@ -93,6 +93,18 @@
   font-size: clamp(1.5rem, 3.4vw, 2rem);
 }
 
+.equation-grid:not(.equation-grid-sqrt) .equation-sign-bottom,
+.equation-grid:not(.equation-grid-sqrt) .operand-grid {
+  font-size: clamp(2rem, 4.8vw, 2.9rem);
+  font-weight: 800;
+}
+
+.equation-grid:not(.equation-grid-sqrt) .operand-grid {
+  border: none;
+  border-radius: 0;
+  padding: 0;
+}
+
 .bubble-viz-result {
   max-width: 340px;
 }
