@@ -14,7 +14,7 @@ describe('computeStats', () => {
     expect(stats.answered).toBe(0)
     expect(stats.accuracy).toBeNull()
     expect(stats.tricky).toEqual([])
-    expect(stats.byOperation.map((entry) => entry.answered)).toEqual([0, 0, 0, 0])
+    expect(stats.byOperation.map((entry) => entry.answered)).toEqual([0, 0, 0, 0, 0])
   })
 
   it('sums totals and counts today separately', () => {
@@ -49,6 +49,7 @@ describe('computeStats', () => {
       { op: 'sub', answered: 0, correct: 0 },
       { op: 'mul', answered: 2, correct: 0 },
       { op: 'div', answered: 0, correct: 0 },
+      { op: 'sqrt', answered: 0, correct: 0 },
     ])
     expect(stats.tricky.map((fact) => fact.key)).toEqual(['7×8=?', '3+4=?'])
   })

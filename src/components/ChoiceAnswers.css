@@ -1,0 +1,84 @@
+.choice-answers {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  width: min(100%, 36rem);
+  margin: 0 auto;
+}
+
+.choice-answer {
+  position: relative;
+  min-height: 4.5rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 3px var(--color-line), 0 4px 0 var(--color-line);
+  font-size: clamp(1.6rem, 6vw, 2.2rem);
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-c);
+  touch-action: manipulation;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease,
+    opacity 0.2s ease;
+}
+
+.choice-answer:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 3px var(--color-c), 0 4px 0 var(--color-line);
+}
+
+.choice-answer:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: inset 0 0 0 3px var(--color-c), 0 1px 0 var(--color-line);
+}
+
+.choice-answer:disabled {
+  cursor: default;
+}
+
+.choice-answer-key {
+  position: absolute;
+  top: 0.35rem;
+  left: 0.55rem;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--color-muted);
+}
+
+.choice-answer.is-correct {
+  background: color-mix(in srgb, var(--color-correct) 14%, var(--color-surface));
+  box-shadow: inset 0 0 0 3px var(--color-correct), 0 4px 0 color-mix(in srgb, var(--color-correct) 50%, var(--color-line));
+  color: var(--color-correct);
+  animation: choice-answer-pop 0.4s ease;
+}
+
+.choice-answer.is-wrong {
+  background: color-mix(in srgb, var(--color-wrong) 10%, var(--color-surface));
+  box-shadow: inset 0 0 0 3px var(--color-wrong), 0 4px 0 color-mix(in srgb, var(--color-wrong) 40%, var(--color-line));
+  color: var(--color-wrong);
+  text-decoration: line-through;
+}
+
+.choice-answer.is-dim {
+  opacity: 0.45;
+}
+
+@keyframes choice-answer-pop {
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@media (max-width: 480px) {
+  .choice-answers {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .choice-answer.is-correct {
+    animation: none;
+  }
+}

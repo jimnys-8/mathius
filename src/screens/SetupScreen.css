@@ -23,3 +23,14 @@
   margin: 0.75rem 0 0;
   color: var(--color-ink-soft);
 }
+
+/* Six categories: two rows of three, or three rows of two on phones. */
+.setup-section .is-tiles .choice-options {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 480px) {
+  .setup-section .is-tiles .choice-options {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

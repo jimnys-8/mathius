@@ -65,6 +65,12 @@
   flex-wrap: wrap;
 }
 
+.play-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .play-touch {
   display: flex;
   flex-direction: column;

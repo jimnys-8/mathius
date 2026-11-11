@@ -9,6 +9,7 @@ const CATEGORY_COLORS = {
   mul: 'var(--color-c)',
   div: '#2f80ed',
   mix: '#e0457b',
+  sqrt: '#0e8fa8',
 }
 
 /** Choose what to practice, how hard, and whether to race the clock. */
@@ -26,7 +27,7 @@ export default function SetupScreen({ settings, onChange, onStart, header }) {
   const levelOptions = LEVELS.map((level) => ({
     value: level.id,
     label: t(`level.${level.id}.name`),
-    detail: t(`level.${level.id}.desc`),
+    detail: t(settings.category === 'sqrt' ? `level.${level.id}.desc.sqrt` : `level.${level.id}.desc`),
     icon: '★'.repeat(level.id),
     color: '#e59a00',
   }))

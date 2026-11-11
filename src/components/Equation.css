@@ -82,3 +82,38 @@
     animation: none !important;
   }
 }
+
+.equation-input.is-choice {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Square root sign with the bar (vinculum) over the radicand. */
+.radical {
+  display: inline-flex;
+  align-items: stretch;
+}
+
+/* Drawn as SVG so it stretches to the height of what is under the root. */
+.radical-sign {
+  align-self: stretch;
+  width: 0.5em;
+  height: auto;
+  overflow: visible;
+}
+
+.radical-sign path {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-width: 0.075em;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.radical-body {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1em 0.12em 0.02em 0.08em;
+  border-top: 0.075em solid var(--color-ink);
+}

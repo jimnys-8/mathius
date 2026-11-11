@@ -1,4 +1,5 @@
-import { useEffect, useReducer, useRef } from 'react'
+import { useCallback, useEffect, useReducer, useRef } from 'react'
+import ChoiceAnswers from '../components/ChoiceAnswers.jsx'
 import Countdown from '../components/Countdown.jsx'
 import Equation from '../components/Equation.jsx'
 import Numpad from '../components/Numpad.jsx'
@@ -12,9 +13,17 @@ import './PlayScreen.css'
 /** In timed mode, correct answers move on by themselves after this long. */
 const AUTO_NEXT_MS = 900
 
+function hintText(question, t) {
+  if (question.op === 'sqrt' && question.choices) {
+    return t('play.hintHelpSqrt', { side: Math.floor(Math.sqrt(question.terms[0])) })
+  }
+  return t('play.hintHelp')
+}
+
 function feedbackText(state, { t, formatNumber }) {
   if (state.phase !== 'feedback') {
-    return state.hinted ? t('play.hintHelp') : ' '
+    // A non-breaking space keeps the line's height when there is no text.
+    return state.hinted ? hintText(state.question, t) : '\u00a0'
   }
   if (state.lastCorrect) {
     return t('play.praise', { index: state.questionNumber })
@@ -81,6 +90,9 @@ export default function PlayScreen({ settings, onFinish, onQuit }) {
     focusInput()
   }
 
+  const handleChoose = useCallback((value) => dispatch({ type: 'choose', value, now: Date.now() }), [])
+  const { choices } = state.question
+
   const correctCount = state.results.filter((result) => result.correct).length
   const status = state.phase === 'feedback' ? (state.lastCorrect ? 'correct' : 'wrong') : 'open'
 
@@ -122,7 +134,29 @@ export default function PlayScreen({ settings, onFinish, onQuit }) {
         {feedbackText(state, i18n)}
       </p>
 
-      {touch ? (
+      {choices ? (
+        <div className="play-choices">
+          <ChoiceAnswers
+            key={state.questionNumber}
+            choices={choices}
+            answer={state.question.answer}
+            chosen={state.phase === 'answering' ? null : Number(state.input)}
+            revealed={state.phase !== 'answering'}
+            onChoose={handleChoose}
+          />
+          <div className="play-actions">
+            {state.phase === 'answering' ? (
+              <button type="button" className="btn" onClick={handleHint} disabled={state.vizStep > 0}>
+                💡 {t('play.hint')}
+              </button>
+            ) : (
+              <button type="button" className="btn btn-primary btn-large" onClick={handleEnter} autoFocus>
+                {t('play.next')} →
+              </button>
+            )}
+          </div>
+        </div>
+      ) : touch ? (
         <div className="play-touch">
           <button type="button" className="btn" onClick={handleHint} disabled={state.phase !== 'answering' || state.vizStep > 0}>
             💡 {t('play.hint')}
