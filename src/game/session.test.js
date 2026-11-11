@@ -22,6 +22,14 @@ describe('sessionReducer', () => {
     ])
   })
 
+  it('skips the solution animation for correct answers in timed mode', () => {
+    const start = createSession(timed, 0)
+    expect(answer(start, start.question.answer, 1).vizStep).toBe(0)
+    const hinted = sessionReducer(start, { type: 'hint' })
+    expect(answer(hinted, start.question.answer, 1).vizStep).toBe(1)
+    expect(answer(start, start.question.answer + 1, 1).vizStep).toBe(2)
+  })
+
   it('records a wrong answer', () => {
     const start = createSession(practice, 0)
     const state = answer(start, start.question.answer + 1, 10)

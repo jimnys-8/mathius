@@ -120,10 +120,13 @@ export function sessionReducer(state, action) {
         hinted: state.hinted,
         ms: action.now - state.questionStartedAt,
       }
+      // In timed mode a correct answer moves on right away, so don't start
+      // a solution animation that would be cut off halfway.
+      const showSolution = !(isTimed(state) && correct)
       return {
         ...state,
         phase: 'feedback',
-        vizStep: SOLUTION_FRAME,
+        vizStep: showSolution ? SOLUTION_FRAME : state.vizStep,
         lastCorrect: correct,
         results: [...state.results, result],
       }
