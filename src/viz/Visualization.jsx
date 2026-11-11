@@ -5,7 +5,7 @@ import './Visualization.css'
 
 const KINDS = ['boxes', 'brackets', 'slots', 'dots', 'labels']
 /** Pixel size of one dot unit when there is room for it. */
-const UNIT_PX = 34
+const UNIT_PX = 44
 
 function prefersReducedMotion() {
   return typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
