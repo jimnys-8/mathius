@@ -14,6 +14,7 @@ import { OPERATIONS, getCategory, getLevel } from './config.js'
  * @property {number} answer   terms[unknown]
  * @property {string} key      stable identifier, e.g. "7+8=?"
  * @property {number[]} [choices]  possible answers, smallest first
+ * @property {'dots'} [choicesAs]  show the choices as dots, not numerals
  */
 
 function randomInt(rng, min, max) {
@@ -76,18 +77,34 @@ export function questionKey(op, terms, unknown, { estimate = false } = {}) {
   return `${shown[0]}${OPERATIONS[op].symbol}${shown[1]}=${shown[2]}`
 }
 
-export function makeQuestion(op, terms, unknown = terms.length - 1, choices = undefined) {
+/**
+ * @param {Object} [extra]  more question fields, e.g. `{ choicesAs: 'dots' }`
+ *   to show the choices as dots instead of numerals
+ */
+export function makeQuestion(op, terms, unknown = terms.length - 1, choices = undefined, extra = {}) {
   const question = {
     op,
     terms,
     unknown,
     answer: terms[unknown],
-    key: questionKey(op, terms, unknown, { estimate: Boolean(choices) }),
+    key: questionKey(op, terms, unknown, { estimate: Boolean(choices) && op === 'sqrt' }),
+    ...extra,
   }
   if (choices) {
     question.choices = choices
   }
   return question
+}
+
+/** Four whole numbers from 1 to `max` close to the answer, smallest first. */
+export function countingChoices(rng, answer, max = 10) {
+  const near = []
+  for (let other = Math.max(1, answer - 3); other <= Math.min(max, answer + 3); other += 1) {
+    if (other !== answer) {
+      near.push(other)
+    }
+  }
+  return [answer, ...pickDistinct(rng, near, 3)].sort((a, b) => a - b)
 }
 
 // ---------------------------------------------------------------------------
@@ -161,8 +178,9 @@ function createSqrtQuestion(config, rng) {
  * @returns {Question}
  */
 export function createQuestion({ category, level, avoid = [], rng = Math.random }) {
-  const { ops } = getCategory(category)
   const levelConfig = getLevel(category, level)
+  const categoryOps = getCategory(category).ops
+  const ops = levelConfig.ops ? categoryOps.filter((op) => levelConfig.ops.includes(op)) : categoryOps
   let question = null
 
   // Small fact spaces (e.g. Easy multiplication) can make collisions
@@ -173,7 +191,11 @@ export function createQuestion({ category, level, avoid = [], rng = Math.random 
       question = createSqrtQuestion(levelConfig.sqrt, rng)
     } else {
       const terms = createTerms(op, levelConfig, rng)
-      question = makeQuestion(op, terms, pickWeighted(rng, levelConfig.unknowns))
+      const unknown = pickWeighted(rng, levelConfig.unknowns)
+      question =
+        levelConfig.choices === 'dots'
+          ? makeQuestion(op, terms, unknown, countingChoices(rng, terms[unknown]), { choicesAs: 'dots' })
+          : makeQuestion(op, terms, unknown)
     }
     if (!avoid.includes(question.key)) {
       break

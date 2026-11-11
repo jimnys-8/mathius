@@ -61,6 +61,19 @@ describe('createQuestion', () => {
     }
   }
 
+  it('answers with dots on the counting level', () => {
+    for (let i = 0; i < 200; i += 1) {
+      const question = createQuestion({ category: 'mix', level: 0, rng })
+      expect(['add', 'sub']).toContain(question.op)
+      expect(question.choicesAs).toBe('dots')
+      expect(question.choices).toContain(question.answer)
+      expect(question.choices).toHaveLength(4)
+      expect(new Set(question.choices).size).toBe(4)
+      expect(question.choices.every((choice) => choice >= 1 && choice <= 10)).toBe(true)
+      expect(question.key).not.toContain('≈')
+    }
+  })
+
   it('only asks for the result on non-equation levels', () => {
     for (let i = 0; i < 200; i += 1) {
       expect(createQuestion({ category: 'mix', level: 2, rng }).unknown).toBe(2)

@@ -26,8 +26,18 @@ export const OPERATIONS = {
  *     decimal by picking from four choices. 'wide' choices lie between
  *     different whole numbers; 'narrow' ones share the whole number and
  *     differ only in the decimal.
+ * - `ops` (optional): only these operations, even in the mix.
+ * - `choices` (optional): 'dots' to answer by picking one of four buttons
+ *   showing dots, for players who can count but don't know numerals yet.
  */
 const ARITHMETIC_LEVELS = [
+  {
+    id: 0,
+    ops: ['add', 'sub'],
+    sum: { max: 10, minPart: 1 },
+    unknowns: [0, 0, 1],
+    choices: 'dots',
+  },
   {
     id: 1,
     sum: { max: 10, minPart: 1 },
@@ -65,6 +75,9 @@ const ARITHMETIC_LEVELS = [
   },
 ]
 
+/** Multiplication, division and roots start at level 1: counting up to ten is too little for them. */
+const TABLE_LEVELS = ARITHMETIC_LEVELS.filter((level) => level.id > 0)
+
 /** Timer choices in seconds; 0 means no timer. */
 export const TIMER_OPTIONS = [0, 30, 60, 120]
 
@@ -80,11 +93,11 @@ export const ROUND_LENGTH = 10
 export const CATEGORIES = [
   { id: 'add', symbol: '+', ops: ['add'], levels: ARITHMETIC_LEVELS },
   { id: 'sub', symbol: '−', ops: ['sub'], levels: ARITHMETIC_LEVELS },
-  { id: 'mul', symbol: '×', ops: ['mul'], levels: ARITHMETIC_LEVELS },
-  { id: 'div', symbol: '÷', ops: ['div'], levels: ARITHMETIC_LEVELS },
+  { id: 'mul', symbol: '×', ops: ['mul'], levels: TABLE_LEVELS },
+  { id: 'div', symbol: '÷', ops: ['div'], levels: TABLE_LEVELS },
   { id: 'mix', symbol: '?', ops: ['add', 'sub', 'mul', 'div'], levels: ARITHMETIC_LEVELS },
   // Square roots are a skill of their own, so they are not part of the mix.
-  { id: 'sqrt', symbol: '√', ops: ['sqrt'], levels: ARITHMETIC_LEVELS },
+  { id: 'sqrt', symbol: '√', ops: ['sqrt'], levels: TABLE_LEVELS },
 ]
 
 /** The level a category starts on. Every category has it. */
