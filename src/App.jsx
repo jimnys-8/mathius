@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import LanguageToggle from './components/LanguageToggle.jsx'
 import PlayerBar from './components/PlayerBar.jsx'
+import { I18nContext, createI18n, useI18n } from './i18n/i18n.js'
 import {
   addProfile,
   bestTimedScore,
@@ -8,6 +10,7 @@ import {
   recordSession,
   removeProfile,
   selectProfile,
+  setLanguage,
   updateProfile,
 } from './profiles/store.js'
 import { useStore } from './profiles/useStore.js'
@@ -19,14 +22,15 @@ import SummaryScreen from './screens/SummaryScreen.jsx'
 import './ui.css'
 
 function RecordBadge({ correct, previousBest }) {
+  const { t } = useI18n()
   if (previousBest === null || correct > previousBest) {
-    return correct > 0 ? <p className="summary-record is-new">🏆 New best score!</p> : null
+    return correct > 0 ? <p className="summary-record is-new">🏆 {t('summary.newBest')}</p> : null
   }
-  return <p className="summary-record">Your best: {previousBest}</p>
+  return <p className="summary-record">{t('summary.best', { best: previousBest })}</p>
 }
 
-export default function App() {
-  const [store, setStore] = useStore()
+function Screens({ store, setStore }) {
+  const { t } = useI18n()
   const [screen, setScreen] = useState({ name: 'setup', round: 0 })
   const profile = getProfile(store, store.activeProfileId)
 
@@ -37,6 +41,11 @@ export default function App() {
     return (
       <ProfileScreen
         profiles={store.profiles}
+        header={
+          <div className="top-bar">
+            <LanguageToggle />
+          </div>
+        }
         onSelect={(id) => {
           setStore((current) => selectProfile(current, id))
           show('setup')
@@ -87,10 +96,29 @@ export default function App() {
       header={
         <PlayerBar profile={profile} onSwitch={() => setStore((current) => selectProfile(current, null))}>
           <button type="button" className="btn" onClick={() => show('stats')}>
-            📊 My stats
+            📊 {t('player.stats')}
           </button>
+          <LanguageToggle />
         </PlayerBar>
       }
     />
+  )
+}
+
+export default function App() {
+  const [store, setStore] = useStore()
+  const i18n = useMemo(
+    () => ({ ...createI18n(store.language), setLang: (lang) => setStore((current) => setLanguage(current, lang)) }),
+    [store.language, setStore],
+  )
+
+  useEffect(() => {
+    document.documentElement.lang = i18n.lang
+  }, [i18n.lang])
+
+  return (
+    <I18nContext.Provider value={i18n}>
+      <Screens store={store} setStore={setStore} />
+    </I18nContext.Provider>
   )
 }

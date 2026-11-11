@@ -1,4 +1,6 @@
+import { formatFact } from '../game/format.js'
 import { summarize } from '../game/session.js'
+import { useI18n } from '../i18n/i18n.js'
 import './SummaryScreen.css'
 
 function starsFor(correct, total) {
@@ -15,16 +17,9 @@ function starsFor(correct, total) {
   return ratio >= 0.4 ? 1 : 0
 }
 
-function headline(stars) {
-  return ['Keep practicing!', 'Good try!', 'Great work!', 'Amazing!'][stars]
-}
-
-function formatKey(result) {
-  return result.key.replace('?', String(result.answer)).replace(/([+−×÷=])/g, ' $1 ')
-}
-
 /** Results of a finished session. */
 export default function SummaryScreen({ session, onPlayAgain, onDone, children }) {
+  const { t, formatNumber } = useI18n()
   const { total, correct } = summarize(session.results)
   const stars = starsFor(correct, total)
   const timed = session.settings.timer > 0
@@ -32,22 +27,22 @@ export default function SummaryScreen({ session, onPlayAgain, onDone, children }
   return (
     <main className="page summary">
       <section className="card summary-score">
-        <div className="summary-stars" aria-label={`${stars} of 3 stars`}>
+        <div className="summary-stars" aria-label={t('summary.stars', { count: stars })}>
           {[0, 1, 2].map((index) => (
             <span key={index} className={`summary-star${index < stars ? ' is-lit' : ''}`} style={{ animationDelay: `${0.2 + index * 0.25}s` }}>
               ★
             </span>
           ))}
         </div>
-        <h1>{headline(stars)}</h1>
+        <h1>{t('summary.headline', { index: stars })}</h1>
         <p className="summary-count">
           {timed ? (
             <>
-              <strong>{correct}</strong> correct in {session.settings.timer} seconds
+              <strong>{correct}</strong> {t('summary.inTime', { seconds: session.settings.timer })}
             </>
           ) : (
             <>
-              <strong>{correct}</strong> of {total} correct
+              <strong>{correct}</strong> {t('summary.ofTotal', { total })}
             </>
           )}
         </p>
@@ -61,9 +56,9 @@ export default function SummaryScreen({ session, onPlayAgain, onDone, children }
               <span className="summary-mark" aria-hidden="true">
                 {result.correct ? '✓' : '✗'}
               </span>
-              <span className="summary-fact">{formatKey(result)}</span>
-              {!result.correct && <span className="summary-given">you said {result.given}</span>}
-              {result.hinted && <span className="summary-hint" title="Used a hint">💡</span>}
+              <span className="summary-fact">{formatFact(result.key, result.answer, formatNumber)}</span>
+              {!result.correct && <span className="summary-given">{t('summary.youSaid', { given: formatNumber(result.given) })}</span>}
+              {result.hinted && <span className="summary-hint" title={t('summary.usedHint')}>💡</span>}
             </li>
           ))}
         </ol>
@@ -71,10 +66,10 @@ export default function SummaryScreen({ session, onPlayAgain, onDone, children }
 
       <div className="summary-actions">
         <button type="button" className="btn" onClick={onDone}>
-          Done
+          {t('summary.done')}
         </button>
         <button type="button" className="btn btn-primary btn-large" onClick={onPlayAgain} autoFocus>
-          Play again
+          {t('summary.playAgain')}
         </button>
       </div>
     </main>

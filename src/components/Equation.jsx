@@ -1,4 +1,5 @@
 import { OPERATIONS } from '../game/config.js'
+import { useI18n } from '../i18n/i18n.js'
 import './Equation.css'
 
 const TERM_CLASSES = ['term-a', 'term-b', 'term-c']
@@ -8,6 +9,7 @@ const TERM_CLASSES = ['term-a', 'term-b', 'term-c']
  * unknown term.
  */
 export default function Equation({ question, input, onInput, onEnter, status, inputRef, readOnly, keyboard = true }) {
+  const { t } = useI18n()
   const symbol = OPERATIONS[question.op].symbol
 
   const renderTerm = (index) => {
@@ -26,7 +28,7 @@ export default function Equation({ question, input, onInput, onEnter, status, in
           pattern="[0-9]*"
           autoComplete="off"
           enterKeyHint="done"
-          aria-label="Your answer"
+          aria-label={t('play.yourAnswer')}
           value={input}
           readOnly={readOnly}
           autoFocus

@@ -1,5 +1,6 @@
 import ChoiceGroup from '../components/ChoiceGroup.jsx'
-import { CATEGORIES, LEVELS, TIMER_OPTIONS } from '../game/config.js'
+import { CATEGORIES, LEVELS, ROUND_LENGTH, TIMER_OPTIONS } from '../game/config.js'
+import { useI18n } from '../i18n/i18n.js'
 import './SetupScreen.css'
 
 const CATEGORY_COLORS = {
@@ -10,29 +11,30 @@ const CATEGORY_COLORS = {
   mix: '#e0457b',
 }
 
-const CATEGORY_OPTIONS = CATEGORIES.map((category) => ({
-  value: category.id,
-  label: category.label,
-  icon: category.id === 'mix' ? '+−×÷' : category.symbol,
-  color: CATEGORY_COLORS[category.id],
-}))
-
-const LEVEL_OPTIONS = LEVELS.map((level) => ({
-  value: level.id,
-  label: level.name,
-  detail: level.description,
-  icon: '★'.repeat(level.id),
-  color: '#e59a00',
-}))
-
-const TIMER_CHOICES = TIMER_OPTIONS.map((option) => ({
-  value: option.seconds,
-  label: option.seconds === 0 ? 'Off' : `⏱ ${option.label}`,
-}))
-
 /** Choose what to practice, how hard, and whether to race the clock. */
 export default function SetupScreen({ settings, onChange, onStart, header }) {
+  const { t, formatTimer } = useI18n()
   const update = (patch) => onChange({ ...settings, ...patch })
+
+  const categoryOptions = CATEGORIES.map((category) => ({
+    value: category.id,
+    label: t(`category.${category.id}`),
+    icon: category.id === 'mix' ? '+−×÷' : category.symbol,
+    color: CATEGORY_COLORS[category.id],
+  }))
+
+  const levelOptions = LEVELS.map((level) => ({
+    value: level.id,
+    label: t(`level.${level.id}.name`),
+    detail: t(`level.${level.id}.desc`),
+    icon: '★'.repeat(level.id),
+    color: '#e59a00',
+  }))
+
+  const timerOptions = TIMER_OPTIONS.map((seconds) => ({
+    value: seconds,
+    label: seconds === 0 ? formatTimer(0) : `⏱ ${formatTimer(seconds)}`,
+  }))
 
   return (
     <main className="page setup">
@@ -40,9 +42,9 @@ export default function SetupScreen({ settings, onChange, onStart, header }) {
 
       <section className="card setup-section">
         <ChoiceGroup
-          legend="What do you want to practice?"
+          legend={t('setup.category')}
           variant="tiles"
-          options={CATEGORY_OPTIONS}
+          options={categoryOptions}
           value={settings.category}
           onChange={(category) => update({ category })}
         />
@@ -50,9 +52,9 @@ export default function SetupScreen({ settings, onChange, onStart, header }) {
 
       <section className="card setup-section">
         <ChoiceGroup
-          legend="How hard?"
+          legend={t('setup.level')}
           variant="steps"
-          options={LEVEL_OPTIONS}
+          options={levelOptions}
           value={settings.level}
           onChange={(level) => update({ level })}
         />
@@ -60,21 +62,21 @@ export default function SetupScreen({ settings, onChange, onStart, header }) {
 
       <section className="card setup-section">
         <ChoiceGroup
-          legend="Timer"
-          options={TIMER_CHOICES}
+          legend={t('setup.timer')}
+          options={timerOptions}
           value={settings.timer}
           onChange={(timer) => update({ timer })}
         />
         <p className="setup-hint">
           {settings.timer > 0
-            ? `How many can you get right in ${TIMER_OPTIONS.find((option) => option.seconds === settings.timer)?.label}?`
-            : 'Take your time with a round of 10 questions.'}
+            ? t('setup.timerHint', { time: formatTimer(settings.timer) })
+            : t('setup.roundHint', { count: ROUND_LENGTH })}
         </p>
       </section>
 
       <div className="setup-start">
         <button type="button" className="btn btn-primary btn-large" onClick={onStart}>
-          Start ▶
+          {t('setup.start')} ▶
         </button>
       </div>
     </main>

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useI18n } from '../i18n/i18n.js'
 import { DOT_RADIUS } from './layout.js'
 import { buildScene } from './scenes.js'
 import './Visualization.css'
@@ -79,18 +80,9 @@ function delayStyle(element) {
   return element.delay ? { transitionDelay: `${element.delay}s` } : undefined
 }
 
-function describe(question) {
+function describe(question, t) {
   const [a, b, c] = question.terms
-  switch (question.op) {
-    case 'add':
-      return `${a} dots and ${b} dots, ${c} together`
-    case 'sub':
-      return `${a} dots, ${b} taken away, ${c} left`
-    case 'mul':
-      return `${a} rows of ${b} dots, ${c} in total`
-    default:
-      return `${a} dots shared into ${b} boxes, ${c} in each`
-  }
+  return t(`viz.${question.op}`, { a, b, c })
 }
 
 /**
@@ -101,6 +93,7 @@ function describe(question) {
  * @param {number} props.step  0 = question, 1 = hint, 2 = solution
  */
 export default function Visualization({ question, step }) {
+  const { t } = useI18n()
   const scene = useMemo(() => buildScene(question), [question])
   const frame = useFrameStepper(step, scene.durations)
   const elements = useMemo(() => resolveElements(scene.frames, frame), [scene, frame])
@@ -112,7 +105,7 @@ export default function Visualization({ question, step }) {
       viewBox={`${x} ${y} ${width} ${height}`}
       style={{ width: `min(100%, ${Math.round(width * UNIT_PX)}px)`, aspectRatio: `${width} / ${height}` }}
       role="img"
-      aria-label={frame === 0 ? 'Picture of the question' : describe(question)}
+      aria-label={frame === 0 ? t('viz.question') : describe(question, t)}
     >
       {elements.boxes.map((box) => (
         <rect

@@ -98,3 +98,8 @@
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+.top-bar {
+  display: flex;
+  justify-content: flex-end;
+}

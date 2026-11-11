@@ -38,6 +38,11 @@ describe('loadStore / saveStore', () => {
     expect(loadStore(storage)).toEqual(store)
   })
 
+  it('adds fields missing from older saves', () => {
+    const storage = memoryStorage({ [STORAGE_KEY]: '{"version":1,"profiles":[],"activeProfileId":null,"history":{}}' })
+    expect(loadStore(storage).language).toBe('sv')
+  })
+
   it('falls back to an empty store for missing or broken data', () => {
     expect(loadStore(memoryStorage())).toEqual(emptyStore())
     expect(loadStore(memoryStorage({ [STORAGE_KEY]: '{nope' }))).toEqual(emptyStore())

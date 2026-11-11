@@ -4,6 +4,7 @@ import Equation from '../components/Equation.jsx'
 import Numpad from '../components/Numpad.jsx'
 import RoundProgress from '../components/RoundProgress.jsx'
 import { createSession, isTimed, sessionReducer } from '../game/session.js'
+import { useI18n } from '../i18n/i18n.js'
 import { useMediaQuery } from '../useMediaQuery.js'
 import Visualization from '../viz/Visualization.jsx'
 import './PlayScreen.css'
@@ -11,16 +12,14 @@ import './PlayScreen.css'
 /** In timed mode, correct answers move on by themselves after this long. */
 const AUTO_NEXT_MS = 900
 
-const PRAISE = ['Great job!', 'Correct!', 'Well done!', 'Nice one!', 'You got it!', 'Super!']
-
-function feedbackText(state) {
+function feedbackText(state, { t, formatNumber }) {
   if (state.phase !== 'feedback') {
-    return state.hinted ? 'Count the dots to find the answer.' : ' '
+    return state.hinted ? t('play.hintHelp') : ' '
   }
   if (state.lastCorrect) {
-    return PRAISE[state.questionNumber % PRAISE.length]
+    return t('play.praise', { index: state.questionNumber })
   }
-  return `Not quite. The answer is ${state.question.answer}.`
+  return t('play.wrong', { answer: formatNumber(state.question.answer) })
 }
 
 /**
@@ -30,6 +29,8 @@ function feedbackText(state) {
 export default function PlayScreen({ settings, onFinish, onQuit }) {
   const [state, dispatch] = useReducer(sessionReducer, settings, (initial) => createSession(initial, Date.now()))
   const inputRef = useRef(null)
+  const i18n = useI18n()
+  const { t } = i18n
   // Touch devices get on-screen number keys instead of the system keyboard.
   const touch = useMediaQuery('(pointer: coarse)')
 
@@ -87,12 +88,12 @@ export default function PlayScreen({ settings, onFinish, onQuit }) {
     <main className="page play">
       <header className="play-header">
         <button type="button" className="btn btn-quiet" onClick={onQuit}>
-          ✕ <span>Stop</span>
+          ✕ <span>{t('play.stop')}</span>
         </button>
         {timed ? (
           <>
             <Countdown startedAt={state.startedAt} seconds={state.settings.timer} />
-            <span className="play-score" aria-label={`${correctCount} correct`}>
+            <span className="play-score" aria-label={t('play.score', { count: correctCount })}>
               ✓ {correctCount}
             </span>
           </>
@@ -118,13 +119,13 @@ export default function PlayScreen({ settings, onFinish, onQuit }) {
       />
 
       <p className={`play-feedback is-${status}`} role="status">
-        {feedbackText(state)}
+        {feedbackText(state, i18n)}
       </p>
 
       {touch ? (
         <div className="play-touch">
           <button type="button" className="btn" onClick={handleHint} disabled={state.phase !== 'answering' || state.vizStep > 0}>
-            💡 Hint
+            💡 {t('play.hint')}
           </button>
           <Numpad
             onDigit={(digit) => dispatch({ type: 'input', value: state.input + digit })}
@@ -140,7 +141,7 @@ export default function PlayScreen({ settings, onFinish, onQuit }) {
           {state.phase === 'answering' ? (
             <>
               <button type="button" className="btn" onClick={handleHint} disabled={state.vizStep > 0}>
-                💡 Hint
+                💡 {t('play.hint')}
               </button>
               <button
                 type="button"
@@ -148,12 +149,12 @@ export default function PlayScreen({ settings, onFinish, onQuit }) {
                 onClick={handleEnter}
                 disabled={state.input === ''}
               >
-                Check
+                {t('play.check')}
               </button>
             </>
           ) : (
             <button type="button" className="btn btn-primary btn-large" onClick={handleEnter} autoFocus>
-              Next →
+              {t('play.next')} →
             </button>
           )}
         </div>

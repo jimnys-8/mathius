@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useI18n } from '../i18n/i18n.js'
 import './Countdown.css'
 
 /**
@@ -7,6 +8,7 @@ import './Countdown.css'
  * second.
  */
 export default function Countdown({ startedAt, seconds }) {
+  const { t } = useI18n()
   const endsAt = startedAt + seconds * 1000
   const [now, setNow] = useState(() => Date.now())
 
@@ -19,7 +21,7 @@ export default function Countdown({ startedAt, seconds }) {
   const elapsed = Math.max(0, Math.min(seconds * 1000, now - startedAt))
 
   return (
-    <div className={`countdown${left <= 10 ? ' is-ending' : ''}`} role="timer" aria-label={`${left} seconds left`}>
+    <div className={`countdown${left <= 10 ? ' is-ending' : ''}`} role="timer" aria-label={t('play.timeLeft', { seconds: left })}>
       <div className="countdown-track">
         <div
           className="countdown-bar"

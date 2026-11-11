@@ -33,6 +33,8 @@
  * @property {Object<string, FactRecord>} facts  by question key
  */
 
+import { DEFAULT_LANGUAGE } from '../i18n/strings.js'
+
 export const STORAGE_KEY = 'mathius:v1'
 const VERSION = 1
 const MAX_SESSIONS = 300
@@ -42,7 +44,7 @@ export const AVATARS = ['🦊', '🐼', '🐸', '🦁', '🐵', '🐨', '🐯', 
 export const DEFAULT_SETTINGS = { category: 'add', level: 1, timer: 0 }
 
 export function emptyStore() {
-  return { version: VERSION, profiles: [], activeProfileId: null, history: {} }
+  return { version: VERSION, language: DEFAULT_LANGUAGE, profiles: [], activeProfileId: null, history: {} }
 }
 
 export function emptyHistory() {
@@ -113,6 +115,10 @@ export function removeProfile(store, id) {
     activeProfileId: store.activeProfileId === id ? null : store.activeProfileId,
     history,
   }
+}
+
+export function setLanguage(store, language) {
+  return { ...store, language }
 }
 
 export function selectProfile(store, id) {

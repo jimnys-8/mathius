@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
-import { OPERATIONS, TIMER_OPTIONS, getCategory, getLevel } from '../game/config.js'
+import { OPERATIONS } from '../game/config.js'
+import { formatFact } from '../game/format.js'
+import { useI18n } from '../i18n/i18n.js'
 import { computeStats } from '../profiles/stats.js'
 import './StatsScreen.css'
 
@@ -7,25 +9,17 @@ function percent(value) {
   return `${Math.round(value * 100)}%`
 }
 
-function formatFact(key, answer) {
-  return key.replace('?', String(answer)).replace(/([+−×÷=])/g, ' $1 ')
-}
-
-function timerLabel(seconds) {
-  return TIMER_OPTIONS.find((option) => option.seconds === seconds)?.label ?? `${seconds} s`
-}
-
-function formatWhen(timestamp, now) {
+function formatWhen(timestamp, now, { t, locale }) {
   const date = new Date(timestamp)
-  const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  const time = date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
   const days = Math.floor((new Date(now).setHours(0, 0, 0, 0) - new Date(timestamp).setHours(0, 0, 0, 0)) / 86_400_000)
   if (days === 0) {
-    return `Today ${time}`
+    return t('stats.todayAt', { time })
   }
   if (days === 1) {
-    return `Yesterday ${time}`
+    return t('stats.yesterdayAt', { time })
   }
-  return date.toLocaleDateString([], { day: 'numeric', month: 'short' })
+  return date.toLocaleDateString(locale, { day: 'numeric', month: 'short' })
 }
 
 function Tile({ label, value }) {
@@ -39,14 +33,20 @@ function Tile({ label, value }) {
 
 /** A player's results: totals, accuracy per operation, records and tricky facts. */
 export default function StatsScreen({ profile, history, onBack }) {
+  const i18n = useI18n()
+  const { t, formatNumber, formatPercent, formatTimer } = i18n
   const [now] = useState(() => Date.now())
+  const describeSettings = (session) =>
+    [t(`category.${session.category}`), t(`level.${session.level}.name`)]
+      .concat(session.timer > 0 ? [`⏱ ${formatTimer(session.timer)}`] : [])
+      .join(' · ')
   const stats = useMemo(() => computeStats(history, now), [history, now])
 
   return (
     <main className="page stats">
       <header className="stats-header">
         <button type="button" className="btn btn-quiet" onClick={onBack}>
-          ← Back
+          ← {t('stats.back')}
         </button>
         <h1>
           <span aria-hidden="true">{profile.avatar}</span> {profile.name}
@@ -55,32 +55,32 @@ export default function StatsScreen({ profile, history, onBack }) {
 
       {stats.games === 0 ? (
         <section className="card stats-empty">
-          <p>Play a game and your results will show up here!</p>
+          <p>{t('stats.empty')}</p>
         </section>
       ) : (
         <>
-          <section className="stats-tiles" aria-label="Totals">
-            <Tile label="questions" value={stats.answered} />
-            <Tile label="correct" value={percent(stats.accuracy)} />
-            <Tile label="games" value={stats.games} />
-            <Tile label="today" value={stats.answeredToday} />
+          <section className="stats-tiles" aria-label={t('stats.totals')}>
+            <Tile label={t('stats.questions')} value={stats.answered} />
+            <Tile label={t('stats.correct')} value={formatPercent(stats.accuracy)} />
+            <Tile label={t('stats.games')} value={stats.games} />
+            <Tile label={t('stats.today')} value={stats.answeredToday} />
           </section>
 
           <section className="card">
-            <h2>Correct answers</h2>
+            <h2>{t('stats.byOperation')}</h2>
             <ul className="stats-meters">
               {stats.byOperation.map(({ op, answered, correct }) => {
                 const ratio = answered > 0 ? correct / answered : 0
                 return (
-                  <li key={op} className="stats-meter" title={answered > 0 ? `${correct} of ${answered} correct` : undefined}>
+                  <li key={op} className="stats-meter" title={answered > 0 ? t('stats.correctOf', { correct, count: answered }) : undefined}>
                     <span className="stats-meter-symbol" aria-hidden="true">
                       {OPERATIONS[op].symbol}
                     </span>
-                    <span className="stats-meter-name">{OPERATIONS[op].label}</span>
+                    <span className="stats-meter-name">{t(`category.${op}`)}</span>
                     <span
                       className="stats-meter-track"
                       role="meter"
-                      aria-label={`${OPERATIONS[op].label} correct`}
+                      aria-label={t(`category.${op}`)}
                       aria-valuemin={0}
                       aria-valuemax={100}
                       aria-valuenow={Math.round(ratio * 100)}
@@ -90,10 +90,10 @@ export default function StatsScreen({ profile, history, onBack }) {
                     <span className="stats-meter-value">
                       {answered > 0 ? (
                         <>
-                          <strong>{percent(ratio)}</strong> of {answered}
+                          <strong>{formatPercent(ratio)}</strong> {t('stats.ofCount', { count: answered })}
                         </>
                       ) : (
-                        'not tried yet'
+                        t('stats.notTried')
                       )}
                     </span>
                   </li>
@@ -104,16 +104,14 @@ export default function StatsScreen({ profile, history, onBack }) {
 
           <div className="stats-columns">
             <section className="card">
-              <h2>⏱ Best timed scores</h2>
+              <h2>⏱ {t('stats.bestTimed')}</h2>
               {stats.bestTimed.length === 0 ? (
-                <p className="stats-note">Turn on the timer to set a record!</p>
+                <p className="stats-note">{t('stats.noTimed')}</p>
               ) : (
                 <ul className="stats-list">
                   {stats.bestTimed.map((session) => (
                     <li key={`${session.category}-${session.level}-${session.timer}`}>
-                      <span>
-                        {getCategory(session.category).label} · {getLevel(session.level).name} · {timerLabel(session.timer)}
-                      </span>
+                      <span>{describeSettings(session)}</span>
                       <strong>{session.correct}</strong>
                     </li>
                   ))}
@@ -122,14 +120,14 @@ export default function StatsScreen({ profile, history, onBack }) {
             </section>
 
             <section className="card">
-              <h2>Practice these</h2>
+              <h2>{t('stats.tricky')}</h2>
               {stats.tricky.length === 0 ? (
-                <p className="stats-note">No tricky ones yet. Great job!</p>
+                <p className="stats-note">{t('stats.noTricky')}</p>
               ) : (
                 <ul className="stats-facts">
                   {stats.tricky.map((fact) => (
-                    <li key={fact.key} title={`Missed ${fact.wrong} of ${fact.right + fact.wrong}`}>
-                      {formatFact(fact.key, fact.answer)}
+                    <li key={fact.key} title={t('stats.missed', { wrong: fact.wrong, count: fact.right + fact.wrong })}>
+                      {formatFact(fact.key, fact.answer, formatNumber)}
                     </li>
                   ))}
                 </ul>
@@ -138,15 +136,12 @@ export default function StatsScreen({ profile, history, onBack }) {
           </div>
 
           <section className="card">
-            <h2>Recent games</h2>
+            <h2>{t('stats.recent')}</h2>
             <ul className="stats-list">
               {stats.recent.map((session, index) => (
                 <li key={`${session.at}-${index}`}>
-                  <span className="stats-when">{formatWhen(session.at, now)}</span>
-                  <span>
-                    {getCategory(session.category).label} · {getLevel(session.level).name}
-                    {session.timer > 0 && ` · ⏱ ${timerLabel(session.timer)}`}
-                  </span>
+                  <span className="stats-when">{formatWhen(session.at, now, i18n)}</span>
+                  <span>{describeSettings(session)}</span>
                   <strong>
                     {session.correct}/{session.total}
                   </strong>
