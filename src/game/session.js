@@ -84,6 +84,7 @@ function finish(state, now) {
  * Actions:
  *   { type: 'input', value }
  *   { type: 'hint' }
+ *   { type: 'choose', value, now }   pick one of the question's choices
  *   { type: 'submit', now }
  *   { type: 'next', now }
  *   { type: 'timeUp', now }
@@ -104,6 +105,13 @@ export function sessionReducer(state, action) {
         return state
       }
       return { ...state, hinted: true, vizStep: Math.max(state.vizStep, HINT_FRAME) }
+    }
+
+    case 'choose': {
+      if (state.phase !== 'answering' || !state.question.choices?.includes(action.value)) {
+        return state
+      }
+      return sessionReducer({ ...state, input: String(action.value) }, { type: 'submit', now: action.now })
     }
 
     case 'submit': {

@@ -43,6 +43,18 @@ describe('sessionReducer', () => {
     expect(sessionReducer(start, { type: 'input', value: '1a2' }).input).toBe('12')
   })
 
+  it('answers multiple-choice questions by choosing', () => {
+    const start = createSession({ category: 'sqrt', level: 3, timer: 0 }, 0)
+    const { answer, choices } = start.question
+    const wrong = choices.find((choice) => choice !== answer)
+
+    expect(sessionReducer(start, { type: 'choose', value: 999, now: 1 })).toBe(start)
+    const right = sessionReducer(start, { type: 'choose', value: answer, now: 1 })
+    expect(right.lastCorrect).toBe(true)
+    expect(right.results[0].given).toBe(answer)
+    expect(sessionReducer(start, { type: 'choose', value: wrong, now: 1 }).lastCorrect).toBe(false)
+  })
+
   it('marks hinted answers', () => {
     const start = createSession(practice, 0)
     const hinted = sessionReducer(start, { type: 'hint' })

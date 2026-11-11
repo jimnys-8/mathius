@@ -6,6 +6,7 @@ export const OPERATIONS = {
   sub: { id: 'sub', symbol: '−' },
   mul: { id: 'mul', symbol: '×' },
   div: { id: 'div', symbol: '÷' },
+  sqrt: { id: 'sqrt', symbol: '√' },
 }
 
 export const CATEGORIES = [
@@ -14,6 +15,8 @@ export const CATEGORIES = [
   { id: 'mul', symbol: '×', ops: ['mul'] },
   { id: 'div', symbol: '÷', ops: ['div'] },
   { id: 'mix', symbol: '?', ops: ['add', 'sub', 'mul', 'div'] },
+  // Square roots are a skill of their own, so they are not part of the mix.
+  { id: 'sqrt', symbol: '√', ops: ['sqrt'] },
 ]
 
 /**
@@ -26,6 +29,13 @@ export const CATEGORIES = [
  * - `unknowns`: weights for which slot of `a op b = c` is hidden.
  *   Index 2 (the result) is a regular question; 0 and 1 are "missing
  *   number" equations like `? + 4 = 9`.
+ * - `sqrt`: square roots, either
+ *   - exact: √(r²) = r with r in [min, max]; `unknowns` weighs asking for
+ *     the radicand (√? = 7) against asking for the root (√49 = ?), or
+ *   - estimate: √n for a non-square n <= maxRadicand, answered to one
+ *     decimal by picking from four choices. 'wide' choices lie between
+ *     different whole numbers; 'narrow' ones share the whole number and
+ *     differ only in the decimal.
  */
 export const LEVELS = [
   {
@@ -33,30 +43,35 @@ export const LEVELS = [
     sum: { max: 10, minPart: 1 },
     product: { min: 1, max: 5 },
     unknowns: [0, 0, 1],
+    sqrt: { mode: 'exact', min: 1, max: 5, unknowns: [0, 1] },
   },
   {
     id: 2,
     sum: { max: 20, minPart: 1 },
     product: { min: 1, max: 10 },
     unknowns: [0, 0, 1],
+    sqrt: { mode: 'exact', min: 2, max: 10, unknowns: [0, 1] },
   },
   {
     id: 3,
     sum: { max: 100, minPart: 2 },
     product: { min: 2, max: 12 },
     unknowns: [0, 0, 1],
+    sqrt: { mode: 'estimate', maxRadicand: 100, choices: 'wide' },
   },
   {
     id: 4,
     sum: { max: 20, minPart: 1 },
     product: { min: 1, max: 10 },
     unknowns: [1, 1, 0.5],
+    sqrt: { mode: 'exact', min: 2, max: 12, unknowns: [1, 1] },
   },
   {
     id: 5,
     sum: { max: 100, minPart: 2 },
     product: { min: 2, max: 12 },
     unknowns: [1, 1, 0.5],
+    sqrt: { mode: 'estimate', maxRadicand: 150, choices: 'narrow' },
   },
 ]
 
