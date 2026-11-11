@@ -7,6 +7,10 @@ import './Visualization.css'
 const KINDS = ['boxes', 'brackets', 'slots', 'dots', 'labels']
 /** Pixel size of one dot unit when there is room for it. */
 const UNIT_PX = 44
+/** Small pictures (a few dots to count) are drawn bigger, up to this size. */
+const MAX_UNIT_PX = 72
+/** Pictures narrower than this many dot units get bigger dots. */
+const SMALL_WIDTH = 10
 
 function prefersReducedMotion() {
   return typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
@@ -86,6 +90,10 @@ function useFrameStepper(target, durations, onSettled) {
   return Math.min(frame, durations.length - 1)
 }
 
+function unitPx(width) {
+  return Math.min(MAX_UNIT_PX, Math.max(UNIT_PX, (UNIT_PX * SMALL_WIDTH) / width))
+}
+
 function bracketPath({ x1, y1, x2, y2 }) {
   const tick = 0.28
   if (x1 === x2) {
@@ -127,7 +135,7 @@ export default function Visualization({ question, step, onSettled }) {
     <svg
       className="viz"
       viewBox={`${x} ${y} ${width} ${height}`}
-      style={{ width: `min(100%, ${Math.round(width * UNIT_PX)}px)`, aspectRatio: `${width} / ${height}` }}
+      style={{ width: `min(100%, ${Math.round(width * unitPx(width))}px)`, aspectRatio: `${width} / ${height}` }}
       role="img"
       aria-label={frame === 0 ? t('viz.question') : describe(question, t)}
     >
