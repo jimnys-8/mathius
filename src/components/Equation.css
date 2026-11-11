@@ -1,0 +1,84 @@
+.equation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.25em 0.4em;
+  font-size: clamp(2.4rem, 9vw, 4.25rem);
+  font-weight: 900;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.equation-sign {
+  color: var(--color-ink);
+}
+
+.equation-answer {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.equation-input {
+  width: calc(var(--chars) * 0.68em + 0.7em);
+  padding: 0.05em 0.3em;
+  border: 0.07em solid currentColor;
+  border-radius: 0.22em;
+  background: color-mix(in srgb, currentColor 7%, var(--color-surface));
+  color: currentColor;
+  font-size: 1em;
+  font-weight: 900;
+  line-height: 1.1;
+  text-align: center;
+  caret-color: var(--color-ink);
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    width 0.15s ease;
+}
+
+.equation-input:focus {
+  box-shadow: 0 0 0 0.09em color-mix(in srgb, currentColor 25%, transparent);
+}
+
+.equation-answer.is-correct .equation-input {
+  border-color: var(--color-correct);
+  background: color-mix(in srgb, var(--color-correct) 14%, var(--color-surface));
+  animation: equation-pop 0.4s ease;
+}
+
+.equation-answer.is-wrong .equation-input {
+  border-color: var(--color-wrong);
+  color: var(--color-wrong);
+  text-decoration: line-through;
+  text-decoration-thickness: 0.06em;
+  background: color-mix(in srgb, var(--color-wrong) 10%, var(--color-surface));
+  animation: equation-shake 0.4s ease;
+}
+
+@keyframes equation-pop {
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes equation-shake {
+  20%,
+  60% {
+    transform: translateX(-0.08em);
+  }
+  40%,
+  80% {
+    transform: translateX(0.08em);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .equation-answer .equation-input {
+    animation: none !important;
+  }
+}

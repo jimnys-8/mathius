@@ -1,0 +1,100 @@
+.summary {
+  justify-content: center;
+}
+
+.summary-score {
+  text-align: center;
+}
+
+.summary-score h1 {
+  margin: 0.25rem 0 0;
+  font-size: clamp(2rem, 7vw, 3rem);
+  font-weight: 900;
+}
+
+.summary-count {
+  margin: 0.25rem 0 0;
+  font-size: 1.3rem;
+  color: var(--color-ink-soft);
+}
+
+.summary-count strong {
+  color: var(--color-ink);
+  font-size: 1.6em;
+}
+
+.summary-stars {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: clamp(3rem, 12vw, 4.5rem);
+  line-height: 1;
+}
+
+.summary-star {
+  color: var(--color-line);
+}
+
+.summary-star.is-lit {
+  color: #ffbf1f;
+  text-shadow: 0 3px 0 #e59a00;
+  animation: summary-star 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) backwards;
+}
+
+@keyframes summary-star {
+  from {
+    transform: scale(0) rotate(-40deg);
+  }
+}
+
+.summary-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+  gap: 0.35rem 1rem;
+  margin: 0;
+  list-style: none;
+  font-size: 1.15rem;
+}
+
+.summary-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.summary-mark {
+  font-weight: 900;
+}
+
+.is-correct .summary-mark {
+  color: var(--color-correct);
+}
+
+.is-wrong .summary-mark {
+  color: var(--color-wrong);
+}
+
+.summary-fact {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.summary-given {
+  font-size: 0.85em;
+  color: var(--color-wrong);
+}
+
+.summary-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .summary-star.is-lit {
+    animation: none;
+  }
+}
