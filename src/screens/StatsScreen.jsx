@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { OPERATIONS } from '../game/config.js'
 import { formatFact } from '../game/format.js'
-import { useI18n } from '../i18n/i18n.js'
+import { levelText, useI18n } from '../i18n/i18n.js'
 import { computeStats } from '../profiles/stats.js'
 import './StatsScreen.css'
 
@@ -37,7 +37,7 @@ export default function StatsScreen({ profile, history, onBack }) {
   const { t, formatNumber, formatPercent, formatTimer } = i18n
   const [now] = useState(() => Date.now())
   const describeSettings = (session) =>
-    [t(`category.${session.category}`), t(`level.${session.level}.name`)]
+    [t(`category.${session.category}`), levelText(t, session.category, session.level).name]
       .concat(session.timer > 0 ? [`⏱ ${formatTimer(session.timer)}`] : [])
       .join(' · ')
   const stats = useMemo(() => computeStats(history, now), [history, now])

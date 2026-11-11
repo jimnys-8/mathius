@@ -162,7 +162,7 @@ function createSqrtQuestion(config, rng) {
  */
 export function createQuestion({ category, level, avoid = [], rng = Math.random }) {
   const { ops } = getCategory(category)
-  const levelConfig = getLevel(level)
+  const levelConfig = getLevel(category, level)
   let question = null
 
   // Small fact spaces (e.g. Easy multiplication) can make collisions

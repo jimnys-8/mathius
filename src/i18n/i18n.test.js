@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createI18n } from './i18n.js'
+import { createI18n, levelText } from './i18n.js'
 import { STRINGS } from './strings.js'
 
 describe('createI18n', () => {
@@ -17,6 +17,18 @@ describe('createI18n', () => {
   it('falls back to the default language and to the key', () => {
     expect(createI18n('xx').lang).toBe('sv')
     expect(createI18n('en').t('no.such.key')).toBe('no.such.key')
+  })
+
+  it('uses the first key that has a text', () => {
+    const { t } = createI18n('en')
+    expect(t(['no.such.key', 'play.hint'])).toBe('Hint')
+    expect(t(['no.such.key', 'other.key'])).toBe('other.key')
+  })
+
+  it('words levels per category when the category has its own texts', () => {
+    const { t } = createI18n('en')
+    expect(levelText(t, 'sqrt', 1)).toEqual({ name: 'Easy', desc: 'Squares up to 25' })
+    expect(levelText(t, 'add', 1)).toEqual({ name: 'Easy', desc: 'Numbers up to 10' })
   })
 
   it('formats decimals for the language', () => {

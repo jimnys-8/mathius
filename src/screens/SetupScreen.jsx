@@ -1,6 +1,6 @@
 import ChoiceGroup from '../components/ChoiceGroup.jsx'
-import { CATEGORIES, LEVELS, ROUND_LENGTH, TIMER_OPTIONS } from '../game/config.js'
-import { useI18n } from '../i18n/i18n.js'
+import { CATEGORIES, ROUND_LENGTH, TIMER_OPTIONS, getCategory, switchCategory, switchLevel } from '../game/config.js'
+import { levelText, useI18n } from '../i18n/i18n.js'
 import './SetupScreen.css'
 
 const CATEGORY_COLORS = {
@@ -24,13 +24,10 @@ export default function SetupScreen({ settings, onChange, onStart, header }) {
     color: CATEGORY_COLORS[category.id],
   }))
 
-  const levelOptions = LEVELS.map((level) => ({
-    value: level.id,
-    label: t(`level.${level.id}.name`),
-    detail: t(settings.category === 'sqrt' ? `level.${level.id}.desc.sqrt` : `level.${level.id}.desc`),
-    icon: '★'.repeat(level.id),
-    color: '#e59a00',
-  }))
+  const levelOptions = getCategory(settings.category).levels.map((level) => {
+    const { name, desc } = levelText(t, settings.category, level.id)
+    return { value: level.id, label: name, detail: desc, icon: '★'.repeat(level.id), color: '#e59a00' }
+  })
 
   const timerOptions = TIMER_OPTIONS.map((seconds) => ({
     value: seconds,
@@ -47,7 +44,7 @@ export default function SetupScreen({ settings, onChange, onStart, header }) {
           variant="tiles"
           options={categoryOptions}
           value={settings.category}
-          onChange={(category) => update({ category })}
+          onChange={(category) => onChange(switchCategory(settings, category))}
         />
       </section>
 
@@ -57,7 +54,7 @@ export default function SetupScreen({ settings, onChange, onStart, header }) {
           variant="steps"
           options={levelOptions}
           value={settings.level}
-          onChange={(level) => update({ level })}
+          onChange={(level) => onChange(switchLevel(settings, level))}
         />
       </section>
 

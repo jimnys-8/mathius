@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import LanguageToggle from './components/LanguageToggle.jsx'
 import PlayerBar from './components/PlayerBar.jsx'
+import { normalizeSettings } from './game/config.js'
 import { I18nContext, createI18n, useI18n } from './i18n/i18n.js'
 import {
   addProfile,
@@ -59,7 +60,7 @@ function Screens({ store, setStore }) {
     )
   }
 
-  const settings = profile.settings
+  const settings = normalizeSettings(profile.settings)
   const history = getHistory(store, profile.id)
 
   const handleFinish = (session) => {

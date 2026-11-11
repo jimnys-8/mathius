@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { LEVELS } from './config.js'
+import { CATEGORIES } from './config.js'
 import { createQuestion, isCorrect, makeQuestion } from './questions.js'
 
 function seededRng(seed) {
@@ -31,8 +31,8 @@ function check(question) {
 describe('createQuestion', () => {
   const rng = seededRng(42)
 
-  for (const level of LEVELS) {
-    for (const category of ['add', 'sub', 'mul', 'div', 'mix', 'sqrt']) {
+  for (const { id: category, levels } of CATEGORIES) {
+    for (const level of levels) {
       it(`produces valid ${category} facts on level ${level.id}`, () => {
         for (let i = 0; i < 300; i += 1) {
           const question = createQuestion({ category, level: level.id, rng })

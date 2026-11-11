@@ -9,7 +9,8 @@
  * @property {string} name
  * @property {string} avatar   an emoji
  * @property {number} createdAt
- * @property {{ category: string, level: number, timer: number }} settings
+ * @property {{ category: string, level: number, timer: number, levels?: Object<string, number> }} settings
+ *   `levels` remembers the level last used in each category.
  *
  * @typedef {Object} SessionRecord
  * @property {number} at          when the session ended
