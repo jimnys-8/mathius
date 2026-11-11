@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useI18n } from '../i18n/i18n.js'
 import { DOT_RADIUS } from './layout.js'
 import { buildScene } from './scenes.js'
@@ -50,9 +50,17 @@ function resolveElements(frames, index) {
   return result
 }
 
-/** Advances one frame at a time towards `target`, letting each frame settle. */
-function useFrameStepper(target, durations) {
+/**
+ * Advances one frame at a time towards `target`, letting each frame settle.
+ * Calls `onSettled(frame)` once the target frame has finished animating.
+ */
+function useFrameStepper(target, durations, onSettled) {
   const [{ frame, enteredAt }, setState] = useState({ frame: 0, enteredAt: 0 })
+  const onSettledRef = useRef(onSettled)
+
+  useEffect(() => {
+    onSettledRef.current = onSettled
+  }, [onSettled])
 
   useEffect(() => {
     if (frame >= target) {
@@ -62,6 +70,16 @@ function useFrameStepper(target, durations) {
     const remaining = durations[frame] - (performance.now() - enteredAt)
     const wait = frame === 0 || prefersReducedMotion() ? 0 : Math.max(0, remaining)
     const timer = setTimeout(() => setState({ frame: frame + 1, enteredAt: performance.now() }), wait)
+    return () => clearTimeout(timer)
+  }, [frame, enteredAt, target, durations])
+
+  useEffect(() => {
+    if (frame === 0 || frame < target) {
+      return undefined
+    }
+    const remaining = durations[frame] - (performance.now() - enteredAt)
+    const wait = prefersReducedMotion() ? 0 : Math.max(0, remaining)
+    const timer = setTimeout(() => onSettledRef.current?.(frame), wait)
     return () => clearTimeout(timer)
   }, [frame, enteredAt, target, durations])
 
@@ -95,11 +113,13 @@ function describe(question, t) {
  * @param {Object} props
  * @param {import('../game/questions.js').Question} props.question
  * @param {number} props.step  0 = question, 1 = hint, 2 = solution
+ * @param {(frame: number) => void} [props.onSettled]  called when a hint or
+ *   solution has finished animating
  */
-export default function Visualization({ question, step }) {
+export default function Visualization({ question, step, onSettled }) {
   const { t, formatNumber } = useI18n()
   const scene = useMemo(() => buildScene(question), [question])
-  const frame = useFrameStepper(step, scene.durations)
+  const frame = useFrameStepper(step, scene.durations, onSettled)
   const elements = useMemo(() => resolveElements(scene.frames, frame), [scene, frame])
   const { x, y, width, height } = scene.viewBox
 
