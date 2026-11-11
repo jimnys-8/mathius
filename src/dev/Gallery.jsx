@@ -6,25 +6,38 @@ import Visualization from '../viz/Visualization.jsx'
 // (and optionally &step=1 or &step=2 to show hints or solutions).
 
 const SAMPLES = [
+  ['count', [4]],
+  ['count', [7], [7], { choicesAs: 'dots' }],
   ['add', [3, 4, 7]],
   ['add', [8, 5, 13]],
   ['add', [47, 38, 85]],
   ['sub', [13, 5, 8]],
+  ['sub', [9, 4, 5], null, { guided: true }],
   ['sub', [62, 27, 35]],
   ['mul', [3, 4, 12]],
   ['mul', [7, 8, 56]],
   ['div', [12, 3, 4]],
   ['div', [56, 8, 7]],
   ['sqrt', [49, 7]],
+  ['sqrt', [36, 6], null, { guided: true }],
   ['sqrt', [144, 12]],
   ['sqrt', [40, 6.3], [6.1, 6.3, 6.6, 6.8]],
   ['sqrt', [7, 2.6], [1.3, 2.6, 3.4, 4.8]],
   ['sqrt', [130, 11.4], [9.6, 10.2, 11.4, 12.7]],
+  ['sqrt', [40, 6.3], [4.2, 6.3, 7.5, 8.1], { guided: true }],
+  ['eq', [1, 3, 7, 4]],
+  ['eq', [3, 0, 12, 4]],
+  ['eq', [3, 1, 10, 3]],
+  ['eq', [3, -2, 13, 5]],
+  ['eq', [5, 9, 59, 10]],
 ]
 
 const SYMBOLS = { add: '+', sub: '−', mul: '×', div: '÷' }
 
 function Equation({ question }) {
+  if (question.op === 'count' || question.op === 'eq') {
+    return <p style={{ fontSize: '1.4rem', fontWeight: 800, margin: '0.5rem 0 0' }}>{question.key}</p>
+  }
   if (question.op === 'sqrt') {
     const [n, r] = question.terms
     return (
@@ -86,11 +99,13 @@ export default function Gallery() {
         padding: 16,
       }}
     >
-      {samples.flatMap(([op, terms, choices]) => {
-        const unknowns = choices ? [1] : terms.map((_, index) => index).reverse()
+      {samples.flatMap(([op, terms, choices, extra = {}]) => {
+        const fixed = { count: [0], eq: [3] }[op] ?? (choices ? [1] : null)
+        const unknowns = fixed ?? terms.map((_, index) => index).reverse()
         return unknowns.map((unknown) => {
-          const question = makeQuestion(op, terms, unknown, choices)
-          return <Sample key={question.key} question={question} initialStep={step} />
+          const question = { ...makeQuestion(op, terms, unknown, choices ?? undefined, extra), ...extra }
+          const id = `${question.key}${extra.guided ? '-guided' : ''}`
+          return <Sample key={id} question={question} initialStep={step} />
         })
       })}
     </main>

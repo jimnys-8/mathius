@@ -35,6 +35,18 @@ const FACTS = {
   ],
 }
 
+const EQUATIONS = [
+  [1, 3, 7, 4],
+  [1, 9, 19, 10],
+  [3, 0, 12, 4],
+  [5, 0, 50, 10],
+  [3, 1, 10, 3],
+  [5, 9, 59, 10],
+  [3, -2, 13, 5],
+  [2, -9, 1, 5],
+  [5, -1, 49, 10],
+]
+
 const ESTIMATES = [
   [2, 1.4, [1.4, 2.5, 3.1, 4.7]],
   [40, 6.3, [6.1, 6.3, 6.6, 6.8]],
@@ -52,6 +64,9 @@ function cases() {
   }
   for (const [radicand, answer, choices] of ESTIMATES) {
     result.push(makeQuestion('sqrt', [radicand, answer], 1, choices))
+  }
+  for (const terms of EQUATIONS) {
+    result.push(makeQuestion('eq', terms, 3))
   }
   for (const count of [1, 6, 10]) {
     result.push(makeQuestion('count', [count], 0, [count], { choicesAs: 'dots' }))
@@ -114,6 +129,28 @@ describe('buildScene', () => {
       })
     })
   }
+})
+
+describe('equation pictures', () => {
+  it('shares x dots into each bag', () => {
+    for (const terms of EQUATIONS) {
+      const [a, , , x] = terms
+      const solution = buildScene(makeQuestion('eq', terms, 3)).frames[2]
+      const bags = solution.boxes.filter((box) => box.id.startsWith('bag-'))
+      expect(bags).toHaveLength(a)
+      for (const bag of bags) {
+        const inside = solution.dots.filter(
+          (dot) =>
+            dot.variant === 'solid' &&
+            dot.x > bag.x &&
+            dot.x < bag.x + bag.width &&
+            dot.y > bag.y &&
+            dot.y < bag.y + bag.height,
+        )
+        expect(inside).toHaveLength(x)
+      }
+    }
+  })
 })
 
 describe('guided pictures', () => {

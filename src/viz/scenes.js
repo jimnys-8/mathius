@@ -524,6 +524,163 @@ function sqrtEstimateScene(n, answer, guided) {
 }
 
 // ---------------------------------------------------------------------------
+// Equations: a·x + b = c, drawn as a bags holding x dots each
+//
+// The left side (bags and loose dots) is above the right side (a pile).
+// Without a constant, the hint shares the pile between the bags. With
+// one, the hint first evens out both sides: `+ b` dots are taken away
+// from both, and the `− b` dots missing on the left are added to the
+// pile. The solution then shares what is left between the bags.
+
+const BAG_COLS = 2
+const BAG_ROWS = 5
+const BAG_PAD = 0.25
+const BAG_WIDTH = span(BAG_COLS) + 2 * (DOT_RADIUS + BAG_PAD)
+const BAG_HEIGHT = BAG_ROWS - 1 + 2 * (DOT_RADIUS + BAG_PAD)
+const BAG_PITCH = BAG_WIDTH + 0.6
+const SIGN_SPACE = 1.4
+
+/** Position of the slot:th dot in a bag (or a bag-shaped group) whose first dot is at x. */
+function inBag(x, slot) {
+  return { x: x + (slot % BAG_COLS), y: Math.floor(slot / BAG_COLS) }
+}
+
+function equationScene([a, b, c, x]) {
+  const loose = Math.abs(b)
+  // Lay out the left side from the first bag's first dot, then center it.
+  const bagsRight = (a - 1) * BAG_PITCH + span(BAG_COLS) + DOT_RADIUS + BAG_PAD
+  const signX = bagsRight + SIGN_SPACE / 2
+  const looseX = bagsRight + SIGN_SPACE + DOT_RADIUS
+  const leftWidth = loose > 0 ? looseX + span(Math.min(loose, BAG_COLS)) : (a - 1) * BAG_PITCH + span(BAG_COLS)
+  const shift = -leftWidth / 2
+  const bagX = (bag) => shift + bag * BAG_PITCH
+  const looseAt = (j) => inBag(shift + looseX, j)
+
+  // The right side: the pile, plus room for dots added to it.
+  const total = c + (b < 0 ? loose : 0)
+  const pileY = BAG_HEIGHT + 1.4
+  const pileX = -span(Math.min(total, 10)) / 2
+  const pileAt = (i) => gridPosition(i, { x: pileX, y: pileY })
+
+  // Dots shared into the bags, one to each bag in turn.
+  const shared = (i) => inBag(bagX(i % a), Math.floor(i / a))
+  const shareDelay = (i) => stagger(i, a * x, { total: 2.4 })
+
+  const bags = []
+  const bagLabels = []
+  const under = []
+  for (let bag = 0; bag < a; bag += 1) {
+    const left = bagX(bag) - DOT_RADIUS - BAG_PAD
+    bags.push({ id: `bag-${bag}`, x: left, y: -DOT_RADIUS - BAG_PAD, width: BAG_WIDTH, height: BAG_HEIGHT, tone: 'a' })
+    bagLabels.push({
+      id: `bag-x-${bag}`,
+      text: 'x',
+      x: left + BAG_WIDTH / 2,
+      y: (BAG_ROWS - 1) / 2,
+      tone: 'a',
+      size: 1.3,
+      anchor: 'middle',
+      bold: true,
+    })
+    under.push({
+      id: `count-${bag}`,
+      text: String(x),
+      x: left + BAG_WIDTH / 2,
+      y: -DOT_RADIUS - BAG_PAD - 0.75,
+      tone: 'a',
+      size: LABEL_SIZE,
+      anchor: 'middle',
+      bold: true,
+    })
+  }
+  const bagsBottom = BAG_HEIGHT - DOT_RADIUS - BAG_PAD
+  const equals = {
+    id: 'equals',
+    text: '=',
+    x: 0,
+    y: (bagsBottom + pileY - DOT_RADIUS) / 2,
+    tone: 'muted',
+    size: 1.1,
+    anchor: 'middle',
+    bold: true,
+  }
+  const sign = {
+    id: 'sign',
+    text: b > 0 ? '+' : '−',
+    x: shift + signX,
+    y: (BAG_ROWS - 1) / 2,
+    tone: 'muted',
+    size: 1.1,
+    anchor: 'middle',
+    bold: true,
+  }
+
+  const question = emptyFrame()
+  const hint = emptyFrame()
+  const solution = emptyFrame()
+  // Once everything is shared into the bags, the right side is empty, so
+  // the equals sign goes too.
+  for (const frame of [question, hint, solution]) {
+    frame.boxes.push(...bags)
+  }
+  question.labels.push(equals)
+  hint.labels.push(equals)
+  question.labels.push(...bagLabels)
+  if (loose > 0) {
+    question.labels.push(sign)
+  }
+
+  if (b === 0) {
+    for (let i = 0; i < c; i += 1) {
+      question.dots.push(dot(`r-${i}`, pileAt(i), 'c'))
+      hint.dots.push(dot(`r-${i}`, shared(i), 'a', { delay: shareDelay(i) }))
+    }
+    solution.dots.push(...hint.dots)
+    solution.labels.push(...under)
+    return [question, hint, solution]
+  }
+
+  hint.labels.push(...bagLabels)
+  const takeDelay = (j) => stagger(j, loose, { total: 0.8, max: 0.15 })
+
+  if (b > 0) {
+    // Take b away from both sides: the loose dots and as many from the pile.
+    for (let j = 0; j < loose; j += 1) {
+      question.dots.push(dot(`l-${j}`, looseAt(j), 'b'))
+      const gone = dot(`l-${j}`, looseAt(j), 'b', { variant: 'faded', delay: takeDelay(j) })
+      hint.dots.push(gone)
+      solution.dots.push({ ...gone, delay: 0 })
+    }
+    for (let i = 0; i < c; i += 1) {
+      question.dots.push(dot(`r-${i}`, pileAt(i), 'c'))
+      if (i >= a * x) {
+        const gone = dot(`r-${i}`, pileAt(i), 'b', { variant: 'faded', delay: takeDelay(c - 1 - i) })
+        hint.dots.push(gone)
+        solution.dots.push({ ...gone, delay: 0 })
+      } else {
+        hint.dots.push(dot(`r-${i}`, pileAt(i), 'c'))
+        solution.dots.push(dot(`r-${i}`, shared(i), 'a', { delay: shareDelay(i) }))
+      }
+    }
+  } else {
+    // The left side is b short: add b to both sides, so the missing dots
+    // join the pile.
+    for (let j = 0; j < loose; j += 1) {
+      question.dots.push(dot(`l-${j}`, looseAt(j), 'b', { variant: 'ghost' }))
+      hint.dots.push(dot(`l-${j}`, pileAt(c + j), 'b', { delay: takeDelay(j) }))
+      solution.dots.push(dot(`l-${j}`, shared(c + j), 'a', { delay: shareDelay(c + j) }))
+    }
+    for (let i = 0; i < c; i += 1) {
+      question.dots.push(dot(`r-${i}`, pileAt(i), 'c'))
+      hint.dots.push(dot(`r-${i}`, pileAt(i), 'c'))
+      solution.dots.push(dot(`r-${i}`, shared(i), 'a', { delay: shareDelay(i) }))
+    }
+  }
+  solution.labels.push(...under)
+  return [question, hint, solution]
+}
+
+// ---------------------------------------------------------------------------
 
 const BUILDERS = {
   count: countScene,
@@ -532,6 +689,7 @@ const BUILDERS = {
   mul: multiplicationScene,
   div: divisionScene,
   sqrt: sqrtScene,
+  eq: equationScene,
 }
 
 function labelBounds(label) {
