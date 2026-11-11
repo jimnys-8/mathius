@@ -21,6 +21,13 @@ function hintText(question, t) {
   if (question.op === 'sqrt' && question.choices) {
     return t('play.hintHelpSqrt', { side: Math.floor(Math.sqrt(question.terms[0])) })
   }
+  if (question.op === 'eq') {
+    const [a, b] = question.terms
+    if (b > 0) {
+      return t('play.hintHelpEqTake', { a, b })
+    }
+    return b < 0 ? t('play.hintHelpEqAdd', { b: -b }) : t('play.hintHelpEqShare', { a })
+  }
   return t('play.hintHelp')
 }
 

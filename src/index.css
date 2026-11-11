@@ -1,4 +1,6 @@
 @import '@fontsource-variable/nunito';
+/* Italics are only used for the x in equations; the browser fetches them on first use. */
+@import '@fontsource-variable/nunito/wght-italic.css';
 
 :root {
   --font: 'Nunito Variable', 'Nunito', 'Avenir Next', 'Trebuchet MS', sans-serif;

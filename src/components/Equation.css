@@ -117,3 +117,21 @@
   padding: 0.1em 0.12em 0.02em 0.08em;
   border-top: 0.075em solid var(--color-ink);
 }
+
+/* Equations with a variable: the equation, and under it "x = ?". */
+.equation.is-linear {
+  flex-direction: column;
+  gap: 0.2em;
+  font-size: clamp(2rem, 7.5vw, 3.6rem);
+}
+
+.equation-row {
+  display: flex;
+  align-items: center;
+  gap: 0.35em;
+}
+
+.equation-variable {
+  font-style: italic;
+  padding-right: 0.06em;
+}

@@ -111,6 +111,10 @@ function describe(question, t) {
   if (question.op === 'count') {
     return t('viz.count', { a })
   }
+  if (question.op === 'eq') {
+    const key = b > 0 ? 'viz.eqPlus' : b < 0 ? 'viz.eqMinus' : 'viz.eq'
+    return t(key, { a, b: Math.abs(b), c, x: question.terms[3] })
+  }
   if (question.op === 'sqrt' && question.choices) {
     const side = Math.floor(Math.sqrt(a))
     return t('viz.sqrtEstimate', { a, b: side, c: a - side * side })

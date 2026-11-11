@@ -6,6 +6,8 @@ import './Equation.css'
 const TERM_CLASSES = ['term-a', 'term-b', 'term-c']
 // Square roots have two terms: the radicand and the root (the result).
 const SQRT_TERM_CLASSES = ['term-a', 'term-c']
+// Equations a·x + b = c, with x (term 3) colored like its bags.
+const EQUATION_TERM_CLASSES = ['term-a', 'term-b', 'term-c', 'term-a']
 
 /**
  * The question as an equation, with an answer box in place of the
@@ -15,7 +17,7 @@ const SQRT_TERM_CLASSES = ['term-a', 'term-c']
 export default function Equation({ question, input, onInput, onEnter, status, inputRef, readOnly, keyboard = true }) {
   const { t, formatNumber } = useI18n()
   const sqrt = question.op === 'sqrt'
-  const classes = sqrt ? SQRT_TERM_CLASSES : TERM_CLASSES
+  const classes = sqrt ? SQRT_TERM_CLASSES : question.op === 'eq' ? EQUATION_TERM_CLASSES : TERM_CLASSES
 
   const renderTerm = (index) => {
     if (index !== question.unknown) {
@@ -55,6 +57,33 @@ export default function Equation({ question, input, onInput, onEnter, status, in
           style={{ '--chars': Math.max(2, input.length) }}
         />
       </span>
+    )
+  }
+
+  if (question.op === 'eq') {
+    const [a, b, c] = question.terms
+    return (
+      <div className="equation is-linear" aria-live="polite">
+        <span className="equation-row">
+          <span className="equation-term term-a">
+            {a === 1 ? '' : formatNumber(a)}
+            <i className="equation-variable">x</i>
+          </span>
+          {b !== 0 && (
+            <>
+              <span className="equation-sign">{b > 0 ? '+' : '−'}</span>
+              <span className="equation-term term-b">{formatNumber(Math.abs(b))}</span>
+            </>
+          )}
+          <span className="equation-sign">=</span>
+          <span className="equation-term term-c">{formatNumber(c)}</span>
+        </span>
+        <span className="equation-row">
+          <i className="equation-term equation-variable term-a">x</i>
+          <span className="equation-sign">=</span>
+          {renderTerm(3)}
+        </span>
+      </div>
     )
   }
 

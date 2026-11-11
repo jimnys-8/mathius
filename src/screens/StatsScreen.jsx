@@ -75,7 +75,7 @@ export default function StatsScreen({ profile, history, onBack }) {
                 return (
                   <li key={op} className="stats-meter" title={t('stats.correctOf', { correct, count: answered })}>
                     <span className="stats-meter-symbol" aria-hidden="true">
-                      {OPERATIONS[op].symbol}
+                      {op === 'eq' ? <i>x</i> : OPERATIONS[op].symbol}
                     </span>
                     <span className="stats-meter-name">{t(`category.${op}`)}</span>
                     <span

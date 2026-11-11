@@ -11,6 +11,17 @@ const CATEGORY_COLORS = {
   div: '#2f80ed',
   mix: '#e0457b',
   sqrt: '#0e8fa8',
+  eq: '#a14fc4',
+}
+
+const CATEGORY_ICONS = {
+  mix: '+−×÷',
+  // An italic x, so it isn't mistaken for a times sign.
+  eq: (
+    <>
+      <i>x</i>=?
+    </>
+  ),
 }
 
 /** Choose what to practice, how hard, and whether to race the clock. */
@@ -21,7 +32,7 @@ export default function SetupScreen({ settings, onChange, onStart, header }) {
   const categoryOptions = CATEGORIES.map((category) => ({
     value: category.id,
     label: t(`category.${category.id}`),
-    icon: category.id === 'mix' ? '+−×÷' : category.symbol,
+    icon: CATEGORY_ICONS[category.id] ?? category.symbol,
     color: CATEGORY_COLORS[category.id],
   }))
 
