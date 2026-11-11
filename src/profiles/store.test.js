@@ -28,7 +28,7 @@ function session(settings, results, startedAt = 0, endedAt = 60_000) {
   return { settings, results, startedAt, endedAt }
 }
 
-const result = (key, op, correct, hinted = false) => ({ key, op, correct, hinted, answer: 0, given: 0, ms: 1000 })
+const result = (key, op, correct, hinted = false) => ({ key, op, correct, hinted, answer: 7, given: 0, ms: 1000 })
 
 describe('loadStore / saveStore', () => {
   it('round-trips the store', () => {
@@ -86,8 +86,8 @@ describe('recordSession', () => {
     expect(history.sessions).toEqual([
       { at: 60_000, category: 'mul', level: 2, timer: 60, total: 3, correct: 2, hinted: 1, durationMs: 60_000 },
     ])
-    expect(history.facts['7×8=?']).toEqual({ op: 'mul', right: 1, wrong: 1, lastSeen: 60_000 })
-    expect(history.facts['3×4=?']).toEqual({ op: 'mul', right: 1, wrong: 0, lastSeen: 60_000 })
+    expect(history.facts['7×8=?']).toEqual({ op: 'mul', answer: 7, right: 1, wrong: 1, lastSeen: 60_000 })
+    expect(history.facts['3×4=?']).toEqual({ op: 'mul', answer: 7, right: 1, wrong: 0, lastSeen: 60_000 })
   })
 
   it('ignores sessions without answers', () => {

@@ -23,6 +23,7 @@
  *
  * @typedef {Object} FactRecord
  * @property {string} op
+ * @property {number} answer
  * @property {number} right
  * @property {number} wrong
  * @property {number} lastSeen
@@ -148,7 +149,7 @@ export function recordSession(store, profileId, session) {
 
   const facts = { ...history.facts }
   for (const result of results) {
-    const fact = facts[result.key] ?? { op: result.op, right: 0, wrong: 0, lastSeen: 0 }
+    const fact = facts[result.key] ?? { op: result.op, answer: result.answer, right: 0, wrong: 0, lastSeen: 0 }
     facts[result.key] = {
       ...fact,
       right: fact.right + (result.correct ? 1 : 0),
