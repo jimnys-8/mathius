@@ -1,8 +1,10 @@
 import { useEffect, useReducer, useRef } from 'react'
 import Countdown from '../components/Countdown.jsx'
 import Equation from '../components/Equation.jsx'
+import Numpad from '../components/Numpad.jsx'
 import RoundProgress from '../components/RoundProgress.jsx'
 import { createSession, isTimed, sessionReducer } from '../game/session.js'
+import { useMediaQuery } from '../useMediaQuery.js'
 import Visualization from '../viz/Visualization.jsx'
 import './PlayScreen.css'
 
@@ -28,6 +30,8 @@ function feedbackText(state) {
 export default function PlayScreen({ settings, onFinish, onQuit }) {
   const [state, dispatch] = useReducer(sessionReducer, settings, (initial) => createSession(initial, Date.now()))
   const inputRef = useRef(null)
+  // Touch devices get on-screen number keys instead of the system keyboard.
+  const touch = useMediaQuery('(pointer: coarse)')
 
   // Report the finished session exactly once.
   const finished = state.phase === 'finished'
@@ -110,33 +114,50 @@ export default function PlayScreen({ settings, onFinish, onQuit }) {
         status={status}
         readOnly={state.phase !== 'answering'}
         inputRef={inputRef}
+        keyboard={!touch}
       />
 
       <p className={`play-feedback is-${status}`} role="status">
         {feedbackText(state)}
       </p>
 
-      <div className="play-actions">
-        {state.phase === 'answering' ? (
-          <>
-            <button type="button" className="btn" onClick={handleHint} disabled={state.vizStep > 0}>
-              💡 Hint
-            </button>
-            <button
-              type="button"
-              className="btn btn-primary btn-large"
-              onClick={handleEnter}
-              disabled={state.input === ''}
-            >
-              Check
-            </button>
-          </>
-        ) : (
-          <button type="button" className="btn btn-primary btn-large" onClick={handleEnter} autoFocus>
-            Next →
+      {touch ? (
+        <div className="play-touch">
+          <button type="button" className="btn" onClick={handleHint} disabled={state.phase !== 'answering' || state.vizStep > 0}>
+            💡 Hint
           </button>
-        )}
-      </div>
+          <Numpad
+            onDigit={(digit) => dispatch({ type: 'input', value: state.input + digit })}
+            onBackspace={() => dispatch({ type: 'input', value: state.input.slice(0, -1) })}
+            onEnter={handleEnter}
+            enterLabel={state.phase === 'answering' ? '✓' : '→'}
+            disabled={state.phase !== 'answering'}
+            enterDisabled={state.phase === 'answering' && state.input === ''}
+          />
+        </div>
+      ) : (
+        <div className="play-actions">
+          {state.phase === 'answering' ? (
+            <>
+              <button type="button" className="btn" onClick={handleHint} disabled={state.vizStep > 0}>
+                💡 Hint
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary btn-large"
+                onClick={handleEnter}
+                disabled={state.input === ''}
+              >
+                Check
+              </button>
+            </>
+          ) : (
+            <button type="button" className="btn btn-primary btn-large" onClick={handleEnter} autoFocus>
+              Next →
+            </button>
+          )}
+        </div>
+      )}
     </main>
   )
 }
