@@ -29,9 +29,12 @@ export default function PlayScreen({ settings, onFinish, onQuit }) {
   const [state, dispatch] = useReducer(sessionReducer, settings, (initial) => createSession(initial, Date.now()))
   const inputRef = useRef(null)
 
+  // Report the finished session exactly once.
   const finished = state.phase === 'finished'
+  const reported = useRef(false)
   useEffect(() => {
-    if (finished) {
+    if (finished && !reported.current) {
+      reported.current = true
       onFinish(state)
     }
   }, [finished, onFinish, state])

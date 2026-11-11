@@ -47,6 +47,22 @@
   }
 }
 
+.summary-record {
+  display: inline-block;
+  margin: 0.75rem 0 0;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  font-weight: 800;
+  background: var(--color-bg);
+  color: var(--color-ink-soft);
+}
+
+.summary-record.is-new {
+  background: #fff1c2;
+  color: #8a5a00;
+  animation: summary-star 0.5s 1s cubic-bezier(0.3, 1.6, 0.5, 1) backwards;
+}
+
 .summary-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
