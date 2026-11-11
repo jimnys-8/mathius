@@ -7,14 +7,19 @@ solution.
 
 ## Features
 
-- Addition, subtraction, multiplication, division, or a mix
+- Addition, subtraction, multiplication, division, a mix of those four,
+  and square roots
 - Five levels, from numbers up to 10 to missing-number equations up to 100
   (`? + 4 = 9`, `7 × ? = 56`)
+- Square roots go from perfect squares (`√49`, `√? = 7`) to estimates
+  picked from four choices (`√40 ≈ 6.3`)
 - Rounds of 10 questions, or a timer (30 s, 1 min or 2 min)
 - One profile per player, with remembered settings, stats, best timed
   scores and the facts they miss most often (stored in the browser's
   localStorage)
 - On-screen number keys on touch devices
+- Swedish and English (Swedish by default); all text is in
+  `src/i18n/strings.js`
 
 ## Development
 
@@ -39,10 +44,12 @@ src/
   profiles/   persistent store and stats (pure, tested) + React hook
   screens/    profile picker, setup, play, summary and stats screens
   components/ smaller UI pieces (equation, numpad, countdown, ...)
+  i18n/       texts per language and number formatting
 ```
 
 - **Questions** are facts `a op b = c` with one hidden term. Hiding `c`
-  gives a regular question; hiding `a` or `b` gives an equation.
+  gives a regular question; hiding `a` or `b` gives an equation. Square
+  roots are `√a = b`; estimates also carry `choices`.
 - **Visualizations** are built by `viz/scenes.js` as three frames
   (question, hint, solution) of elements with stable ids. The renderer
   animates between frames with CSS transitions: dots that keep their id
@@ -51,3 +58,6 @@ src/
   - Subtraction: dots are taken away from the end.
   - Multiplication: an array of rows, counted row by row.
   - Division: dots are dealt into boxes.
+  - Square roots: dots form a square. For estimates, the leftovers after
+    the biggest square start the border of the next one, so how far round
+    they reach shows the decimal.
