@@ -51,16 +51,18 @@ function resolveElements(frames, index) {
 
 /** Advances one frame at a time towards `target`, letting each frame settle. */
 function useFrameStepper(target, durations) {
-  const [frame, setFrame] = useState(0)
+  const [{ frame, enteredAt }, setState] = useState({ frame: 0, enteredAt: 0 })
 
   useEffect(() => {
     if (frame >= target) {
       return undefined
     }
-    const wait = frame === 0 || prefersReducedMotion() ? 0 : durations[frame]
-    const timer = setTimeout(() => setFrame((current) => current + 1), wait)
+    // Only wait for what is left of the current frame's animation.
+    const remaining = durations[frame] - (performance.now() - enteredAt)
+    const wait = frame === 0 || prefersReducedMotion() ? 0 : Math.max(0, remaining)
+    const timer = setTimeout(() => setState({ frame: frame + 1, enteredAt: performance.now() }), wait)
     return () => clearTimeout(timer)
-  }, [frame, target, durations])
+  }, [frame, enteredAt, target, durations])
 
   return Math.min(frame, durations.length - 1)
 }
