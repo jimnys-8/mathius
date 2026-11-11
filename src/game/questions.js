@@ -7,11 +7,14 @@ import { OPERATIONS, getCategory, getLevel } from './config.js'
  * Counting has one term, the number of dots (`terms[0]`), which is also
  * the answer.
  *
+ * Equations have four terms, `terms[0]·x + terms[1] = terms[2]` with
+ * x = terms[3] hidden. terms[1] is negative for `3x − 2 = 13`.
+ *
  * Square roots have two terms, `√terms[0] = terms[1]`. Estimates
  * (`√40 ≈ 6.3`) come with `choices` to pick the answer from.
  *
  * @typedef {Object} Question
- * @property {'count'|'add'|'sub'|'mul'|'div'|'sqrt'} op
+ * @property {'count'|'add'|'sub'|'mul'|'div'|'sqrt'|'eq'} op
  * @property {[number, number, number]} terms
  * @property {0|1|2} unknown
  * @property {number} answer   terms[unknown]
@@ -77,6 +80,12 @@ export function questionKey(op, terms, unknown, { estimate = false, dots = false
   if (op === 'count') {
     // Counting dots to name the number, or picking dots for a numeral.
     return dots ? `${terms[0]}=●?` : `●${terms[0]}=?`
+  }
+  if (op === 'eq') {
+    // 3x+1=10, x+4=9, 2x=8, 3x−2=13
+    const [a, b, c] = terms
+    const constant = b > 0 ? `+${b}` : b < 0 ? `−${-b}` : ''
+    return `${a === 1 ? '' : a}x${constant}=${c}`
   }
   const shown = terms.map((term, index) => (index === unknown ? '?' : String(term)))
   if (op === 'sqrt') {
@@ -184,6 +193,23 @@ function createCountQuestion({ max, ask }, rng) {
   return makeQuestion('count', [count], 0, choices, ask === 'dots' ? { choicesAs: 'dots' } : {})
 }
 
+// ---------------------------------------------------------------------------
+// Equations
+
+function createEquationQuestion({ a: aRange, x: xRange, b: bRange, sign }, rng) {
+  for (;;) {
+    const a = randomInt(rng, ...aRange)
+    const x = randomInt(rng, ...xRange)
+    const size = randomInt(rng, ...bRange)
+    const minus = sign === 'minus' || (sign === 'both' && rng() < 0.5)
+    const b = minus ? -size : size
+    const c = a * x + b
+    if (c >= 1) {
+      return makeQuestion('eq', [a, b, c, x], 3)
+    }
+  }
+}
+
 /**
  * Creates a random question for the given category and level.
  *
@@ -208,6 +234,8 @@ export function createQuestion({ category, level, avoid = [], rng = Math.random 
       question = createSqrtQuestion(levelConfig.sqrt, rng)
     } else if (op === 'count') {
       question = createCountQuestion(levelConfig.count, rng)
+    } else if (op === 'eq') {
+      question = createEquationQuestion(levelConfig.eq, rng)
     } else {
       const terms = createTerms(op, levelConfig, rng)
       const unknown = pickWeighted(rng, levelConfig.unknowns)

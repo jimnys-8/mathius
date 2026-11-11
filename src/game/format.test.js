@@ -18,6 +18,12 @@ describe('formatFact', () => {
     expect(formatFact('3=●?', 3)).toBe('●●● = 3')
   })
 
+  it('says what x is in equations', () => {
+    expect(formatFact('3x+1=10', 3)).toBe('3x + 1 = 10, x = 3')
+    expect(formatFact('x−2=5', 7)).toBe('x − 2 = 5, x = 7')
+    expect(formatFact('7×?=56', 8)).toBe('7 × 8 = 56')
+  })
+
   it('formats numbers for the language', () => {
     const comma = (n) => String(n).replace('.', ',')
     expect(formatFact('3×4=?', 12.5, comma)).toBe('3 × 4 = 12,5')

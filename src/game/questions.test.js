@@ -15,6 +15,8 @@ function check(question) {
   switch (question.op) {
     case 'count':
       return question.choices.includes(a) && a >= 1
+    case 'eq':
+      return a * question.terms[3] + b === c && c >= 1
     case 'sqrt':
       return question.choices ? Math.round(Math.sqrt(a) * 10) / 10 === b : b * b === a
     case 'add':
@@ -41,7 +43,9 @@ describe('createQuestion', () => {
           expect(check(question)).toBe(true)
           expect(question.answer).toBe(question.terms[question.unknown])
           if (!question.choices) {
-            expect(question.terms.every((term) => Number.isInteger(term) && term >= 0)).toBe(true)
+            // Only an equation's constant can be negative (3x − 2 = 13).
+            const terms = question.op === 'eq' ? question.terms.filter((_, index) => index !== 1) : question.terms
+            expect(terms.every((term) => Number.isInteger(term) && term >= 0)).toBe(true)
           }
 
           if (question.op === 'add') {
@@ -90,6 +94,29 @@ describe('createQuestion', () => {
         expect(question.choicesAs).toBe(choicesAs)
       }
     }
+  })
+
+  it('climbs the equation ladder', () => {
+    const shapes = (level) => {
+      const seen = new Set()
+      for (let i = 0; i < 300; i += 1) {
+        const [a, b, , x] = createQuestion({ category: 'eq', level, rng }).terms
+        expect(x).toBeLessThanOrEqual(10)
+        seen.add(`${a === 1 ? 'x' : 'ax'}${b > 0 ? '+b' : b < 0 ? '-b' : ''}`)
+      }
+      return [...seen].sort()
+    }
+    expect(shapes(1)).toEqual(['x+b'])
+    expect(shapes(2)).toEqual(['ax'])
+    expect(shapes(3)).toEqual(['ax+b'])
+    expect(shapes(4)).toEqual(['ax+b', 'ax-b'])
+  })
+
+  it('writes equations as they are read', () => {
+    expect(makeQuestion('eq', [3, 1, 10, 3], 3).key).toBe('3x+1=10')
+    expect(makeQuestion('eq', [1, 4, 9, 5], 3).key).toBe('x+4=9')
+    expect(makeQuestion('eq', [2, 0, 8, 4], 3).key).toBe('2x=8')
+    expect(makeQuestion('eq', [3, -2, 13, 5], 3).key).toBe('3x−2=13')
   })
 
   it('guides the pictures on the levels that ask for it', () => {

@@ -8,6 +8,7 @@ export const OPERATIONS = {
   mul: { id: 'mul', symbol: '×' },
   div: { id: 'div', symbol: '÷' },
   sqrt: { id: 'sqrt', symbol: '√' },
+  eq: { id: 'eq', symbol: 'x' },
 }
 
 /**
@@ -96,6 +97,18 @@ const COUNT_LEVELS = [
   { id: 3, count: { max: 10, ask: 'dots' } },
 ]
 
+/**
+ * Levels for equations with a variable, `a·x + b = c` (or `a·x − b = c`).
+ * `a`, `x` and `b` are [min, max] ranges and `sign` is 'plus', 'minus'
+ * or 'both'. x stays at most 10, so the picture's bags can hold it.
+ */
+const EQUATION_LEVELS = [
+  { id: 1, eq: { a: [1, 1], x: [1, 10], b: [1, 9], sign: 'plus' } },
+  { id: 2, eq: { a: [2, 5], x: [1, 10], b: [0, 0], sign: 'plus' } },
+  { id: 3, eq: { a: [2, 5], x: [1, 10], b: [1, 9], sign: 'plus' } },
+  { id: 4, eq: { a: [2, 5], x: [2, 10], b: [1, 9], sign: 'both' } },
+]
+
 /** Multiplication, division and roots start at level 1: counting up to ten is too little for them. */
 const TABLE_LEVELS = ARITHMETIC_LEVELS.filter((level) => level.id > 0)
 
@@ -120,6 +133,7 @@ export const CATEGORIES = [
   { id: 'mix', symbol: '?', ops: ['add', 'sub', 'mul', 'div'], levels: ARITHMETIC_LEVELS },
   // Square roots are a skill of their own, so they are not part of the mix.
   { id: 'sqrt', symbol: '√', ops: ['sqrt'], levels: TABLE_LEVELS },
+  { id: 'eq', symbol: 'x', ops: ['eq'], levels: EQUATION_LEVELS },
 ]
 
 /** The level a category starts on. Every category has it. */
