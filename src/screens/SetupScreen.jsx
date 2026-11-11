@@ -26,7 +26,7 @@ export default function SetupScreen({ settings, onChange, onStart, header }) {
 
   const levelOptions = getCategory(settings.category).levels.map((level) => {
     const { name, desc } = levelText(t, settings.category, level.id)
-    return { value: level.id, label: name, detail: desc, icon: '★'.repeat(level.id), color: '#e59a00' }
+    return { value: level.id, label: name, detail: desc, icon: level.id === 0 ? '☆' : '★'.repeat(level.id), color: '#e59a00' }
   })
 
   const timerOptions = TIMER_OPTIONS.map((seconds) => ({

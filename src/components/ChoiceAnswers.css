@@ -82,3 +82,44 @@
     animation: none;
   }
 }
+
+/* Dots instead of numerals, for players who count but can't read numbers yet. */
+.choice-answers.is-dots .choice-answer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  min-height: 6.5rem;
+  padding: 0.8rem 0.6rem 0.4rem;
+  font-size: 1.3rem;
+}
+
+.choice-dots {
+  width: min(100%, 7rem);
+  height: auto;
+}
+
+.choice-dots circle {
+  fill: var(--color-c);
+  stroke: color-mix(in srgb, var(--color-c) 70%, #000);
+  stroke-width: 0.06;
+}
+
+.choice-answer.is-wrong .choice-dots circle {
+  fill: var(--color-wrong);
+  stroke: color-mix(in srgb, var(--color-wrong) 70%, #000);
+}
+
+.choice-answer.is-wrong .choice-answer-number {
+  text-decoration: line-through;
+}
+
+.choice-answers.is-dots .choice-answer.is-wrong {
+  text-decoration: none;
+}
+
+/* Hidden until answered, but keeping its space so buttons don't jump. */
+.choice-answer-number.is-hidden {
+  visibility: hidden;
+}

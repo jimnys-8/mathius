@@ -168,6 +168,7 @@ export default function PlayScreen({ settings, onFinish, onQuit }) {
             chosen={state.phase === 'answering' ? null : Number(state.input)}
             revealed={state.phase !== 'answering'}
             onChoose={handleChoose}
+            as={state.question.choicesAs}
           />
           <div className="play-actions">
             {state.phase === 'answering' ? (

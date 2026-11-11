@@ -22,6 +22,8 @@ const en = {
   'category.mix': 'Mix',
   'category.sqrt': 'Square roots',
 
+  'level.0.name': 'Dots',
+  'level.0.desc': 'Count up to 10, answer with dots',
   'level.1.name': 'Easy',
   'level.1.desc': 'Numbers up to 10',
   'level.2.name': 'Medium',
@@ -72,6 +74,7 @@ const en = {
   'play.hintHelp': 'Count the dots to find the answer.',
   'play.hintHelpSqrt': 'The biggest square that fits has sides of {side}. How far round the next one do the orange dots get?',
   'play.chooseAnswer': 'Choose an answer',
+  'play.dotCount': '{count} dots',
   'play.praise': ['Great job!', 'Correct!', 'Well done!', 'Nice one!', 'You got it!', 'Super!'],
   'play.wrong': 'Not quite. The answer is {answer}.',
   'play.yourAnswer': 'Your answer',
@@ -131,6 +134,8 @@ const sv = {
   'category.mix': 'Blandat',
   'category.sqrt': 'Kvadratrötter',
 
+  'level.0.name': 'Prickar',
+  'level.0.desc': 'Räkna upp till 10, svara med prickar',
   'level.1.name': 'Lätt',
   'level.1.desc': 'Tal upp till 10',
   'level.2.name': 'Mellan',
@@ -181,6 +186,7 @@ const sv = {
   'play.hintHelp': 'Räkna prickarna för att hitta svaret.',
   'play.hintHelpSqrt': 'Den största kvadraten som får plats har sidan {side}. Hur långt runt nästa kvadrat når de orange prickarna?',
   'play.chooseAnswer': 'Välj ett svar',
+  'play.dotCount': '{count} prickar',
   'play.praise': ['Bra jobbat!', 'Rätt!', 'Snyggt!', 'Toppen!', 'Du klarade det!', 'Superbra!'],
   'play.wrong': 'Inte riktigt. Svaret är {answer}.',
   'play.yourAnswer': 'Ditt svar',
