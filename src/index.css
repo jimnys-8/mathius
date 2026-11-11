@@ -1,9 +1,36 @@
+@import '@fontsource-variable/nunito';
+
 :root {
-  font-family: 'Avenir Next', 'Nunito', 'Trebuchet MS', sans-serif;
+  --font: 'Nunito Variable', 'Nunito', 'Avenir Next', 'Trebuchet MS', sans-serif;
+
+  --color-bg: #fff8ee;
+  --color-surface: #ffffff;
+  --color-ink: #1f2a44;
+  --color-ink-soft: #5b6782;
+  --color-line: #e6dccb;
+  --color-slot: #d8dce6;
+  --color-muted: #9aa5b8;
+  --color-focus: #3b82f6;
+
+  /* Term colors: first term, second term, result. */
+  --color-a: #7b5cff;
+  --color-b: #ff8a3d;
+  --color-c: #12a58c;
+
+  --color-correct: #1f9d55;
+  --color-wrong: #e0453a;
+
+  --radius: 1.1rem;
+  --shadow: 0 2px 0 rgba(31, 42, 68, 0.08), 0 8px 24px rgba(31, 42, 68, 0.08);
+
+  font-family: var(--font);
+  color: var(--color-ink);
+  background: var(--color-bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
 }
 
 * {
@@ -14,6 +41,26 @@ html,
 body,
 #root {
   margin: 0;
-  width: 100%;
+  min-height: 100%;
+}
+
+body {
   min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--color-bg);
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
 }
