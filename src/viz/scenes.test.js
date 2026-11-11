@@ -3,6 +3,7 @@ import { makeQuestion } from '../game/questions.js'
 import { buildScene } from './scenes.js'
 
 const FACTS = {
+  count: [[1], [4], [7], [10]],
   add: [
     [3, 4, 7],
     [8, 5, 13],
@@ -52,6 +53,9 @@ function cases() {
   for (const [radicand, answer, choices] of ESTIMATES) {
     result.push(makeQuestion('sqrt', [radicand, answer], 1, choices))
   }
+  for (const count of [1, 6, 10]) {
+    result.push(makeQuestion('count', [count], 0, [count], { choicesAs: 'dots' }))
+  }
   // Guided pictures start half solved.
   for (const question of [...result]) {
     if (question.op === 'sub' || question.op === 'sqrt') {
@@ -93,7 +97,9 @@ describe('buildScene', () => {
       })
 
       it('keeps the same dots in every frame', () => {
-        const ids = scene.frames.map((frame) => frame.dots.map((dot) => dot.id).sort().join())
+        // Picking dots for a numeral starts from an empty frame.
+        const frames = question.choicesAs === 'dots' && question.op === 'count' ? scene.frames.slice(1) : scene.frames
+        const ids = frames.map((frame) => frame.dots.map((dot) => dot.id).sort().join())
         expect(new Set(ids).size).toBe(1)
       })
 

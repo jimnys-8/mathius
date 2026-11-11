@@ -13,6 +13,11 @@ describe('formatFact', () => {
     expect(formatFact('√40≈?', 6.3)).toBe('√40 ≈ 6.3')
   })
 
+  it('shows counted dots', () => {
+    expect(formatFact('●3=?', 3)).toBe('●●● = 3')
+    expect(formatFact('3=●?', 3)).toBe('●●● = 3')
+  })
+
   it('formats numbers for the language', () => {
     const comma = (n) => String(n).replace('.', ',')
     expect(formatFact('3×4=?', 12.5, comma)).toBe('3 × 4 = 12,5')

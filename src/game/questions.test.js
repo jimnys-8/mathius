@@ -13,6 +13,8 @@ function seededRng(seed) {
 function check(question) {
   const [a, b, c] = question.terms
   switch (question.op) {
+    case 'count':
+      return question.choices.includes(a) && a >= 1
     case 'sqrt':
       return question.choices ? Math.round(Math.sqrt(a) * 10) / 10 === b : b * b === a
     case 'add':
@@ -71,6 +73,22 @@ describe('createQuestion', () => {
       expect(new Set(question.choices).size).toBe(4)
       expect(question.choices.every((choice) => choice >= 1 && choice <= 10)).toBe(true)
       expect(question.key).not.toContain('≈')
+    }
+  })
+
+  it('counts up to the level maximum', () => {
+    for (const [level, max, choicesAs] of [
+      [1, 5, undefined],
+      [2, 10, undefined],
+      [3, 10, 'dots'],
+    ]) {
+      for (let i = 0; i < 100; i += 1) {
+        const question = createQuestion({ category: 'count', level, rng })
+        expect(question.answer).toBeLessThanOrEqual(max)
+        expect(question.choices.every((choice) => choice >= 1 && choice <= max)).toBe(true)
+        expect(new Set(question.choices).size).toBe(4)
+        expect(question.choicesAs).toBe(choicesAs)
+      }
     }
   })
 

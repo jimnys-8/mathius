@@ -67,6 +67,51 @@ function answerLabel(text, x, y, tone, anchor = 'start') {
 const RIGHT_OF_ROW = span(10) + DOT_RADIUS + 0.8
 
 // ---------------------------------------------------------------------------
+// Counting: n dots in rows of five, like a ten frame
+
+const TEN_FRAME = 5
+
+/** A dot's number, written on the dot itself. */
+function countLabel(i, position, delay) {
+  return { id: `n-${i}`, text: String(i + 1), ...position, tone: 'on', size: 0.42, anchor: 'middle', bold: true, delay }
+}
+
+function countScene([n], unknown, { choicesAs }) {
+  const at = (i) => gridPosition(i, { perRow: TEN_FRAME })
+  const question = emptyFrame()
+  const hint = emptyFrame()
+  const pickDots = choicesAs === 'dots'
+
+  for (let i = 0; i < n; i += 1) {
+    const delay = stagger(i, n, { total: 2.5, max: 0.35 })
+    // Picking dots for a numeral: the picture starts as an empty frame.
+    if (!pickDots) {
+      question.dots.push(dot(`d-${i}`, at(i), 'a'))
+    }
+    hint.dots.push(dot(`d-${i}`, at(i), 'a', { delay: pickDots ? delay : 0 }))
+    hint.labels.push(countLabel(i, at(i), delay))
+  }
+  if (pickDots) {
+    // An empty ten frame that fills up.
+    for (let i = 0; i < 2 * TEN_FRAME; i += 1) {
+      const slot = { id: `slot-${i}`, ...at(i) }
+      question.slots.push(slot)
+      if (i >= n) {
+        hint.slots.push(slot)
+      }
+    }
+  } else {
+    fillSlots(question, n, { perRow: TEN_FRAME })
+    fillSlots(hint, n, { perRow: TEN_FRAME })
+  }
+  // The number goes under the dots, keeping the picture centered.
+  const rows = pickDots ? 2 : rowsFor(n, TEN_FRAME)
+  const solution = cloneFrame(hint)
+  solution.labels.push(answerLabel(n, span(TEN_FRAME) / 2, rows - 1 + DOT_RADIUS + 1.2, 'a', 'middle'))
+  return [question, hint, solution]
+}
+
+// ---------------------------------------------------------------------------
 // Addition: a + b = c
 
 function additionScene([a, b, c], unknown) {
@@ -481,6 +526,7 @@ function sqrtEstimateScene(n, answer, guided) {
 // ---------------------------------------------------------------------------
 
 const BUILDERS = {
+  count: countScene,
   add: additionScene,
   sub: subtractionScene,
   mul: multiplicationScene,

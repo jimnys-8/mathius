@@ -15,6 +15,7 @@ export const DEFAULT_LANGUAGE = 'sv'
 const en = {
   'app.languageSwitch': 'Language',
 
+  'category.count': 'Counting',
   'category.add': 'Addition',
   'category.sub': 'Subtraction',
   'category.mul': 'Multiplication',
@@ -34,6 +35,9 @@ const en = {
   'level.4.desc': 'Find the missing number, up to 20',
   'level.5.name': 'Master',
   'level.5.desc': 'Missing numbers, up to 100',
+  'level.count.1.desc': 'How many dots? Up to 5',
+  'level.count.2.desc': 'How many dots? Up to 10',
+  'level.count.3.desc': 'Find the right number of dots',
   'level.sqrt.1.desc': 'Squares up to 25',
   'level.sqrt.2.desc': 'Squares up to 100',
   'level.sqrt.3.desc': 'Estimate: choose from four',
@@ -115,6 +119,7 @@ const en = {
   'stats.yesterdayAt': 'Yesterday {time}',
 
   'viz.question': 'Picture of the question',
+  'viz.count': '{a} dots',
   'viz.add': '{a} dots and {b} dots, {c} together',
   'viz.sub': '{a} dots, {b} taken away, {c} left',
   'viz.mul': '{a} rows of {b} dots, {c} in total',
@@ -126,6 +131,7 @@ const en = {
 const sv = {
   'app.languageSwitch': 'Språk',
 
+  'category.count': 'Räkna',
   'category.add': 'Addition',
   'category.sub': 'Subtraktion',
   'category.mul': 'Multiplikation',
@@ -145,6 +151,9 @@ const sv = {
   'level.4.desc': 'Hitta talet som saknas, upp till 20',
   'level.5.name': 'Mästare',
   'level.5.desc': 'Tal som saknas, upp till 100',
+  'level.count.1.desc': 'Hur många prickar? Upp till 5',
+  'level.count.2.desc': 'Hur många prickar? Upp till 10',
+  'level.count.3.desc': 'Hitta rätt antal prickar',
   'level.sqrt.1.desc': 'Kvadrater upp till 25',
   'level.sqrt.2.desc': 'Kvadrater upp till 100',
   'level.sqrt.3.desc': 'Uppskatta: välj bland fyra',
@@ -226,6 +235,7 @@ const sv = {
   'stats.yesterdayAt': 'Igår {time}',
 
   'viz.question': 'Bild av frågan',
+  'viz.count': '{a} prickar',
   'viz.add': '{a} prickar och {b} prickar, {c} tillsammans',
   'viz.sub': '{a} prickar, {b} tas bort, {c} kvar',
   'viz.mul': '{a} rader med {b} prickar, {c} totalt',

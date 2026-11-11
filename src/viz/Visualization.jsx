@@ -108,6 +108,9 @@ function delayStyle(element) {
 
 function describe(question, t) {
   const [a, b, c] = question.terms
+  if (question.op === 'count') {
+    return t('viz.count', { a })
+  }
   if (question.op === 'sqrt' && question.choices) {
     const side = Math.floor(Math.sqrt(a))
     return t('viz.sqrtEstimate', { a, b: side, c: a - side * side })

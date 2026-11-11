@@ -58,6 +58,20 @@ export default function Equation({ question, input, onInput, onEnter, status, in
     )
   }
 
+  if (question.op === 'count') {
+    // Either count the dots and pick their number, or read the number and
+    // pick the dots.
+    return (
+      <div className="equation" aria-live="polite">
+        {question.choicesAs === 'dots' ? (
+          <span className="equation-term term-a">{formatNumber(question.terms[0])}</span>
+        ) : (
+          renderTerm(0)
+        )}
+      </div>
+    )
+  }
+
   if (sqrt) {
     return (
       <div className="equation" aria-live="polite">

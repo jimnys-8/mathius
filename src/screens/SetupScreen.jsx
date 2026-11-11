@@ -4,6 +4,7 @@ import { levelText, useI18n } from '../i18n/i18n.js'
 import './SetupScreen.css'
 
 const CATEGORY_COLORS = {
+  count: '#3fa34d',
   add: 'var(--color-a)',
   sub: 'var(--color-b)',
   mul: 'var(--color-c)',

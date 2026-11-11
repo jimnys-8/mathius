@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { OPERATIONS } from '../game/config.js'
 import { computeStats } from './stats.js'
 
 const DAY = 24 * 60 * 60 * 1000
@@ -14,7 +15,8 @@ describe('computeStats', () => {
     expect(stats.answered).toBe(0)
     expect(stats.accuracy).toBeNull()
     expect(stats.tricky).toEqual([])
-    expect(stats.byOperation.map((entry) => entry.answered)).toEqual([0, 0, 0, 0, 0])
+    expect(stats.byOperation.map((entry) => entry.op)).toEqual(Object.keys(OPERATIONS))
+    expect(stats.byOperation.every((entry) => entry.answered === 0)).toBe(true)
   })
 
   it('sums totals and counts today separately', () => {
@@ -44,13 +46,10 @@ describe('computeStats', () => {
       },
       now,
     )
-    expect(stats.byOperation).toEqual([
-      { op: 'add', answered: 4, correct: 3 },
-      { op: 'sub', answered: 0, correct: 0 },
-      { op: 'mul', answered: 2, correct: 0 },
-      { op: 'div', answered: 0, correct: 0 },
-      { op: 'sqrt', answered: 0, correct: 0 },
-    ])
+    const byOp = Object.fromEntries(stats.byOperation.map(({ op, answered, correct }) => [op, { answered, correct }]))
+    expect(byOp.add).toEqual({ answered: 4, correct: 3 })
+    expect(byOp.mul).toEqual({ answered: 2, correct: 0 })
+    expect(byOp.sub).toEqual({ answered: 0, correct: 0 })
     expect(stats.tricky.map((fact) => fact.key)).toEqual(['7×8=?', '3+4=?'])
   })
 

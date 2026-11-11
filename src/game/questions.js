@@ -4,11 +4,14 @@ import { OPERATIONS, getCategory, getLevel } from './config.js'
  * A question is a fact `terms[0] op terms[1] = terms[2]` where one of the
  * terms is hidden. `unknown` is the index of the hidden term.
  *
+ * Counting has one term, the number of dots (`terms[0]`), which is also
+ * the answer.
+ *
  * Square roots have two terms, `√terms[0] = terms[1]`. Estimates
  * (`√40 ≈ 6.3`) come with `choices` to pick the answer from.
  *
  * @typedef {Object} Question
- * @property {'add'|'sub'|'mul'|'div'} op
+ * @property {'count'|'add'|'sub'|'mul'|'div'|'sqrt'} op
  * @property {[number, number, number]} terms
  * @property {0|1|2} unknown
  * @property {number} answer   terms[unknown]
@@ -70,7 +73,11 @@ function createTerms(op, level, rng) {
   return [c, a, b]
 }
 
-export function questionKey(op, terms, unknown, { estimate = false } = {}) {
+export function questionKey(op, terms, unknown, { estimate = false, dots = false } = {}) {
+  if (op === 'count') {
+    // Counting dots to name the number, or picking dots for a numeral.
+    return dots ? `${terms[0]}=●?` : `●${terms[0]}=?`
+  }
   const shown = terms.map((term, index) => (index === unknown ? '?' : String(term)))
   if (op === 'sqrt') {
     return `√${shown[0]}${estimate ? '≈' : '='}${shown[1]}`
@@ -88,7 +95,7 @@ export function makeQuestion(op, terms, unknown = terms.length - 1, choices = un
     terms,
     unknown,
     answer: terms[unknown],
-    key: questionKey(op, terms, unknown, { estimate: Boolean(choices) && op === 'sqrt' }),
+    key: questionKey(op, terms, unknown, { estimate: Boolean(choices) && op === 'sqrt', dots: extra.choicesAs === 'dots' }),
     ...extra,
   }
   if (choices) {
@@ -168,11 +175,20 @@ function createSqrtQuestion(config, rng) {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Counting
+
+function createCountQuestion({ max, ask }, rng) {
+  const count = randomInt(rng, 1, max)
+  const choices = countingChoices(rng, count, max)
+  return makeQuestion('count', [count], 0, choices, ask === 'dots' ? { choicesAs: 'dots' } : {})
+}
+
 /**
  * Creates a random question for the given category and level.
  *
  * @param {Object} options
- * @param {string} options.category  category id ('add', 'sub', 'mul', 'div', 'mix', 'sqrt')
+ * @param {string} options.category  category id, see CATEGORIES
  * @param {number} options.level     level id
  * @param {string[]} [options.avoid] question keys to avoid (e.g. recent questions)
  * @param {() => number} [options.rng]
@@ -190,6 +206,8 @@ export function createQuestion({ category, level, avoid = [], rng = Math.random 
     const op = ops[randomInt(rng, 0, ops.length - 1)]
     if (op === 'sqrt') {
       question = createSqrtQuestion(levelConfig.sqrt, rng)
+    } else if (op === 'count') {
+      question = createCountQuestion(levelConfig.count, rng)
     } else {
       const terms = createTerms(op, levelConfig, rng)
       const unknown = pickWeighted(rng, levelConfig.unknowns)

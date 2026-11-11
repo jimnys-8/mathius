@@ -18,6 +18,11 @@
   --tone: var(--color-c);
 }
 
+/* Text drawn on top of a dot. */
+.tone-on {
+  --tone: #fff;
+}
+
 .tone-muted {
   --tone: var(--color-muted);
 }

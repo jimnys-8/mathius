@@ -2,6 +2,7 @@
 // Names and descriptions shown to players live in src/i18n/strings.js.
 
 export const OPERATIONS = {
+  count: { id: 'count', symbol: '●' },
   add: { id: 'add', symbol: '+' },
   sub: { id: 'sub', symbol: '−' },
   mul: { id: 'mul', symbol: '×' },
@@ -84,6 +85,17 @@ const ARITHMETIC_LEVELS = [
   },
 ]
 
+/**
+ * Levels for learning the numbers by counting. `count.ask` is 'number'
+ * to count dots and pick the numeral, or 'dots' to read a numeral and
+ * pick the button with that many dots.
+ */
+const COUNT_LEVELS = [
+  { id: 1, count: { max: 5, ask: 'number' } },
+  { id: 2, count: { max: 10, ask: 'number' } },
+  { id: 3, count: { max: 10, ask: 'dots' } },
+]
+
 /** Multiplication, division and roots start at level 1: counting up to ten is too little for them. */
 const TABLE_LEVELS = ARITHMETIC_LEVELS.filter((level) => level.id > 0)
 
@@ -100,6 +112,7 @@ export const ROUND_LENGTH = 10
  * results refer to them.
  */
 export const CATEGORIES = [
+  { id: 'count', symbol: '123', ops: ['count'], levels: COUNT_LEVELS },
   { id: 'add', symbol: '+', ops: ['add'], levels: ARITHMETIC_LEVELS },
   { id: 'sub', symbol: '−', ops: ['sub'], levels: ARITHMETIC_LEVELS },
   { id: 'mul', symbol: '×', ops: ['mul'], levels: TABLE_LEVELS },
@@ -112,8 +125,11 @@ export const CATEGORIES = [
 /** The level a category starts on. Every category has it. */
 export const DEFAULT_LEVEL = 1
 
+/** The category new players start with. */
+export const DEFAULT_CATEGORY = 'add'
+
 export function getCategory(id) {
-  return CATEGORIES.find((category) => category.id === id) ?? CATEGORIES[0]
+  return CATEGORIES.find((category) => category.id === id) ?? CATEGORIES.find((category) => category.id === DEFAULT_CATEGORY)
 }
 
 /** A level of a category, falling back to the default level. */
