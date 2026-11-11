@@ -19,10 +19,9 @@
   border-radius: inherit;
   background: var(--color-c);
   transform-origin: left center;
-  animation-name: countdown-shrink;
-  animation-timing-function: linear;
-  animation-fill-mode: both;
-  transition: background 0.3s ease;
+  transition:
+    transform 0.1s linear,
+    background 0.3s ease;
 }
 
 .countdown.is-ending .countdown-bar {
@@ -41,11 +40,11 @@
   color: var(--color-wrong);
 }
 
-@keyframes countdown-shrink {
-  from {
-    transform: scaleX(1);
-  }
-  to {
-    transform: scaleX(0);
-  }
+/* While an answer is shown the clock stands still. */
+.countdown.is-paused .countdown-bar {
+  background: var(--color-muted);
+}
+
+.countdown.is-paused .countdown-seconds {
+  color: var(--color-muted);
 }

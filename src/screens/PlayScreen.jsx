@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer, useRef } from 'react'
+import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import ChoiceAnswers from '../components/ChoiceAnswers.jsx'
 import Countdown from '../components/Countdown.jsx'
 import Equation from '../components/Equation.jsx'
@@ -7,11 +7,15 @@ import RoundProgress from '../components/RoundProgress.jsx'
 import { createSession, isTimed, sessionReducer } from '../game/session.js'
 import { useI18n } from '../i18n/i18n.js'
 import { useMediaQuery } from '../useMediaQuery.js'
+import { SOLUTION_FRAME } from '../viz/scenes.js'
 import Visualization from '../viz/Visualization.jsx'
 import './PlayScreen.css'
 
-/** In timed mode, correct answers move on by themselves after this long. */
-const AUTO_NEXT_MS = 900
+/**
+ * In timed mode, a correct answer moves on by itself this long after its
+ * solution has finished animating. The clock is paused meanwhile.
+ */
+const AUTO_NEXT_MS = 700
 
 function hintText(question, t) {
   if (question.op === 'sqrt' && question.choices) {
@@ -55,18 +59,30 @@ export default function PlayScreen({ settings, onFinish, onQuit }) {
 
   const timed = isTimed(state)
 
-  // Time is up: end the session wherever it is.
+  // The clock only runs while answering; end the session when it runs out.
+  const clockRunning = timed && state.phase === 'answering'
+  const clockEndsAt = clockRunning ? state.clockRunningSince + state.settings.timer * 1000 - state.clockUsedMs : null
   useEffect(() => {
-    if (!timed || finished) {
+    if (clockEndsAt === null) {
       return undefined
     }
-    const endsAt = state.startedAt + state.settings.timer * 1000
-    const timer = setTimeout(() => dispatch({ type: 'timeUp', now: Date.now() }), Math.max(0, endsAt - Date.now()))
+    const timer = setTimeout(() => dispatch({ type: 'timeUp', now: Date.now() }), Math.max(0, clockEndsAt - Date.now()))
     return () => clearTimeout(timer)
-  }, [timed, finished, state.startedAt, state.settings.timer])
+  }, [clockEndsAt])
 
-  // Keep the pace up when racing the clock.
-  const autoNext = timed && state.phase === 'feedback' && state.lastCorrect
+  // Keep the pace up when racing the clock: once the solution has played,
+  // move on to the next question.
+  const [settledQuestion, setSettledQuestion] = useState(0)
+  const { questionNumber } = state
+  const handleSettled = useCallback(
+    (frame) => {
+      if (frame === SOLUTION_FRAME) {
+        setSettledQuestion(questionNumber)
+      }
+    },
+    [questionNumber],
+  )
+  const autoNext = timed && state.phase === 'feedback' && state.lastCorrect && settledQuestion === questionNumber
   useEffect(() => {
     if (!autoNext) {
       return undefined
@@ -104,7 +120,11 @@ export default function PlayScreen({ settings, onFinish, onQuit }) {
         </button>
         {timed ? (
           <>
-            <Countdown startedAt={state.startedAt} seconds={state.settings.timer} />
+            <Countdown
+              seconds={state.settings.timer}
+              usedMs={state.clockUsedMs}
+              runningSince={state.clockRunningSince}
+            />
             <span className="play-score" aria-label={t('play.score', { count: correctCount })}>
               ✓ {correctCount}
             </span>
@@ -115,7 +135,12 @@ export default function PlayScreen({ settings, onFinish, onQuit }) {
       </header>
 
       <section className="play-viz card">
-        <Visualization key={`${state.questionNumber}-${state.question.key}`} question={state.question} step={state.vizStep} />
+        <Visualization
+          key={`${state.questionNumber}-${state.question.key}`}
+          question={state.question}
+          step={state.vizStep}
+          onSettled={handleSettled}
+        />
       </section>
 
       <Equation
