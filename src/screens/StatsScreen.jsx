@@ -69,10 +69,11 @@ export default function StatsScreen({ profile, history, onBack }) {
           <section className="card">
             <h2>{t('stats.byOperation')}</h2>
             <ul className="stats-meters">
-              {stats.byOperation.map(({ op, answered, correct }) => {
-                const ratio = answered > 0 ? correct / answered : 0
+              {/* Only what the player has tried, so a young player isn't faced with square roots. */}
+              {stats.byOperation.filter(({ answered }) => answered > 0).map(({ op, answered, correct }) => {
+                const ratio = correct / answered
                 return (
-                  <li key={op} className="stats-meter" title={answered > 0 ? t('stats.correctOf', { correct, count: answered }) : undefined}>
+                  <li key={op} className="stats-meter" title={t('stats.correctOf', { correct, count: answered })}>
                     <span className="stats-meter-symbol" aria-hidden="true">
                       {OPERATIONS[op].symbol}
                     </span>
@@ -88,13 +89,7 @@ export default function StatsScreen({ profile, history, onBack }) {
                       <span className="stats-meter-fill" style={{ width: percent(ratio) }} />
                     </span>
                     <span className="stats-meter-value">
-                      {answered > 0 ? (
-                        <>
-                          <strong>{formatPercent(ratio)}</strong> {t('stats.ofCount', { count: answered })}
-                        </>
-                      ) : (
-                        t('stats.notTried')
-                      )}
+                      <strong>{formatPercent(ratio)}</strong> {t('stats.ofCount', { count: answered })}
                     </span>
                   </li>
                 )
