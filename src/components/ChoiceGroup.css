@@ -1,0 +1,112 @@
+.choice-group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.choice-legend {
+  padding: 0;
+  margin-bottom: 0.6rem;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-ink-soft);
+}
+
+.choice-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.choice-option {
+  position: relative;
+}
+
+.choice-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.choice-option label {
+  --choice-color: var(--color-ink);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
+  height: 100%;
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 2px var(--color-line), 0 3px 0 var(--color-line);
+  cursor: pointer;
+  user-select: none;
+  text-align: center;
+  transition:
+    box-shadow 0.15s ease,
+    background 0.15s ease,
+    transform 0.08s ease;
+}
+
+.choice-option label:active {
+  transform: translateY(2px);
+}
+
+.choice-option input:checked + label {
+  background: color-mix(in srgb, var(--choice-color) 12%, var(--color-surface));
+  box-shadow: inset 0 0 0 3px var(--choice-color), 0 3px 0 color-mix(in srgb, var(--choice-color) 55%, var(--color-line));
+}
+
+.choice-option input:focus-visible + label {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.choice-label {
+  font-weight: 800;
+}
+
+.choice-detail {
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+}
+
+/* Pills: compact horizontal options. */
+.is-pills .choice-option label {
+  min-height: 3rem;
+  padding: 0.4rem 1.2rem;
+  border-radius: 999px;
+  font-size: 1.1rem;
+}
+
+/* Tiles: big squares with an icon. */
+.is-tiles .choice-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+}
+
+.is-tiles .choice-option label {
+  padding: 0.9rem 0.5rem;
+  min-height: 7rem;
+  font-size: 1.05rem;
+}
+
+.is-tiles .choice-icon {
+  font-size: 2.6rem;
+  font-weight: 900;
+  line-height: 1;
+  color: var(--choice-color);
+}
+
+/* Steps: equal-width options with a detail line. */
+.is-steps .choice-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr));
+}
+
+.is-steps .choice-option label {
+  padding: 0.7rem 0.6rem;
+  min-height: 5.5rem;
+  font-size: 1.1rem;
+}

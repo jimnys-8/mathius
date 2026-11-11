@@ -1,0 +1,20 @@
+.setup-section {
+  padding: 1rem 1.1rem 1.2rem;
+}
+
+.setup-section .is-steps .choice-icon {
+  color: #f0a800;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+}
+
+
+.setup-start {
+  display: flex;
+  justify-content: center;
+  padding-top: 0.25rem;
+}
+
+.setup-start .btn {
+  min-width: 14rem;
+}
