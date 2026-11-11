@@ -18,3 +18,8 @@
 .setup-start .btn {
   min-width: 14rem;
 }
+
+.setup-hint {
+  margin: 0.75rem 0 0;
+  color: var(--color-ink-soft);
+}

@@ -1,0 +1,51 @@
+.countdown {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex: 1;
+  max-width: 22rem;
+}
+
+.countdown-track {
+  flex: 1;
+  height: 0.9rem;
+  border-radius: 999px;
+  background: var(--color-line);
+  overflow: hidden;
+}
+
+.countdown-bar {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-c);
+  transform-origin: left center;
+  animation-name: countdown-shrink;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+  transition: background 0.3s ease;
+}
+
+.countdown.is-ending .countdown-bar {
+  background: var(--color-wrong);
+}
+
+.countdown-seconds {
+  min-width: 2.2ch;
+  font-size: 1.5rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.countdown.is-ending .countdown-seconds {
+  color: var(--color-wrong);
+}
+
+@keyframes countdown-shrink {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}

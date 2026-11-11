@@ -1,5 +1,5 @@
 import ChoiceGroup from '../components/ChoiceGroup.jsx'
-import { CATEGORIES, LEVELS } from '../game/config.js'
+import { CATEGORIES, LEVELS, TIMER_OPTIONS } from '../game/config.js'
 import './SetupScreen.css'
 
 const CATEGORY_COLORS = {
@@ -25,7 +25,12 @@ const LEVEL_OPTIONS = LEVELS.map((level) => ({
   color: '#e59a00',
 }))
 
-/** Choose what to practice and how hard. */
+const TIMER_CHOICES = TIMER_OPTIONS.map((option) => ({
+  value: option.seconds,
+  label: option.seconds === 0 ? 'Off' : `⏱ ${option.label}`,
+}))
+
+/** Choose what to practice, how hard, and whether to race the clock. */
 export default function SetupScreen({ settings, onChange, onStart, header }) {
   const update = (patch) => onChange({ ...settings, ...patch })
 
@@ -51,6 +56,20 @@ export default function SetupScreen({ settings, onChange, onStart, header }) {
           value={settings.level}
           onChange={(level) => update({ level })}
         />
+      </section>
+
+      <section className="card setup-section">
+        <ChoiceGroup
+          legend="Timer"
+          options={TIMER_CHOICES}
+          value={settings.timer}
+          onChange={(timer) => update({ timer })}
+        />
+        <p className="setup-hint">
+          {settings.timer > 0
+            ? `How many can you get right in ${TIMER_OPTIONS.find((option) => option.seconds === settings.timer)?.label}?`
+            : 'Take your time with a round of 10 questions.'}
+        </p>
       </section>
 
       <div className="setup-start">

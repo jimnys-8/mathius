@@ -1,9 +1,13 @@
 import { useEffect, useReducer, useRef } from 'react'
+import Countdown from '../components/Countdown.jsx'
 import Equation from '../components/Equation.jsx'
 import RoundProgress from '../components/RoundProgress.jsx'
-import { createSession, sessionReducer } from '../game/session.js'
+import { createSession, isTimed, sessionReducer } from '../game/session.js'
 import Visualization from '../viz/Visualization.jsx'
 import './PlayScreen.css'
+
+/** In timed mode, correct answers move on by themselves after this long. */
+const AUTO_NEXT_MS = 900
 
 const PRAISE = ['Great job!', 'Correct!', 'Well done!', 'Nice one!', 'You got it!', 'Super!']
 
@@ -32,6 +36,28 @@ export default function PlayScreen({ settings, onFinish, onQuit }) {
     }
   }, [finished, onFinish, state])
 
+  const timed = isTimed(state)
+
+  // Time is up: end the session wherever it is.
+  useEffect(() => {
+    if (!timed || finished) {
+      return undefined
+    }
+    const endsAt = state.startedAt + state.settings.timer * 1000
+    const timer = setTimeout(() => dispatch({ type: 'timeUp', now: Date.now() }), Math.max(0, endsAt - Date.now()))
+    return () => clearTimeout(timer)
+  }, [timed, finished, state.startedAt, state.settings.timer])
+
+  // Keep the pace up when racing the clock.
+  const autoNext = timed && state.phase === 'feedback' && state.lastCorrect
+  useEffect(() => {
+    if (!autoNext) {
+      return undefined
+    }
+    const timer = setTimeout(() => dispatch({ type: 'next', now: Date.now() }), AUTO_NEXT_MS)
+    return () => clearTimeout(timer)
+  }, [autoNext])
+
   const focusInput = () => inputRef.current?.focus({ preventScroll: true })
 
   const handleEnter = () => {
@@ -47,6 +73,7 @@ export default function PlayScreen({ settings, onFinish, onQuit }) {
     focusInput()
   }
 
+  const correctCount = state.results.filter((result) => result.correct).length
   const status = state.phase === 'feedback' ? (state.lastCorrect ? 'correct' : 'wrong') : 'open'
 
   return (
@@ -55,7 +82,16 @@ export default function PlayScreen({ settings, onFinish, onQuit }) {
         <button type="button" className="btn btn-quiet" onClick={onQuit}>
           ✕ <span>Stop</span>
         </button>
-        <RoundProgress results={state.results} current={state.phase === 'answering'} />
+        {timed ? (
+          <>
+            <Countdown startedAt={state.startedAt} seconds={state.settings.timer} />
+            <span className="play-score" aria-label={`${correctCount} correct`}>
+              ✓ {correctCount}
+            </span>
+          </>
+        ) : (
+          <RoundProgress results={state.results} current={state.phase === 'answering'} />
+        )}
       </header>
 
       <section className="play-viz card">
