@@ -22,14 +22,6 @@ describe('sessionReducer', () => {
     ])
   })
 
-  it('skips the solution animation for correct answers in timed mode', () => {
-    const start = createSession(timed, 0)
-    expect(answer(start, start.question.answer, 1).vizStep).toBe(0)
-    const hinted = sessionReducer(start, { type: 'hint' })
-    expect(answer(hinted, start.question.answer, 1).vizStep).toBe(1)
-    expect(answer(start, start.question.answer + 1, 1).vizStep).toBe(2)
-  })
-
   it('records a wrong answer', () => {
     const start = createSession(practice, 0)
     const state = answer(start, start.question.answer + 1, 10)
@@ -100,11 +92,28 @@ describe('sessionReducer', () => {
     state = sessionReducer(state, { type: 'timeUp', now: 60_000 })
     expect(state.phase).toBe('finished')
     expect(timeLeft(state, 99_000)).toBe(0)
+    expect(timeLeft(state, 99_000)).toBe(timeLeft(state, 60_000))
   })
 
-  it('finishes after feedback when time ran out meanwhile', () => {
+  it('pauses the clock between answering and the next question', () => {
+    let state = createSession(timed, 0)
+    state = answer(state, state.question.answer, 10_000)
+    expect(timeLeft(state, 10_000)).toBe(50_000)
+    // Watching the solution doesn't use time.
+    expect(timeLeft(state, 25_000)).toBe(50_000)
+    expect(sessionReducer(state, { type: 'timeUp', now: 99_000 })).toBe(state)
+
+    state = sessionReducer(state, { type: 'next', now: 25_000 })
+    expect(timeLeft(state, 35_000)).toBe(40_000)
+    expect(sessionReducer(state, { type: 'timeUp', now: 35_000 })).toBe(state)
+    expect(sessionReducer(state, { type: 'timeUp', now: 75_000 }).phase).toBe('finished')
+  })
+
+  it('finishes after the answer that used up the time', () => {
     const start = createSession(timed, 0)
-    const state = answer(start, 1, 59_000)
-    expect(sessionReducer(state, { type: 'next', now: 61_000 }).phase).toBe('finished')
+    const state = answer(start, 1, 61_000)
+    expect(state.phase).toBe('feedback')
+    expect(timeLeft(state, 61_000)).toBe(0)
+    expect(sessionReducer(state, { type: 'next', now: 70_000 }).phase).toBe('finished')
   })
 })

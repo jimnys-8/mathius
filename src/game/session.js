@@ -9,6 +9,11 @@ import { HINT_FRAME, SOLUTION_FRAME } from '../viz/scenes.js'
  *   'answering'  waiting for an answer
  *   'feedback'   answer given, showing whether it was right
  *   'finished'   the round is over
+ *
+ * In timed mode the clock only runs while answering: it pauses when an
+ * answer is given and starts again with the next question. `clockUsedMs`
+ * is the time used by earlier questions and `clockRunningSince` when the
+ * clock last started (null while paused).
  */
 
 const RECENT_LIMIT = 6
@@ -38,6 +43,8 @@ export function createSession(settings, now, rng = Math.random) {
     startedAt: now,
     questionStartedAt: now,
     endedAt: null,
+    clockUsedMs: 0,
+    clockRunningSince: now,
   }
 }
 
@@ -45,12 +52,25 @@ export function isTimed(session) {
   return session.settings.timer > 0
 }
 
+/** Time used on the clock so far (ms). */
+export function timeUsed(session, now) {
+  const running = session.clockRunningSince === null ? 0 : now - session.clockRunningSince
+  return session.clockUsedMs + running
+}
+
+/** Time left on the clock (ms); Infinity without a timer. */
 export function timeLeft(session, now) {
   if (!isTimed(session)) {
     return Infinity
   }
-  const end = session.startedAt + session.settings.timer * 1000
-  return Math.max(0, end - (session.endedAt ?? now))
+  return Math.max(0, session.settings.timer * 1000 - timeUsed(session, now))
+}
+
+function stopClock(state, now) {
+  if (state.clockRunningSince === null) {
+    return state
+  }
+  return { ...state, clockUsedMs: timeUsed(state, now), clockRunningSince: null }
 }
 
 function nextQuestion(state, now) {
@@ -71,11 +91,12 @@ function nextQuestion(state, now) {
     lastCorrect: null,
     recent: [...state.recent, question.key].slice(-RECENT_LIMIT),
     questionStartedAt: now,
+    clockRunningSince: now,
   }
 }
 
 function finish(state, now) {
-  return { ...state, phase: 'finished', endedAt: now }
+  return { ...stopClock(state, now), phase: 'finished', endedAt: now }
 }
 
 /**
@@ -128,13 +149,10 @@ export function sessionReducer(state, action) {
         hinted: state.hinted,
         ms: action.now - state.questionStartedAt,
       }
-      // In timed mode a correct answer moves on right away, so don't start
-      // a solution animation that would be cut off halfway.
-      const showSolution = !(isTimed(state) && correct)
       return {
-        ...state,
+        ...stopClock(state, action.now),
         phase: 'feedback',
-        vizStep: showSolution ? SOLUTION_FRAME : state.vizStep,
+        vizStep: SOLUTION_FRAME,
         lastCorrect: correct,
         results: [...state.results, result],
       }
@@ -153,7 +171,14 @@ export function sessionReducer(state, action) {
       return nextQuestion(state, action.now)
     }
 
-    case 'timeUp':
+    case 'timeUp': {
+      // Only while the clock runs; a paused clock can't run out.
+      if (state.phase !== 'answering' || timeLeft(state, action.now) > 0) {
+        return state
+      }
+      return finish(state, action.now)
+    }
+
     case 'quit': {
       if (state.phase === 'finished') {
         return state
