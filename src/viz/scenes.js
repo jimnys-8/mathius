@@ -118,7 +118,7 @@ function additionScene([a, b, c], unknown) {
 // ---------------------------------------------------------------------------
 // Subtraction: m − s = d (the dots that stay are the first d dots)
 
-function subtractionScene([m, s, d], unknown) {
+function subtractionScene([m, s, d], unknown, { guided }) {
   const yTaken = rowsFor(m) + GROUP_GAP
   const whole = (i) => gridPosition(i)
   const split = (i) => (i < d ? gridPosition(i) : gridPosition(i - d, { y: yTaken }))
@@ -140,11 +140,13 @@ function subtractionScene([m, s, d], unknown) {
     return [question, hint, solution]
   }
 
-  // Take dots away from the end, starting with the last one.
+  // Take dots away from the end, starting with the last one. Guided, the
+  // dots to take away are orange from the start.
   const moveEnd = stagger(s - 1, s) + MOVE_SECONDS
+  const marked = guided && unknown === 2
   for (let i = 0; i < m; i += 1) {
     const taken = i >= d
-    question.dots.push(dot(`d-${i}`, whole(i), 'a'))
+    question.dots.push(dot(`d-${i}`, whole(i), marked && taken ? 'b' : 'a'))
     hint.dots.push(
       dot(`d-${i}`, split(i), taken ? 'b' : 'c', {
         variant: taken && unknown === 2 ? 'faded' : 'solid',
@@ -197,6 +199,49 @@ function addBracket(frame, { bracket, label }) {
   }
 }
 
+/** Outlines an array row by row, with the running total after each row (skip counting). */
+function addRowCounts(frame, rows, cols, tone) {
+  const rowDelay = Math.min(0.45, 3 / rows)
+  for (let row = 0; row < rows; row += 1) {
+    const y = offset(row)
+    frame.boxes.push({
+      id: `row-${row}`,
+      x: -DOT_RADIUS - 0.12,
+      y: y - DOT_RADIUS - 0.12,
+      width: span(cols) + 2 * DOT_RADIUS + 0.24,
+      height: 2 * DOT_RADIUS + 0.24,
+      tone,
+      delay: row * rowDelay,
+    })
+    frame.labels.push({
+      id: `count-${row}`,
+      text: String((row + 1) * cols),
+      x: span(cols) + DOT_RADIUS + 0.5,
+      y,
+      tone: 'muted',
+      size: SMALL_SIZE,
+      anchor: 'start',
+      delay: row * rowDelay,
+    })
+  }
+}
+
+/** Numbers 1, 2, 3, … over the columns of an array, counting its side. */
+function addColumnCounts(frame, cols) {
+  for (let col = 0; col < cols; col += 1) {
+    frame.labels.push({
+      id: `col-${col}`,
+      text: String(col + 1),
+      x: offset(col),
+      y: -DOT_RADIUS - 0.6,
+      tone: 'muted',
+      size: SMALL_SIZE,
+      anchor: 'middle',
+      delay: stagger(col, cols, { total: 1.2, max: 0.2 }),
+    })
+  }
+}
+
 function multiplicationScene([a, b, c], unknown) {
   const question = emptyFrame()
   const hint = emptyFrame()
@@ -214,29 +259,7 @@ function multiplicationScene([a, b, c], unknown) {
       addBracket(frame, rowBracket(a, 'a', true))
       addBracket(frame, columnBracket(b, 'b', true))
     }
-    const rowDelay = Math.min(0.45, 3 / a)
-    for (let row = 0; row < a; row += 1) {
-      const y = offset(row)
-      hint.boxes.push({
-        id: `row-${row}`,
-        x: -DOT_RADIUS - 0.12,
-        y: y - DOT_RADIUS - 0.12,
-        width: span(b) + 2 * DOT_RADIUS + 0.24,
-        height: 2 * DOT_RADIUS + 0.24,
-        tone: 'c',
-        delay: row * rowDelay,
-      })
-      hint.labels.push({
-        id: `count-${row}`,
-        text: String((row + 1) * b),
-        x: span(b) + DOT_RADIUS + 0.5,
-        y,
-        tone: 'muted',
-        size: SMALL_SIZE,
-        anchor: 'start',
-        delay: row * rowDelay,
-      })
-    }
+    addRowCounts(hint, a, b, 'c')
     const solution = cloneFrame(hint)
     solution.labels.push(answerLabel(c, span(b) / 2, span(a) + DOT_RADIUS + 1.2, 'c', 'middle'))
     return [question, hint, solution]
@@ -365,36 +388,48 @@ function squareOf(i, side) {
   return arrayPosition(Math.floor(i / side), i % side)
 }
 
-function sqrtScene([n, r], unknown, { choices }) {
+function sqrtScene([n, r], unknown, { choices, guided }) {
+  if (choices) {
+    return sqrtEstimateScene(n, r, guided)
+  }
+
   const question = emptyFrame()
   const hint = emptyFrame()
 
-  if (choices) {
-    return sqrtEstimateScene(n, r)
-  }
-
   if (unknown === 1) {
-    // Arrange the pile into a square and measure its side.
+    // Arrange the pile into a square and measure its side. Guided, the
+    // square is already laid out and the hint counts along its side.
     for (let i = 0; i < n; i += 1) {
-      question.dots.push(dot(`d-${i}`, gridPosition(i), 'a'))
-      hint.dots.push(dot(`d-${i}`, squareOf(i, r), 'a', { delay: stagger(i, n, { total: 2 }) }))
+      const inSquare = dot(`d-${i}`, squareOf(i, r), 'a', { delay: guided ? 0 : stagger(i, n, { total: 2 }) })
+      question.dots.push(guided ? { ...inSquare } : dot(`d-${i}`, gridPosition(i), 'a'))
+      hint.dots.push(inSquare)
     }
-    const solution = cloneFrame(hint)
+    if (guided) {
+      addColumnCounts(hint, r)
+    }
+    const solution = emptyFrame()
+    solution.dots = [...hint.dots]
     addBracket(solution, columnBracket(r, 'c', true))
     addBracket(solution, rowBracket(r, 'c', true))
     solution.labels.find((label) => label.id === 'cols-label').size = ANSWER_SIZE
     return [question, hint, solution]
   }
 
-  // The side is known; fill the square and count it.
+  // The side is known; fill the square and count it. Guided, the square
+  // is already filled and the hint counts it row by row.
   for (let i = 0; i < n; i += 1) {
     const firstRow = i < r
-    question.dots.push(dot(`d-${i}`, squareOf(i, r), 'a', { variant: firstRow ? 'solid' : 'ghost' }))
-    hint.dots.push(dot(`d-${i}`, squareOf(i, r), 'a', { delay: firstRow ? 0 : stagger(i - r, n - r, { total: 2 }) }))
+    question.dots.push(dot(`d-${i}`, squareOf(i, r), 'a', { variant: firstRow || guided ? 'solid' : 'ghost' }))
+    hint.dots.push(
+      dot(`d-${i}`, squareOf(i, r), 'a', { delay: firstRow || guided ? 0 : stagger(i - r, n - r, { total: 2 }) }),
+    )
   }
   for (const frame of [question, hint]) {
     addBracket(frame, columnBracket(r, 'c', true))
     addBracket(frame, rowBracket(r, 'c', true))
+  }
+  if (guided) {
+    addRowCounts(hint, r, r, 'a')
   }
   const solution = cloneFrame(hint)
   solution.labels.push(answerLabel(n, span(r) / 2, span(r) + DOT_RADIUS + 1.2, 'a', 'middle'))
@@ -404,9 +439,10 @@ function sqrtScene([n, r], unknown, { choices }) {
 /**
  * √n for a non-square n: the biggest square that fits (k × k), with the
  * leftover dots starting the border of the next square, (k + 1) × (k + 1).
- * How far round the border they get shows the decimals.
+ * How far round the border they get shows the decimals. Guided, the
+ * squares are laid out from the start and the hint measures the side.
  */
-function sqrtEstimateScene(n, answer) {
+function sqrtEstimateScene(n, answer, guided) {
   const k = Math.floor(Math.sqrt(n))
   const extra = n - k * k
   // Border of the next square: down the right side, then along the bottom.
@@ -422,15 +458,18 @@ function sqrtEstimateScene(n, answer) {
   const hint = emptyFrame()
   for (let i = 0; i < n; i += 1) {
     const inSquare = i < k * k
-    question.dots.push(dot(`d-${i}`, gridPosition(i), 'a'))
-    hint.dots.push(
-      dot(`d-${i}`, inSquare ? squareOf(i, k) : border[i - k * k], inSquare ? 'a' : 'b', {
-        delay: stagger(i, n, { total: 2 }),
-      }),
-    )
+    const laidOut = dot(`d-${i}`, inSquare ? squareOf(i, k) : border[i - k * k], inSquare ? 'a' : 'b', {
+      delay: guided ? 0 : stagger(i, n, { total: 2 }),
+    })
+    question.dots.push(guided ? { ...laidOut } : dot(`d-${i}`, gridPosition(i), 'a'))
+    hint.dots.push(laidOut)
   }
   for (let j = extra; j < border.length; j += 1) {
-    hint.slots.push({ id: `border-${j}`, ...border[j] })
+    const slot = { id: `border-${j}`, ...border[j] }
+    hint.slots.push(slot)
+    if (guided) {
+      question.slots.push(slot)
+    }
   }
   addBracket(hint, columnBracket(k, 'muted', true))
 

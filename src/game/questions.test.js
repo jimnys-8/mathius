@@ -74,6 +74,14 @@ describe('createQuestion', () => {
     }
   })
 
+  it('guides the pictures on the levels that ask for it', () => {
+    expect(createQuestion({ category: 'sub', level: 1, rng }).guided).toBe(true)
+    expect(createQuestion({ category: 'sub', level: 3, rng }).guided).toBeUndefined()
+    expect(createQuestion({ category: 'sqrt', level: 4, rng }).guided).toBe(true)
+    expect(createQuestion({ category: 'sqrt', level: 5, rng }).guided).toBeUndefined()
+    expect(createQuestion({ category: 'add', level: 1, rng }).guided).toBeUndefined()
+  })
+
   it('only asks for the result on non-equation levels', () => {
     for (let i = 0; i < 200; i += 1) {
       expect(createQuestion({ category: 'mix', level: 2, rng }).unknown).toBe(2)

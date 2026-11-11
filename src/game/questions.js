@@ -15,6 +15,7 @@ import { OPERATIONS, getCategory, getLevel } from './config.js'
  * @property {string} key      stable identifier, e.g. "7+8=?"
  * @property {number[]} [choices]  possible answers, smallest first
  * @property {'dots'} [choicesAs]  show the choices as dots, not numerals
+ * @property {boolean} [guided]  start the picture half solved
  */
 
 function randomInt(rng, min, max) {
@@ -196,6 +197,9 @@ export function createQuestion({ category, level, avoid = [], rng = Math.random 
         levelConfig.choices === 'dots'
           ? makeQuestion(op, terms, unknown, countingChoices(rng, terms[unknown]), { choicesAs: 'dots' })
           : makeQuestion(op, terms, unknown)
+    }
+    if (levelConfig.guided?.includes(op)) {
+      question.guided = true
     }
     if (!avoid.includes(question.key)) {
       break

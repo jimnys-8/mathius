@@ -52,12 +52,20 @@ function cases() {
   for (const [radicand, answer, choices] of ESTIMATES) {
     result.push(makeQuestion('sqrt', [radicand, answer], 1, choices))
   }
+  // Guided pictures start half solved.
+  for (const question of [...result]) {
+    if (question.op === 'sub' || question.op === 'sqrt') {
+      result.push({ ...question, guided: true })
+    }
+  }
   return result
 }
 
+const positions = (frame) => frame.dots.map((dot) => `${dot.id}@${dot.x.toFixed(2)},${dot.y.toFixed(2)}`).sort()
+
 describe('buildScene', () => {
   for (const question of cases()) {
-    describe(question.key, () => {
+    describe(`${question.key}${question.guided ? ' (guided)' : ''}`, () => {
       const scene = buildScene(question)
 
       it('has a question, hint and solution frame', () => {
@@ -100,4 +108,27 @@ describe('buildScene', () => {
       })
     })
   }
+})
+
+describe('guided pictures', () => {
+  it('colors the dots to take away before subtracting', () => {
+    const [plain] = buildScene(makeQuestion('sub', [9, 4, 5], 2)).frames
+    const [guided] = buildScene({ ...makeQuestion('sub', [9, 4, 5], 2), guided: true }).frames
+    expect(plain.dots.filter((dot) => dot.tone === 'b')).toHaveLength(0)
+    expect(guided.dots.filter((dot) => dot.tone === 'b')).toHaveLength(4)
+  })
+
+  it('does not give away a missing number in subtraction', () => {
+    const [guided] = buildScene({ ...makeQuestion('sub', [9, 4, 5], 1), guided: true }).frames
+    expect(guided.dots.filter((dot) => dot.tone === 'b')).toHaveLength(0)
+  })
+
+  it('lays out the square before answering', () => {
+    for (const question of [makeQuestion('sqrt', [49, 7], 1), makeQuestion('sqrt', [40, 6.3], 1, [6.1, 6.3, 6.6, 6.8])]) {
+      const plain = buildScene(question).frames
+      const guided = buildScene({ ...question, guided: true }).frames
+      expect(positions(plain[0])).not.toEqual(positions(plain[1]))
+      expect(positions(guided[0])).toEqual(positions(guided[1]))
+    }
+  })
 })

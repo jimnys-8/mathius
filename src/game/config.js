@@ -29,6 +29,9 @@ export const OPERATIONS = {
  * - `ops` (optional): only these operations, even in the mix.
  * - `choices` (optional): 'dots' to answer by picking one of four buttons
  *   showing dots, for players who can count but don't know numerals yet.
+ * - `guided`: operations whose picture starts half solved: subtraction
+ *   with the dots to take away already orange, square roots with the
+ *   square already laid out.
  */
 const ARITHMETIC_LEVELS = [
   {
@@ -37,6 +40,7 @@ const ARITHMETIC_LEVELS = [
     sum: { max: 10, minPart: 1 },
     unknowns: [0, 0, 1],
     choices: 'dots',
+    guided: ['sub'],
   },
   {
     id: 1,
@@ -44,6 +48,7 @@ const ARITHMETIC_LEVELS = [
     product: { min: 1, max: 5 },
     unknowns: [0, 0, 1],
     sqrt: { mode: 'exact', min: 1, max: 5, unknowns: [0, 1] },
+    guided: ['sub', 'sqrt'],
   },
   {
     id: 2,
@@ -51,6 +56,7 @@ const ARITHMETIC_LEVELS = [
     product: { min: 1, max: 10 },
     unknowns: [0, 0, 1],
     sqrt: { mode: 'exact', min: 2, max: 10, unknowns: [0, 1] },
+    guided: ['sub', 'sqrt'],
   },
   {
     id: 3,
@@ -58,6 +64,7 @@ const ARITHMETIC_LEVELS = [
     product: { min: 2, max: 12 },
     unknowns: [0, 0, 1],
     sqrt: { mode: 'estimate', maxRadicand: 100, choices: 'wide' },
+    guided: ['sqrt'],
   },
   {
     id: 4,
@@ -65,6 +72,7 @@ const ARITHMETIC_LEVELS = [
     product: { min: 1, max: 10 },
     unknowns: [1, 1, 0.5],
     sqrt: { mode: 'exact', min: 2, max: 12, unknowns: [1, 1] },
+    guided: ['sqrt'],
   },
   {
     id: 5,
@@ -72,6 +80,7 @@ const ARITHMETIC_LEVELS = [
     product: { min: 2, max: 12 },
     unknowns: [1, 1, 0.5],
     sqrt: { mode: 'estimate', maxRadicand: 150, choices: 'narrow' },
+    guided: [],
   },
 ]
 
