@@ -15,11 +15,26 @@ const SAMPLES = [
   ['mul', [7, 8, 56]],
   ['div', [12, 3, 4]],
   ['div', [56, 8, 7]],
+  ['sqrt', [49, 7]],
+  ['sqrt', [144, 12]],
+  ['sqrt', [40, 6.3], [6.1, 6.3, 6.6, 6.8]],
+  ['sqrt', [7, 2.6], [1.3, 2.6, 3.4, 4.8]],
+  ['sqrt', [130, 11.4], [9.6, 10.2, 11.4, 12.7]],
 ]
 
 const SYMBOLS = { add: '+', sub: '−', mul: '×', div: '÷' }
 
 function Equation({ question }) {
+  if (question.op === 'sqrt') {
+    const [n, r] = question.terms
+    return (
+      <p style={{ fontSize: '1.4rem', fontWeight: 800, margin: '0.5rem 0 0' }}>
+        √<span style={{ color: 'var(--color-a)' }}>{question.unknown === 0 ? '?' : n}</span>
+        {question.choices ? ' ≈ ' : ' = '}
+        <span style={{ color: 'var(--color-c)' }}>{question.unknown === 1 ? '?' : r}</span>
+      </p>
+    )
+  }
   return (
     <p style={{ fontSize: '1.4rem', fontWeight: 800, margin: '0.5rem 0 0' }}>
       {question.terms.map((term, index) => (
@@ -71,12 +86,13 @@ export default function Gallery() {
         padding: 16,
       }}
     >
-      {samples.flatMap(([op, terms]) =>
-        [2, 1, 0].map((unknown) => {
-          const question = makeQuestion(op, terms, unknown)
+      {samples.flatMap(([op, terms, choices]) => {
+        const unknowns = choices ? [1] : terms.map((_, index) => index).reverse()
+        return unknowns.map((unknown) => {
+          const question = makeQuestion(op, terms, unknown, choices)
           return <Sample key={question.key} question={question} initialStep={step} />
-        }),
-      )}
+        })
+      })}
     </main>
   )
 }

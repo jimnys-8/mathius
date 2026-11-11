@@ -82,6 +82,10 @@ function delayStyle(element) {
 
 function describe(question, t) {
   const [a, b, c] = question.terms
+  if (question.op === 'sqrt' && question.choices) {
+    const side = Math.floor(Math.sqrt(a))
+    return t('viz.sqrtEstimate', { a, b: side, c: a - side * side })
+  }
   return t(`viz.${question.op}`, { a, b, c })
 }
 
@@ -93,7 +97,7 @@ function describe(question, t) {
  * @param {number} props.step  0 = question, 1 = hint, 2 = solution
  */
 export default function Visualization({ question, step }) {
-  const { t } = useI18n()
+  const { t, formatNumber } = useI18n()
   const scene = useMemo(() => buildScene(question), [question])
   const frame = useFrameStepper(step, scene.durations)
   const elements = useMemo(() => resolveElements(scene.frames, frame), [scene, frame])
@@ -160,7 +164,7 @@ export default function Visualization({ question, step }) {
           dominantBaseline="central"
           style={delayStyle(label)}
         >
-          {label.text}
+          {label.text.replace(/\d+(\.\d+)?/g, (number) => formatNumber(Number(number)))}
         </text>
       ))}
     </svg>

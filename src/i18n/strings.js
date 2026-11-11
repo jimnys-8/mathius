@@ -109,6 +109,8 @@ const en = {
   'viz.sub': '{a} dots, {b} taken away, {c} left',
   'viz.mul': '{a} rows of {b} dots, {c} in total',
   'viz.div': '{a} dots shared into {b} boxes, {c} in each',
+  'viz.sqrt': '{a} dots make a square with sides of {b}',
+  'viz.sqrtEstimate': '{a} dots: a square with sides of {b}, and {c} dots more',
 }
 
 const sv = {
@@ -208,6 +210,8 @@ const sv = {
   'viz.sub': '{a} prickar, {b} tas bort, {c} kvar',
   'viz.mul': '{a} rader med {b} prickar, {c} totalt',
   'viz.div': '{a} prickar delas i {b} lådor, {c} i varje',
+  'viz.sqrt': '{a} prickar blir en kvadrat med sidan {b}',
+  'viz.sqrtEstimate': '{a} prickar: en kvadrat med sidan {b} och {c} prickar till',
 }
 
 export const STRINGS = { en, sv }

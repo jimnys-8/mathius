@@ -359,12 +359,94 @@ function divisionScene([n, g, q], unknown) {
 }
 
 // ---------------------------------------------------------------------------
+// Square roots: √n = r, drawn as n dots making a square with sides r
+
+function squareOf(i, side) {
+  return arrayPosition(Math.floor(i / side), i % side)
+}
+
+function sqrtScene([n, r], unknown, { choices }) {
+  const question = emptyFrame()
+  const hint = emptyFrame()
+
+  if (choices) {
+    return sqrtEstimateScene(n, r)
+  }
+
+  if (unknown === 1) {
+    // Arrange the pile into a square and measure its side.
+    for (let i = 0; i < n; i += 1) {
+      question.dots.push(dot(`d-${i}`, gridPosition(i), 'a'))
+      hint.dots.push(dot(`d-${i}`, squareOf(i, r), 'a', { delay: stagger(i, n, { total: 2 }) }))
+    }
+    const solution = cloneFrame(hint)
+    addBracket(solution, columnBracket(r, 'c', true))
+    addBracket(solution, rowBracket(r, 'c', true))
+    solution.labels.find((label) => label.id === 'cols-label').size = ANSWER_SIZE
+    return [question, hint, solution]
+  }
+
+  // The side is known; fill the square and count it.
+  for (let i = 0; i < n; i += 1) {
+    const firstRow = i < r
+    question.dots.push(dot(`d-${i}`, squareOf(i, r), 'a', { variant: firstRow ? 'solid' : 'ghost' }))
+    hint.dots.push(dot(`d-${i}`, squareOf(i, r), 'a', { delay: firstRow ? 0 : stagger(i - r, n - r, { total: 2 }) }))
+  }
+  for (const frame of [question, hint]) {
+    addBracket(frame, columnBracket(r, 'c', true))
+    addBracket(frame, rowBracket(r, 'c', true))
+  }
+  const solution = cloneFrame(hint)
+  solution.labels.push(answerLabel(n, span(r) / 2, span(r) + DOT_RADIUS + 1.2, 'a', 'middle'))
+  return [question, hint, solution]
+}
+
+/**
+ * √n for a non-square n: the biggest square that fits (k × k), with the
+ * leftover dots starting the border of the next square, (k + 1) × (k + 1).
+ * How far round the border they get shows the decimals.
+ */
+function sqrtEstimateScene(n, answer) {
+  const k = Math.floor(Math.sqrt(n))
+  const extra = n - k * k
+  // Border of the next square: down the right side, then along the bottom.
+  const border = []
+  for (let row = 0; row < k; row += 1) {
+    border.push(arrayPosition(row, k))
+  }
+  for (let col = 0; col <= k; col += 1) {
+    border.push(arrayPosition(k, col))
+  }
+
+  const question = emptyFrame()
+  const hint = emptyFrame()
+  for (let i = 0; i < n; i += 1) {
+    const inSquare = i < k * k
+    question.dots.push(dot(`d-${i}`, gridPosition(i), 'a'))
+    hint.dots.push(
+      dot(`d-${i}`, inSquare ? squareOf(i, k) : border[i - k * k], inSquare ? 'a' : 'b', {
+        delay: stagger(i, n, { total: 2 }),
+      }),
+    )
+  }
+  for (let j = extra; j < border.length; j += 1) {
+    hint.slots.push({ id: `border-${j}`, ...border[j] })
+  }
+  addBracket(hint, columnBracket(k, 'muted', true))
+
+  const solution = cloneFrame(hint)
+  solution.labels.push(answerLabel(`≈ ${answer}`, span(k + 1) / 2, span(k + 1) + DOT_RADIUS + 1.2, 'c', 'middle'))
+  return [question, hint, solution]
+}
+
+// ---------------------------------------------------------------------------
 
 const BUILDERS = {
   add: additionScene,
   sub: subtractionScene,
   mul: multiplicationScene,
   div: divisionScene,
+  sqrt: sqrtScene,
 }
 
 function labelBounds(label) {
@@ -431,7 +513,7 @@ function frameDuration(frame) {
  * @returns {{ frames: Object[], durations: number[], viewBox: {x, y, width, height} }}
  */
 export function buildScene(question) {
-  const frames = BUILDERS[question.op](question.terms, question.unknown)
+  const frames = BUILDERS[question.op](question.terms, question.unknown, question)
   return {
     frames,
     durations: frames.map(frameDuration),

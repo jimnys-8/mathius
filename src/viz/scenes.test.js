@@ -27,16 +27,30 @@ const FACTS = {
     [144, 12, 12],
     [56, 8, 7],
   ],
+  sqrt: [
+    [1, 1],
+    [49, 7],
+    [144, 12],
+  ],
 }
+
+const ESTIMATES = [
+  [2, 1.4, [1.4, 2.5, 3.1, 4.7]],
+  [40, 6.3, [6.1, 6.3, 6.6, 6.8]],
+  [150, 12.2, [10.5, 11.3, 12.2, 13.7]],
+]
 
 function cases() {
   const result = []
   for (const [op, facts] of Object.entries(FACTS)) {
     for (const terms of facts) {
-      for (const unknown of [0, 1, 2]) {
+      for (let unknown = 0; unknown < terms.length; unknown += 1) {
         result.push(makeQuestion(op, terms, unknown))
       }
     }
+  }
+  for (const [radicand, answer, choices] of ESTIMATES) {
+    result.push(makeQuestion('sqrt', [radicand, answer], 1, choices))
   }
   return result
 }
@@ -76,7 +90,7 @@ describe('buildScene', () => {
       })
 
       it('shows the answer in the solution', () => {
-        const labels = scene.frames[2].labels.map((label) => label.text)
+        const labels = scene.frames[2].labels.map((label) => label.text.replace('≈ ', ''))
         expect(labels).toContain(String(question.answer))
       })
 
