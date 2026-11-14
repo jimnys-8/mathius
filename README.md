@@ -27,7 +27,7 @@ solution.
 - One profile per player, with remembered settings, stats, best timed
   scores and the facts they miss most often (stored in the browser's
   localStorage)
-- On-screen number keys on touch devices
+- On-screen number keys on touch devices, and at the press of a button (🔢) with a keyboard, remembered per player
 - Swedish and English (Swedish by default); all text is in
   `src/i18n/strings.js`
 

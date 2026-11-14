@@ -96,6 +96,8 @@ const en = {
   'play.timeLeft': '{seconds} seconds left',
   'play.numberKeys': 'Number keys',
   'play.delete': 'Delete',
+  'play.showKeypad': 'Show number keys',
+  'play.hideKeypad': 'Hide number keys',
 
   'summary.headline': ['Keep practicing!', 'Good try!', 'Great work!', 'Amazing!'],
   'summary.stars': '{count} of 3 stars',
@@ -224,6 +226,8 @@ const sv = {
   'play.timeLeft': '{seconds} sekunder kvar',
   'play.numberKeys': 'Sifferknappar',
   'play.delete': 'Radera',
+  'play.showKeypad': 'Visa sifferknappar',
+  'play.hideKeypad': 'Dölj sifferknappar',
 
   'summary.headline': ['Fortsätt öva!', 'Bra försök!', 'Bra jobbat!', 'Fantastiskt!'],
   'summary.stars': '{count} av 3 stjärnor',

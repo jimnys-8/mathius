@@ -70,7 +70,16 @@ function Screens({ store, setStore }) {
   }
 
   if (screen.name === 'play') {
-    return <PlayScreen key={screen.round} settings={settings} onFinish={handleFinish} onQuit={() => show('setup')} />
+    return (
+      <PlayScreen
+        key={screen.round}
+        settings={settings}
+        keypad={Boolean(profile.keypad)}
+        onKeypadChange={(keypad) => setStore((current) => updateProfile(current, profile.id, { keypad }))}
+        onFinish={handleFinish}
+        onQuit={() => show('setup')}
+      />
+    )
   }
 
   if (screen.name === 'summary') {

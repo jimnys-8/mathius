@@ -11,6 +11,22 @@
   min-height: 3rem;
 }
 
+.play-header-start {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.play-keypad-toggle {
+  font-size: 1.3rem;
+  opacity: 0.6;
+}
+
+.play-keypad-toggle[aria-pressed='true'] {
+  opacity: 1;
+  box-shadow: inset 0 0 0 2px var(--color-line);
+}
+
 .play-score {
   min-width: 3.5rem;
   font-size: 1.5rem;
@@ -84,22 +100,48 @@
   }
 }
 
-@media (pointer: coarse) {
-  .play {
-    gap: 0.6rem;
-    padding-top: 0.5rem;
-  }
+/* With number keys on screen (always on touch devices), the picture
+   shrinks to make room for them. */
+.play.is-compact {
+  gap: 0.6rem;
+  padding-top: 0.5rem;
+}
 
-  .play-viz {
-    min-height: min(34vh, 20rem);
-    padding: 0.75rem;
-  }
+.play.is-compact .play-viz {
+  min-height: min(34vh, 20rem);
+  padding: 0.75rem;
+}
 
-  .play-viz .viz {
-    max-height: 32vh;
-  }
+.play.is-compact .play-viz .viz {
+  max-height: 32vh;
+}
 
-  .play-feedback {
-    margin-top: 0;
-  }
+.play.is-compact .play-feedback {
+  margin-top: 0;
+}
+
+/* On a screen with a keyboard, the number keys are an option and the
+   screen is often short and wide: the picture gets the height that is
+   left over, so everything fits without scrolling. 35rem is roughly
+   the height of everything else on the page. */
+.play.has-keypad {
+  --viz-room: clamp(7rem, 100dvh - 35rem, 32vh);
+  padding-bottom: 1rem;
+}
+
+/* Equations take a second row for the answer. */
+.play.has-keypad:has(.equation.is-linear) {
+  --viz-room: clamp(7rem, 100dvh - 39rem, 32vh);
+}
+
+.play.has-keypad .play-viz {
+  min-height: calc(var(--viz-room) + 1.5rem);
+}
+
+.play.has-keypad .play-viz .viz {
+  max-height: var(--viz-room);
+}
+
+.play.has-keypad .numpad-key {
+  min-height: 3rem;
 }

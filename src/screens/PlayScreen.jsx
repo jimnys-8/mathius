@@ -46,12 +46,13 @@ function feedbackText(state, { t, formatNumber }) {
  * Plays one session: shows questions until the round is over, then
  * reports the finished session through `onFinish`.
  */
-export default function PlayScreen({ settings, onFinish, onQuit }) {
+export default function PlayScreen({ settings, keypad = false, onKeypadChange, onFinish, onQuit }) {
   const [state, dispatch] = useReducer(sessionReducer, settings, (initial) => createSession(initial, Date.now()))
   const inputRef = useRef(null)
   const i18n = useI18n()
   const { t } = i18n
   // Touch devices get on-screen number keys instead of the system keyboard.
+  // With a keyboard, the keys can be brought up too.
   const touch = useMediaQuery('(pointer: coarse)')
 
   // Report the finished session exactly once.
@@ -115,16 +116,44 @@ export default function PlayScreen({ settings, onFinish, onQuit }) {
 
   const handleChoose = useCallback((value) => dispatch({ type: 'choose', value, now: Date.now() }), [])
   const { choices } = state.question
+  const showKeypad = !choices && (touch || keypad)
+
+  // Pressing an on-screen key moves focus off the answer box; put it back
+  // so the keyboard keeps working alongside the keys.
+  const keepKeyboard = () => {
+    if (!touch) {
+      focusInput()
+    }
+  }
+
+  const toggleKeypad = () => {
+    onKeypadChange?.(!keypad)
+    focusInput()
+  }
 
   const correctCount = state.results.filter((result) => result.correct).length
   const status = state.phase === 'feedback' ? (state.lastCorrect ? 'correct' : 'wrong') : 'open'
 
   return (
-    <main className="page play">
+    <main className={`page play${touch || showKeypad ? ' is-compact' : ''}${showKeypad && !touch ? ' has-keypad' : ''}`}>
       <header className="play-header">
-        <button type="button" className="btn btn-quiet" onClick={onQuit}>
-          ✕ <span>{t('play.stop')}</span>
-        </button>
+        <div className="play-header-start">
+          <button type="button" className="btn btn-quiet" onClick={onQuit}>
+            ✕ <span>{t('play.stop')}</span>
+          </button>
+          {!touch && !choices && (
+            <button
+              type="button"
+              className="btn btn-quiet play-keypad-toggle"
+              onClick={toggleKeypad}
+              aria-pressed={keypad}
+              aria-label={t(keypad ? 'play.hideKeypad' : 'play.showKeypad')}
+              title={t(keypad ? 'play.hideKeypad' : 'play.showKeypad')}
+            >
+              🔢
+            </button>
+          )}
+        </div>
         {timed ? (
           <>
             <Countdown
@@ -189,15 +218,24 @@ export default function PlayScreen({ settings, onFinish, onQuit }) {
             )}
           </div>
         </div>
-      ) : touch ? (
+      ) : showKeypad ? (
         <div className="play-touch">
           <button type="button" className="btn" onClick={handleHint} disabled={state.phase !== 'answering' || state.vizStep > 0}>
             💡 {t('play.hint')}
           </button>
           <Numpad
-            onDigit={(digit) => dispatch({ type: 'input', value: state.input + digit })}
-            onBackspace={() => dispatch({ type: 'input', value: state.input.slice(0, -1) })}
-            onEnter={handleEnter}
+            onDigit={(digit) => {
+              dispatch({ type: 'input', value: state.input + digit })
+              keepKeyboard()
+            }}
+            onBackspace={() => {
+              dispatch({ type: 'input', value: state.input.slice(0, -1) })
+              keepKeyboard()
+            }}
+            onEnter={() => {
+              handleEnter()
+              keepKeyboard()
+            }}
             enterLabel={state.phase === 'answering' ? '✓' : '→'}
             disabled={state.phase !== 'answering'}
             enterDisabled={state.phase === 'answering' && state.input === ''}

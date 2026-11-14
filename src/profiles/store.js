@@ -11,6 +11,7 @@
  * @property {number} createdAt
  * @property {{ category: string, level: number, timer: number, levels?: Object<string, number> }} settings
  *   `levels` remembers the level last used in each category.
+ * @property {boolean} [keypad]  shows the on-screen number keys on devices with a keyboard
  *
  * @typedef {Object} SessionRecord
  * @property {number} at          when the session ended
