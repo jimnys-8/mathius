@@ -30,8 +30,23 @@ solution.
 - On-screen number keys on touch devices, and at the press of a button (🔢) with a keyboard, remembered per player
 - Swedish and English (Swedish by default); all text is in
   `src/i18n/strings.js`
+- Installable as an app with its own icon, and playable offline once
+  opened (see below)
+
+## Installing on a phone or tablet
+
+Open the game's address once while online, then:
+
+- **Android (Chrome):** menu ⋮ → *Install app* (or *Add to Home screen*)
+- **iPhone/iPad (Safari):** Share → *Add to Home Screen*
+
+It then opens full screen and works without a connection. Each device
+keeps its own players and progress. A new version is downloaded in the
+background and used the next time the game is opened.
 
 ## Development
+
+Uses the Node version in `.nvmrc` (`nvm use`).
 
 ```sh
 npm install
@@ -44,6 +59,9 @@ npm run build
 Open `/?gallery` on the dev server to see every kind of visualization side
 by side (add `&step=1` for hints, `&step=2` for solutions, `&op=mul` to
 filter).
+
+The offline support (a service worker from `vite-plugin-pwa`) is only
+active in a build: try it with `npm run build && npm run preview`.
 
 ## How it fits together
 
