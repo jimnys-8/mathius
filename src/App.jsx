@@ -105,8 +105,8 @@ function Screens({ store, setStore }) {
       onStart={play}
       header={
         <PlayerBar profile={profile} onSwitch={() => setStore((current) => selectProfile(current, null))}>
-          <button type="button" className="btn" onClick={() => show('stats')}>
-            📊 {t('player.stats')}
+          <button type="button" className="btn" onClick={() => show('stats')} aria-label={t('player.stats')}>
+            📊 <span className="player-bar-label">{t('player.stats')}</span>
           </button>
           <LanguageToggle />
         </PlayerBar>

@@ -27,6 +27,7 @@
   border-radius: 50%;
   background: var(--color-bg);
   font-size: 1.8rem;
+  flex-shrink: 0;
 }
 
 .player-bar-name {
@@ -55,4 +56,21 @@
   padding: 0.4rem 1.1rem;
   font-size: 1.05rem;
   white-space: nowrap;
+}
+
+/* On phones, the buttons' texts give way so everything fits on one line.
+   The buttons keep their names for screen readers. */
+@media (max-width: 34rem) {
+  .player-bar {
+    flex-wrap: nowrap;
+  }
+
+  .player-bar-who {
+    min-width: 0;
+  }
+
+  .player-bar-switch,
+  .player-bar-label {
+    display: none;
+  }
 }
