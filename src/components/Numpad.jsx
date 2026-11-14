@@ -12,7 +12,11 @@ export default function Numpad({ onDigit, onBackspace, onEnter, enterLabel = '�
         if (key === 'back') {
           return (
             <button key={key} type="button" className="numpad-key is-back" onClick={onBackspace} disabled={disabled} aria-label={t('play.delete')}>
-              ⌫
+              {/* An SVG, not the ⌫ character: Nunito lacks it, and phones draw it thin from a fallback font */}
+              <svg className="numpad-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9 5h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-6-7z" />
+                <path d="M11.5 9.5l5 5M16.5 9.5l-5 5" />
+              </svg>
             </button>
           )
         }
