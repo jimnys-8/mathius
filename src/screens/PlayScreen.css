@@ -100,20 +100,29 @@
   }
 }
 
-/* With number keys on screen (always on touch devices), the picture
-   shrinks to make room for them. */
+/* With number keys on screen (always on touch devices), the page is
+   exactly one screen tall and the picture takes the height left over,
+   so the keys stay in view whatever the screen's shape. */
 .play.is-compact {
+  height: 100vh;
+  height: 100dvh;
   gap: 0.6rem;
   padding-top: 0.5rem;
+  padding-bottom: 1rem;
+}
+
+.play.is-compact > * {
+  flex-shrink: 0;
 }
 
 .play.is-compact .play-viz {
-  min-height: min(34vh, 20rem);
+  flex: 1 1 0;
+  min-height: 7rem;
   padding: 0.75rem;
 }
 
 .play.is-compact .play-viz .viz {
-  max-height: 32vh;
+  max-height: 100%;
 }
 
 /* Balance the space around the equation: a little more above it, and
@@ -128,28 +137,7 @@
   line-height: 1.3;
 }
 
-/* On a screen with a keyboard, the number keys are an option and the
-   screen is often short and wide: the picture gets the height that is
-   left over, so everything fits without scrolling. 35rem is roughly
-   the height of everything else on the page. */
-.play.has-keypad {
-  --viz-room: clamp(7rem, 100dvh - 35rem, 32vh);
-  padding-bottom: 1rem;
-}
-
-/* Equations take a second row for the answer. */
-.play.has-keypad:has(.equation.is-linear) {
-  --viz-room: clamp(7rem, 100dvh - 39rem, 32vh);
-}
-
-.play.has-keypad .play-viz {
-  min-height: calc(var(--viz-room) + 1.5rem);
-}
-
-.play.has-keypad .play-viz .viz {
-  max-height: var(--viz-room);
-}
-
+/* A mouse doesn't need keys as big as fingers do. */
 .play.has-keypad .numpad-key {
   min-height: 3rem;
 }
