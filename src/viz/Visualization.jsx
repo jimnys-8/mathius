@@ -196,7 +196,10 @@ export default function Visualization({ question, step, onSettled }) {
           y={label.y}
           fontSize={label.size}
           textAnchor={label.anchor}
-          dominantBaseline="central"
+          // Centers digits on y: they are 0.7em tall in Nunito. Safari on
+          // iOS gets dominant-baseline="central" wrong at the tiny font
+          // sizes used here (fractions of a unit, scaled up).
+          dy="0.35em"
           style={delayStyle(label)}
         >
           {label.text.replace(/\d+(\.\d+)?/g, (number) => formatNumber(Number(number)))}
