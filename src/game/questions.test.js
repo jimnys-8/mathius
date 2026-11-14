@@ -149,6 +149,20 @@ describe('createQuestion', () => {
     }
   })
 
+  it('never repeats the last question when every question is recent', () => {
+    // Easy square roots have only five questions.
+    const keys = new Set()
+    for (let i = 0; i < 200; i += 1) {
+      keys.add(createQuestion({ category: 'sqrt', level: 1, rng }).key)
+    }
+    const all = [...keys]
+    expect(all.length).toBeLessThan(6)
+    for (let i = 0; i < 200; i += 1) {
+      const question = createQuestion({ category: 'sqrt', level: 1, rng, avoid: all })
+      expect(question.key).not.toBe(all.at(-1))
+    }
+  })
+
   it('uses only the operations of the category', () => {
     const ops = new Set()
     for (let i = 0; i < 200; i += 1) {

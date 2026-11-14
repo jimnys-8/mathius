@@ -216,7 +216,7 @@ function createEquationQuestion({ a: aRange, x: xRange, b: bRange, sign }, rng) 
  * @param {Object} options
  * @param {string} options.category  category id, see CATEGORIES
  * @param {number} options.level     level id
- * @param {string[]} [options.avoid] question keys to avoid (e.g. recent questions)
+ * @param {string[]} [options.avoid] question keys to avoid, oldest first (e.g. recent questions)
  * @param {() => number} [options.rng]
  * @returns {Question}
  */
@@ -224,11 +224,14 @@ export function createQuestion({ category, level, avoid = [], rng = Math.random 
   const levelConfig = getLevel(category, level)
   const categoryOps = getCategory(category).ops
   const ops = levelConfig.ops ? categoryOps.filter((op) => levelConfig.ops.includes(op)) : categoryOps
-  let question = null
-
-  // Small fact spaces (e.g. Easy multiplication) can make collisions
-  // likely, so give up avoiding after a few attempts.
+  // Small fact spaces (e.g. Easy square roots, with five questions) may
+  // have nothing left that isn't in `avoid`. Then settle for the
+  // question asked longest ago, so the last one is never asked again
+  // straight away.
+  let best = null
+  let bestSeen = Infinity
   for (let attempt = 0; attempt < 20; attempt += 1) {
+    let question
     const op = ops[randomInt(rng, 0, ops.length - 1)]
     if (op === 'sqrt') {
       question = createSqrtQuestion(levelConfig.sqrt, rng)
@@ -247,12 +250,17 @@ export function createQuestion({ category, level, avoid = [], rng = Math.random 
     if (levelConfig.guided?.includes(op)) {
       question.guided = true
     }
-    if (!avoid.includes(question.key)) {
-      break
+    const seen = avoid.lastIndexOf(question.key)
+    if (seen === -1) {
+      return question
+    }
+    if (seen < bestSeen) {
+      best = question
+      bestSeen = seen
     }
   }
 
-  return question
+  return best
 }
 
 /** Whether an answer is right. Accepts decimal points and commas. */
