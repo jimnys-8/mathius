@@ -225,11 +225,11 @@ export function createQuestion({ category, level, avoid = [], rng = Math.random 
   const categoryOps = getCategory(category).ops
   const ops = levelConfig.ops ? categoryOps.filter((op) => levelConfig.ops.includes(op)) : categoryOps
   // Small fact spaces (e.g. Easy square roots, with five questions) may
-  // have nothing left that isn't in `avoid`. Then settle for the
-  // question asked longest ago, so the last one is never asked again
-  // straight away.
-  let best = null
-  let bestSeen = Infinity
+  // have nothing left that isn't in `avoid`. Then pick at random among
+  // the older half of what came up: the last question is never asked
+  // again straight away, and the questions don't settle into a fixed
+  // order.
+  const recent = new Map()
   for (let attempt = 0; attempt < 20; attempt += 1) {
     let question
     const op = ops[randomInt(rng, 0, ops.length - 1)]
@@ -254,13 +254,12 @@ export function createQuestion({ category, level, avoid = [], rng = Math.random 
     if (seen === -1) {
       return question
     }
-    if (seen < bestSeen) {
-      best = question
-      bestSeen = seen
-    }
+    recent.set(question.key, { question, seen })
   }
 
-  return best
+  const oldestFirst = [...recent.values()].sort((a, b) => a.seen - b.seen)
+  const older = oldestFirst.slice(0, Math.ceil(oldestFirst.length / 2))
+  return older[randomInt(rng, 0, older.length - 1)].question
 }
 
 /** Whether an answer is right. Accepts decimal points and commas. */

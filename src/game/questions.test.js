@@ -149,18 +149,36 @@ describe('createQuestion', () => {
     }
   })
 
-  it('never repeats the last question when every question is recent', () => {
-    // Easy square roots have only five questions.
-    const keys = new Set()
-    for (let i = 0; i < 200; i += 1) {
-      keys.add(createQuestion({ category: 'sqrt', level: 1, rng }).key)
+  describe('when every question is recent', () => {
+    // Easy square roots have only five questions, fewer than a session
+    // remembers (six).
+    function play(count) {
+      const keys = []
+      for (let i = 0; i < count; i += 1) {
+        keys.push(createQuestion({ category: 'sqrt', level: 1, rng, avoid: keys.slice(-6) }).key)
+      }
+      return keys
     }
-    const all = [...keys]
-    expect(all.length).toBeLessThan(6)
-    for (let i = 0; i < 200; i += 1) {
-      const question = createQuestion({ category: 'sqrt', level: 1, rng, avoid: all })
-      expect(question.key).not.toBe(all.at(-1))
-    }
+
+    it('never repeats the last two questions', () => {
+      const keys = play(500)
+      expect(new Set(keys).size).toBe(5)
+      keys.slice(2).forEach((key, index) => {
+        expect(key).not.toBe(keys[index])
+        expect(key).not.toBe(keys[index + 1])
+      })
+    })
+
+    it('does not loop in a fixed order', () => {
+      const keys = play(500)
+      const after = new Set()
+      keys.slice(1).forEach((key, index) => {
+        if (keys[index] === keys[0]) {
+          after.add(key)
+        }
+      })
+      expect(after.size).toBeGreaterThan(1)
+    })
   })
 
   it('uses only the operations of the category', () => {
