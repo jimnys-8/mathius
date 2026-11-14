@@ -50,8 +50,8 @@ const en = {
   'level.sqrt.5.desc': 'Estimate to one decimal',
 
   'timer.off': 'Off',
-  'timer.seconds': '{seconds} s',
-  'timer.minutes': '{minutes} min',
+  'timer.seconds': '{seconds}\u00a0s',
+  'timer.minutes': '{minutes}\u00a0min',
 
   'profiles.welcome': 'Welcome! Let’s make your player.',
   'profiles.whoIsPlaying': 'Who’s playing?',
@@ -180,8 +180,8 @@ const sv = {
   'level.sqrt.5.desc': 'Uppskatta på en decimal',
 
   'timer.off': 'Av',
-  'timer.seconds': '{seconds} s',
-  'timer.minutes': '{minutes} min',
+  'timer.seconds': '{seconds}\u00a0s',
+  'timer.minutes': '{minutes}\u00a0min',
 
   'profiles.welcome': 'Välkommen! Skapa din spelare.',
   'profiles.whoIsPlaying': 'Vem spelar?',

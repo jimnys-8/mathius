@@ -42,10 +42,10 @@ describe('createI18n', () => {
     expect(createI18n('sv').formatPercent(0.92).replace(/\s/, ' ')).toBe('92 %')
   })
 
-  it('names timer choices', () => {
+  it('names timer choices, keeping each unit with its number', () => {
     expect(createI18n('en').formatTimer(0)).toBe('Off')
-    expect(createI18n('sv').formatTimer(30)).toBe('30 s')
-    expect(createI18n('sv').formatTimer(120)).toBe('2 min')
+    expect(createI18n('sv').formatTimer(30)).toBe('30\u00a0s')
+    expect(createI18n('sv').formatTimer(120)).toBe('2\u00a0min')
   })
 
   it('has the same keys in every language', () => {
