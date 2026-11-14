@@ -1,3 +1,4 @@
+import Icon from '../components/Icon.jsx'
 import { formatFact } from '../game/format.js'
 import { summarize } from '../game/session.js'
 import { useI18n } from '../i18n/i18n.js'
@@ -54,7 +55,7 @@ export default function SummaryScreen({ session, onPlayAgain, onDone, children }
           {session.results.map((result, index) => (
             <li key={index} className={result.correct ? 'is-correct' : 'is-wrong'}>
               <span className="summary-mark" aria-hidden="true">
-                {result.correct ? '✓' : '✗'}
+                <Icon name={result.correct ? 'check' : 'cross'} />
               </span>
               <span className="summary-fact">{formatFact(result.key, result.answer, formatNumber)}</span>
               {!result.correct && <span className="summary-given">{t('summary.youSaid', { given: formatNumber(result.given) })}</span>}

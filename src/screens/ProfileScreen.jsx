@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Icon from '../components/Icon.jsx'
 import { useI18n } from '../i18n/i18n.js'
 import { AVATARS } from '../profiles/store.js'
 import './ProfileScreen.css'
@@ -102,7 +103,7 @@ export default function ProfileScreen({ profiles, onSelect, onCreate, onRemove, 
                       }
                     }}
                   >
-                    ✕
+                    <Icon name="cross" />
                   </button>
                 )}
               </li>

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import Icon from '../components/Icon.jsx'
 import { OPERATIONS } from '../game/config.js'
 import { formatFact } from '../game/format.js'
 import { levelText, useI18n } from '../i18n/i18n.js'
@@ -46,7 +47,7 @@ export default function StatsScreen({ profile, history, onBack }) {
     <main className="page stats">
       <header className="stats-header">
         <button type="button" className="btn btn-quiet" onClick={onBack}>
-          ← {t('stats.back')}
+          <Icon name="arrowLeft" /> {t('stats.back')}
         </button>
         <h1>
           <span aria-hidden="true">{profile.avatar}</span> {profile.name}

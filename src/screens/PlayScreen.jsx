@@ -2,6 +2,7 @@ import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import ChoiceAnswers from '../components/ChoiceAnswers.jsx'
 import Countdown from '../components/Countdown.jsx'
 import Equation from '../components/Equation.jsx'
+import Icon from '../components/Icon.jsx'
 import Numpad from '../components/Numpad.jsx'
 import RoundProgress from '../components/RoundProgress.jsx'
 import { createSession, isTimed, sessionReducer } from '../game/session.js'
@@ -139,7 +140,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
       <header className="play-header">
         <div className="play-header-start">
           <button type="button" className="btn btn-quiet" onClick={onQuit}>
-            ✕ <span>{t('play.stop')}</span>
+            <Icon name="cross" /> <span>{t('play.stop')}</span>
           </button>
           {!touch && !choices && (
             <button
@@ -162,7 +163,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
               runningSince={state.clockRunningSince}
             />
             <span className="play-score" aria-label={t('play.score', { count: correctCount })}>
-              ✓ {correctCount}
+              <Icon name="check" /> {correctCount}
             </span>
           </>
         ) : (
@@ -216,7 +217,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
               </button>
             ) : (
               <button type="button" className="btn btn-primary btn-large" onClick={handleEnter} autoFocus>
-                {t('play.next')} →
+                {t('play.next')} <Icon name="arrowRight" />
               </button>
             )}
           </div>
@@ -239,7 +240,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
               handleEnter()
               keepKeyboard()
             }}
-            enterLabel={state.phase === 'answering' ? '✓' : '→'}
+            enterIcon={state.phase === 'answering' ? 'check' : 'arrowRight'}
             disabled={state.phase !== 'answering'}
             enterDisabled={state.phase === 'answering' && state.input === ''}
           />
@@ -262,7 +263,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
             </>
           ) : (
             <button type="button" className="btn btn-primary btn-large" onClick={handleEnter} autoFocus>
-              {t('play.next')} →
+              {t('play.next')} <Icon name="arrowRight" />
             </button>
           )}
         </div>

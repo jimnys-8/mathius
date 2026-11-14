@@ -87,9 +87,10 @@
   height: 2.5rem;
   border: 0;
   border-radius: 50%;
+  display: grid;
+  place-items: center;
   background: var(--color-wrong);
   color: #fff;
-  font-weight: 900;
   font-size: 1.1rem;
   box-shadow: var(--shadow);
 }

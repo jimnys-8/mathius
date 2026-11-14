@@ -32,16 +32,18 @@
   color: var(--color-ink-soft);
 }
 
-.numpad-icon {
+.numpad-key .numpad-icon {
   display: block;
   width: 1.1em;
   height: 1.1em;
   margin: 0 auto;
-  fill: none;
-  stroke: currentColor;
   stroke-width: 2.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+}
+
+/* The enter key's text is smaller; its icon matches the digits' size. */
+.numpad-key.is-enter .numpad-icon {
+  width: 1.35em;
+  height: 1.35em;
 }
 
 .numpad-key.is-enter {
