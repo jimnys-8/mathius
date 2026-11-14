@@ -205,6 +205,9 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
             revealed={state.phase !== 'answering'}
             onChoose={handleChoose}
             as={state.question.choicesAs}
+            // Picking the dots for a number is about counting them, not
+            // matching the number's shape.
+            numbersFirst={state.question.op !== 'count'}
           />
           <div className="play-actions">
             {state.phase === 'answering' ? (

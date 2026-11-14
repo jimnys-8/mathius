@@ -44,10 +44,11 @@ function choiceForKey(key, choices, byValue) {
  * on the buttons. Once answered, the right choice turns green and a wrong
  * pick red.
  *
- * With `as="dots"` each choice shows that many dots instead of a numeral,
- * and the numeral appears once answered.
+ * With `as="dots"` each choice shows that many dots with its numeral
+ * below. With `numbersFirst` off, the numeral only appears once answered,
+ * for questions where it would give the answer away.
  */
-export default function ChoiceAnswers({ choices, answer, chosen, revealed, onChoose, as = 'numbers' }) {
+export default function ChoiceAnswers({ choices, answer, chosen, revealed, onChoose, as = 'numbers', numbersFirst = true }) {
   const { t, formatNumber } = useI18n()
   const byValue = choices.every((choice) => Number.isInteger(choice))
   const dots = as === 'dots'
@@ -91,7 +92,7 @@ export default function ChoiceAnswers({ choices, answer, chosen, revealed, onCho
             {dots ? (
               <>
                 <DotCount count={choice} rows={rows} />
-                <span className={`choice-answer-number${revealed ? '' : ' is-hidden'}`} aria-hidden="true">
+                <span className={`choice-answer-number${revealed || numbersFirst ? '' : ' is-hidden'}`} aria-hidden="true">
                   {formatNumber(choice)}
                 </span>
               </>

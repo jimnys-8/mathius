@@ -83,7 +83,7 @@
   }
 }
 
-/* Dots instead of numerals, for players who count but can't read numbers yet. */
+/* Dots, with the numeral below, for players who are learning to count. */
 .choice-answers.is-dots .choice-answer {
   display: flex;
   flex-direction: column;
