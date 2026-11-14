@@ -4,7 +4,10 @@ import './ChoiceAnswers.css'
 
 const DOTS_PER_ROW = 5
 
-/** A count shown as dots in rows of five, like a ten frame. */
+/**
+ * A count shown as dots in rows of five, like a ten frame. Rows fill from
+ * the bottom up, so the dots of every button rest on the same line.
+ */
 function DotCount({ count, rows }) {
   const width = DOTS_PER_ROW
   return (
@@ -13,7 +16,7 @@ function DotCount({ count, rows }) {
         <circle
           key={index}
           cx={(index % DOTS_PER_ROW) + 0.5}
-          cy={Math.floor(index / DOTS_PER_ROW) + 0.5}
+          cy={rows - Math.floor(index / DOTS_PER_ROW) - 0.5}
           r={0.38}
         />
       ))}
