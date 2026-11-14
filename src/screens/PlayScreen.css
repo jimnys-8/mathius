@@ -116,8 +116,16 @@
   max-height: 32vh;
 }
 
+/* Balance the space around the equation: a little more above it, and
+   a tighter line for the feedback below it. */
+.play.is-compact .equation {
+  margin-top: 0.4rem;
+}
+
 .play.is-compact .play-feedback {
-  margin-top: 0;
+  margin: -0.3rem 0;
+  min-height: 1.3em;
+  line-height: 1.3;
 }
 
 /* On a screen with a keyboard, the number keys are an option and the
