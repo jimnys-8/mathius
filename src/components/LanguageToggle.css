@@ -1,26 +1,50 @@
 .language-toggle {
-  display: inline-flex;
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: repeat(var(--count), 2.75rem);
   padding: 0.2rem;
+  border: 0;
   border-radius: 999px;
   background: var(--color-surface);
   box-shadow: inset 0 0 0 2px var(--color-line);
+  touch-action: manipulation;
 }
 
-.language-toggle button {
-  min-width: 2.75rem;
-  min-height: 2.5rem;
-  padding: 0 0.6rem;
-  border: 0;
+/* Slides behind the current language's flag. */
+.language-toggle-thumb {
+  position: absolute;
+  top: 0.2rem;
+  bottom: 0.2rem;
+  left: 0.2rem;
+  width: 2.75rem;
   border-radius: 999px;
-  background: transparent;
-  font-weight: 900;
-  color: var(--color-ink-soft);
-  transition:
-    background 0.15s ease,
-    color 0.15s ease;
+  background: var(--color-ink);
+  transform: translateX(calc(var(--index) * 100%));
+  transition: transform 0.2s ease;
 }
 
-.language-toggle button.is-active {
-  background: var(--color-ink);
-  color: #fff;
+.language-toggle-flag {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 2.5rem;
+  font-size: 1.45rem;
+  line-height: 1;
+  opacity: 0.45;
+  filter: grayscale(0.6);
+  transition:
+    opacity 0.2s ease,
+    filter 0.2s ease;
+}
+
+.language-toggle-flag.is-active {
+  opacity: 1;
+  filter: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .language-toggle-thumb,
+  .language-toggle-flag {
+    transition: none;
+  }
 }

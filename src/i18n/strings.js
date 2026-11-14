@@ -6,14 +6,14 @@
  */
 
 export const LANGUAGES = [
-  { id: 'sv', short: 'SV', name: 'Svenska', locale: 'sv-SE' },
-  { id: 'en', short: 'EN', name: 'English', locale: 'en-GB' },
+  { id: 'sv', flag: '🇸🇪', name: 'Svenska', locale: 'sv-SE' },
+  { id: 'en', flag: '🇬🇧', name: 'English', locale: 'en-GB' },
 ]
 
 export const DEFAULT_LANGUAGE = 'sv'
 
 const en = {
-  'app.languageSwitch': 'Language',
+  'app.switchLanguage': 'Language: {current}. Switch to {next}',
 
   'category.count': 'Counting',
   'category.add': 'Addition',
@@ -143,7 +143,7 @@ const en = {
 }
 
 const sv = {
-  'app.languageSwitch': 'Språk',
+  'app.switchLanguage': 'Språk: {current}. Byt till {next}',
 
   'category.count': 'Räkna',
   'category.add': 'Addition',
