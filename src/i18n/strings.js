@@ -186,7 +186,7 @@ const sv = {
   'profiles.welcome': 'Välkommen! Skapa din spelare.',
   'profiles.whoIsPlaying': 'Vem spelar?',
   'profiles.newPlayer': 'Ny spelare',
-  'profiles.edit': 'Ändra spelare',
+  'profiles.edit': 'Redigera spelare',
   'profiles.done': 'Klar',
   'profiles.remove': 'Ta bort {name}',
   'profiles.confirmRemove': 'Ta bort {name} och alla resultat?',
