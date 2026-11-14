@@ -63,6 +63,14 @@ filter).
 The offline support (a service worker from `vite-plugin-pwa`) is only
 active in a build: try it with `npm run build && npm run preview`.
 
+## Publishing
+
+`.github/workflows/deploy.yml` lints, tests, builds and publishes the game
+to GitHub Pages on every push to `main` (or by hand from the Actions tab).
+One-time setup on GitHub: *Settings → Pages → Source: GitHub Actions*.
+The site is served from `https://<user>.github.io/<repository>/`; the
+workflow passes that path to the build as `BASE_PATH`.
+
 ## How it fits together
 
 ```
