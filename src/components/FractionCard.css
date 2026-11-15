@@ -1,0 +1,106 @@
+.fraction-card {
+  container-type: inline-size;
+  --pie: min(62cqi, 34vh, 15rem);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 100%;
+  animation: fraction-card-in 0.3s ease-out;
+}
+
+.fraction-card.has-2 {
+  --pie: min(38cqi, 26vh, 12rem);
+}
+
+.fraction-card.has-3 {
+  --pie: min(25cqi, 20vh, 9rem);
+}
+
+.fraction-card-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fraction-card-pie {
+  width: var(--pie);
+  height: auto;
+}
+
+/* As tall as the circles, so the sign sits level with their middle. */
+.fraction-card-sign {
+  display: flex;
+  align-items: center;
+  height: var(--pie);
+  font-size: min(3rem, 10cqi);
+  font-weight: 900;
+  color: var(--color-ink);
+}
+
+.fraction-card-label {
+  font-size: min(2.4rem, 9cqi);
+  font-weight: 900;
+  color: var(--color-ink);
+}
+
+.fraction-card-result {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  max-width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-width 0.5s ease,
+    opacity 0.4s ease 0.2s;
+}
+
+.is-solved .fraction-card-result {
+  max-width: 100cqi;
+  opacity: 1;
+}
+
+.fraction-card-result .fraction-card-label {
+  color: var(--color-c);
+}
+
+/* The fractions keep their space until the solution shows them. */
+.fraction-card-label {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(0.4rem) scale(0.95);
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
+}
+
+.is-solved .fraction-card-label {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+}
+
+/* Reading a circle: its fraction is the answer. */
+.has-1.is-solved .fraction-card-label {
+  color: var(--color-c);
+}
+
+@keyframes fraction-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fraction-card {
+    animation: none;
+  }
+
+  .fraction-card-label,
+  .fraction-card-result {
+    transition: none;
+  }
+}

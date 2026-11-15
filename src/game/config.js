@@ -12,6 +12,7 @@ export const OPERATIONS = {
   word: { id: 'word', symbol: 'Abc' },
   picture: { id: 'picture', symbol: '🐈' },
   letter: { id: 'letter', symbol: 'A_C' },
+  fraction: { id: 'fraction', symbol: '½' },
   clockDigital: { id: 'clockDigital', symbol: '🕗' },
   clockWords: { id: 'clockWords', symbol: '🕗' },
   digitalWords: { id: 'digitalWords', symbol: '8:00' },
@@ -159,6 +160,32 @@ const TIME_NO_NUMBERS = { minutes: FIVE_MINUTES, numbers: false }
 /** Multiplication, division and roots start at level 1: counting up to ten is too little for them. */
 const TABLE_LEVELS = ARITHMETIC_LEVELS.filter((level) => level.id > 0)
 
+/**
+ * Fractions: read a circle, then read it in lowest terms, then add two
+ * circles. From Svår on, the options are written in different ways
+ * (stacked, 1/3, in words) within the same question.
+ */
+const MIXED_FORMS = ['stacked', 'stacked', 'inline', 'words']
+const FRACTION_LEVELS = [
+  { id: 1, fraction: { kind: 'read', dens: [2, 3, 4], maxDen: 4, forms: ['stacked'] } },
+  { id: 2, fraction: { kind: 'read', dens: [2, 3, 4, 5, 6], maxDen: 6, forms: ['stacked'] } },
+  { id: 3, fraction: { kind: 'simplify', dens: [4, 6, 8, 9, 10], maxDen: 10, forms: MIXED_FORMS } },
+  {
+    id: 4,
+    fraction: { kind: 'add', pairs: [[3, 3], [4, 4], [5, 5], [6, 6], [8, 8]], maxDen: 8, forms: MIXED_FORMS },
+  },
+  {
+    id: 5,
+    fraction: {
+      kind: 'add',
+      pairs: [[2, 4], [2, 6], [3, 6], [2, 8], [4, 8]],
+      whole: true,
+      maxDen: 8,
+      forms: MIXED_FORMS,
+    },
+  },
+]
+
 /** Timer choices in seconds; 0 means no timer. */
 export const TIMER_OPTIONS = [0, 30, 60, 120]
 
@@ -181,6 +208,7 @@ export const CATEGORIES = [
   // Square roots are a skill of their own, so they are not part of the mix.
   { id: 'sqrt', symbol: '√', ops: ['sqrt'], levels: TABLE_LEVELS },
   { id: 'eq', symbol: 'x', ops: ['eq'], levels: EQUATION_LEVELS },
+  { id: 'fraction', symbol: '½', ops: ['fraction'], levels: FRACTION_LEVELS },
   // Reading: pick the word for a picture, or the picture for a word.
   { id: 'word', symbol: 'Abc', ops: ['word'], levels: READING_LEVELS },
   { id: 'picture', symbol: '🐈', ops: ['picture'], levels: READING_LEVELS },
@@ -202,7 +230,7 @@ export const CATEGORIES = [
  * tabs: math, reading and telling the time.
  */
 export const AREAS = [
-  { id: 'math', categories: ['count', 'add', 'sub', 'mul', 'div', 'mix', 'sqrt', 'eq'] },
+  { id: 'math', categories: ['count', 'add', 'sub', 'mul', 'div', 'mix', 'sqrt', 'eq', 'fraction'] },
   { id: 'reading', categories: ['word', 'picture', 'letter'] },
   { id: 'time', categories: ['clockDigital', 'clockWords', 'digitalWords', 'digitalClock'] },
 ]

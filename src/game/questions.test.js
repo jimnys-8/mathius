@@ -33,6 +33,9 @@ function check(question) {
       return WORDS.some((word) => word.emoji === a && word.sv === b) && question.choices.includes(b)
     case 'picture':
       return WORDS.some((word) => word.sv === a && word.emoji === b) && question.choices.includes(b)
+    case 'fraction':
+      // Checked in detail in fractions.test.js.
+      return b === question.answer && question.choices.includes(b) && typeof a === 'string'
     case 'letter':
       // An emoji, its word with a gap, and the letter that fills it.
       return WORDS.some((word) => word.emoji === a && word.sv === b.replace('_', c)) && question.choices.includes(c)

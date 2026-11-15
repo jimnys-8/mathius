@@ -4,6 +4,7 @@ import { parseClock } from '../game/time.js'
 import { useI18n } from '../i18n/i18n.js'
 import AnalogClock from './AnalogClock.jsx'
 import DigitalTime from './DigitalTime.jsx'
+import { FractionChoice } from './Fraction.jsx'
 import './ChoiceAnswers.css'
 
 const DOTS_PER_ROW = 5
@@ -60,7 +61,9 @@ function choiceForKey(key, choices, byValue) {
  *
  * For telling the time: `as="digital"` shows digital times ("8:20"),
  * `as="phrases"` times in words, and `as="clock"` analog clocks for
- * times written "8:20", with `clock` options for AnalogClock.
+ * times written "8:20", with `clock` options for AnalogClock. With
+ * `as="fractions"` the choices are fractions ("stacked:3/4", see
+ * fractions.js).
  */
 export default function ChoiceAnswers({
   choices,
@@ -102,6 +105,8 @@ export default function ChoiceAnswers({
     label = (choice) => choice
   } else if (as === 'digital') {
     label = (choice) => <DigitalTime text={choice} />
+  } else if (as === 'fractions') {
+    label = (choice) => <FractionChoice choice={choice} />
   } else if (as === 'clock') {
     label = (choice) => <AnalogClock {...parseClock(choice)} {...clock} />
   }

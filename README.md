@@ -8,7 +8,7 @@ solution.
 ## Features
 
 - Counting, addition, subtraction, multiplication, division, a mix of the
-  four, square roots and equations with a variable
+  four, square roots, equations with a variable and fractions
 - Each category has its own ladder of levels, and each player's last
   level is remembered per category:
   - Counting: how many dots (up to 5, then 10), then picking the button
@@ -21,6 +21,12 @@ solution.
     from four choices (`√40 ≈ 6.3`)
   - Equations: `x + 3 = 7`, `3x = 12`, `3x + 1 = 10`, then also
     `3x − 2 = 13`
+  - Fractions: a circle cut in slices, some colored, and four fractions
+    to pick from: halves to fourths, up to sixths, then in lowest terms
+    (3/6 = 1/2), then adding two circles (1/4 + 1/4, then 1/4 + 1/2).
+    From the third level the options mix stacked fractions, 1/3 and
+    words ("tre fjärdedelar"). Wrong options include likely mistakes,
+    like counting the white slices or adding tops and bottoms
 - Reading: *Which word?* shows an emoji to pick the word for, and
   *Which picture?* a word to pick the emoji for, among four. Levels go
   from short words in capitals to all words in lowercase, where the

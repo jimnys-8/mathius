@@ -13,6 +13,11 @@ export function formatFact({ key, op, answer }, formatNumber = String) {
   if (op === 'word' || op === 'picture') {
     return key.replace('=', ' ')
   }
+  if (op === 'fraction') {
+    // "3/6=1/2": the picture's fraction, and the answer when it differs.
+    const [shown, answered] = key.split('=')
+    return shown === answered ? shown : spaceSymbols(key)
+  }
   if (op === 'letter') {
     // "🐈=k_tt" with answer "a": the emoji and the whole word.
     return key.replace('=', ' ').replace('_', answer)

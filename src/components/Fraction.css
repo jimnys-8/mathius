@@ -1,0 +1,21 @@
+.fraction.is-stacked {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: middle;
+  line-height: 1;
+}
+
+.fraction-top,
+.fraction-bottom {
+  padding: 0 0.15em;
+}
+
+/* The fraction bar: the line between the numbers, a bit wider than them. */
+.fraction-bottom {
+  min-width: 1.1em;
+  margin-top: 0.08em;
+  padding-top: 0.1em;
+  border-top: 0.09em solid currentColor;
+  text-align: center;
+}

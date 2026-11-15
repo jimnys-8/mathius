@@ -67,6 +67,10 @@
   padding: 0.4rem 0;
 }
 
+.stats-meter-fraction {
+  font-size: 0.6em;
+}
+
 .stats-meter-symbol {
   font-size: 1.4rem;
   font-weight: 900;

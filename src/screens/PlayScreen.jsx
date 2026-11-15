@@ -2,12 +2,14 @@ import { useCallback, useEffect, useReducer, useRef, useState } from 'react'
 import ChoiceAnswers from '../components/ChoiceAnswers.jsx'
 import Countdown from '../components/Countdown.jsx'
 import Equation from '../components/Equation.jsx'
+import FractionCard from '../components/FractionCard.jsx'
 import Icon from '../components/Icon.jsx'
 import LetterCard from '../components/LetterCard.jsx'
 import Numpad from '../components/Numpad.jsx'
 import ReadingCard from '../components/ReadingCard.jsx'
 import TimeCard from '../components/TimeCard.jsx'
 import RoundProgress from '../components/RoundProgress.jsx'
+import { fractionWords, parseChoice, pictureFractions } from '../game/fractions.js'
 import { showWord } from '../game/reading.js'
 import { createSession, isTimed, sessionReducer } from '../game/session.js'
 import { useI18n } from '../i18n/i18n.js'
@@ -36,13 +38,20 @@ function choicesAs(question) {
   if (question.op === 'letter') {
     return 'letters'
   }
+  if (question.op === 'fraction') {
+    return 'fractions'
+  }
   return CLOCK_CHOICES[question.op] ?? question.choicesAs
 }
 
-/** An answer as the question shows it: a number, a word or an emoji. */
-function formatAnswer(question, value, formatNumber) {
+/** An answer as the question shows it: a number, a word, an emoji or a fraction. */
+function formatAnswer(question, value, { formatNumber, lang }) {
   if (question.op === 'word' || question.op === 'letter') {
     return showWord(value, question.case)
+  }
+  if (question.op === 'fraction') {
+    const { form, fraction } = parseChoice(value)
+    return form === 'words' ? fractionWords(fraction, lang) : fraction[0] === fraction[1] ? '1' : fraction.join('/')
   }
   return typeof value === 'string' ? value : formatNumber(value)
 }
@@ -53,6 +62,10 @@ function hintText(question, t) {
   }
   if (question.op === 'letter') {
     return t('play.hintHelpLetter')
+  }
+  if (question.op === 'fraction') {
+    const [first, second] = pictureFractions(question.terms[0])
+    return t(`play.hintHelpFraction.${second && first[1] !== second[1] ? 'addCommon' : question.kind}`)
   }
   if (question.time) {
     return t(question.op === 'clockWords' || question.op === 'digitalWords' ? 'play.hintHelpClockWords' : 'play.hintHelpClock')
@@ -70,7 +83,8 @@ function hintText(question, t) {
   return t('play.hintHelp')
 }
 
-function feedbackText(state, { t, formatNumber }) {
+function feedbackText(state, i18n) {
+  const { t } = i18n
   if (state.phase !== 'feedback') {
     // A non-breaking space keeps the line's height when there is no text.
     return state.hinted ? hintText(state.question, t) : '\u00a0'
@@ -78,7 +92,7 @@ function feedbackText(state, { t, formatNumber }) {
   if (state.lastCorrect) {
     return t('play.praise', { index: state.questionNumber })
   }
-  return t('play.wrong', { answer: formatAnswer(state.question, state.question.answer, formatNumber) })
+  return t('play.wrong', { answer: formatAnswer(state.question, state.question.answer, i18n) })
 }
 
 /**
@@ -161,6 +175,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
   const reading = isReading(state.question)
   const clock = Boolean(state.question.time)
   const letter = state.question.op === 'letter'
+  const fraction = state.question.op === 'fraction'
   const showKeypad = !choices && (touch || keypad)
 
   // Pressing an on-screen key moves focus off the answer box; put it back
@@ -223,6 +238,13 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
             step={state.vizStep}
             onSettled={handleSettled}
           />
+        ) : fraction ? (
+          <FractionCard
+            key={`${state.questionNumber}-${state.question.key}`}
+            question={state.question}
+            step={state.vizStep}
+            onSettled={handleSettled}
+          />
         ) : letter ? (
           <LetterCard
             key={`${state.questionNumber}-${state.question.key}`}
@@ -247,7 +269,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
         )}
       </section>
 
-      {!reading && !clock && !letter && (
+      {!reading && !clock && !letter && !fraction && (
         <Equation
           key={state.questionNumber}
           question={state.question}

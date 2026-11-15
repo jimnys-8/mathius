@@ -1,5 +1,6 @@
 import AnalogClock from '../components/AnalogClock.jsx'
 import ChoiceGroup from '../components/ChoiceGroup.jsx'
+import Fraction from '../components/Fraction.jsx'
 import Icon from '../components/Icon.jsx'
 import {
   AREAS,
@@ -24,6 +25,7 @@ const CATEGORY_COLORS = {
   mix: '#e0457b',
   sqrt: '#0e8fa8',
   eq: '#a14fc4',
+  fraction: '#c8553d',
   word: '#c26a1b',
   picture: '#5b6bd6',
   letter: '#2a9d8f',
@@ -60,6 +62,8 @@ const CATEGORY_ICONS = {
       <i>x</i>=?
     </>
   ),
+  // Drawn stacked: the ½ character is too small, and differs per font.
+  fraction: <Fraction fraction={[1, 2]} className="setup-fraction-icon" />,
   clockDigital: timePair('clock', 'digital'),
   clockWords: timePair('clock', 'words'),
   digitalWords: timePair('digital', 'words'),

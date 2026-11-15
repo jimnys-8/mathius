@@ -2,6 +2,10 @@
   padding: 1rem 1.1rem 1.2rem;
 }
 
+.setup-fraction-icon {
+  font-size: 0.6em;
+}
+
 .setup-level-lock {
   vertical-align: -0.1em;
 }

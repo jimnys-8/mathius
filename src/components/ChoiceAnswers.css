@@ -173,6 +173,34 @@
   text-decoration: none;
 }
 
+.choice-answers.is-fractions {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.choice-answers.is-fractions .choice-answer {
+  min-height: 6.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 2.2rem;
+  color: var(--color-ink);
+}
+
+/* Words wrap to two lines rather than shrink. A block of their own, so
+   the button's bigger line height doesn't space the lines apart. */
+.choice-answers.is-fractions .fraction.is-words {
+  display: block;
+  font-size: 1.4rem;
+  line-height: 1.15;
+}
+
+.choice-answers.is-fractions .choice-answer.is-correct {
+  color: var(--color-correct);
+}
+
+.choice-answers.is-fractions .choice-answer.is-wrong {
+  color: var(--color-wrong);
+  text-decoration: none;
+}
+
 .choice-answers.is-emoji .choice-answer {
   min-height: 6rem;
   font-size: clamp(3.2rem, 14vw, 4.2rem);

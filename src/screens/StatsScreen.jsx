@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import Fraction from '../components/Fraction.jsx'
 import Icon from '../components/Icon.jsx'
 import { OPERATIONS } from '../game/config.js'
 import { formatFact } from '../game/format.js'
@@ -76,7 +77,7 @@ export default function StatsScreen({ profile, history, onBack }) {
                 return (
                   <li key={op} className="stats-meter" title={t('stats.correctOf', { correct, count: answered })}>
                     <span className="stats-meter-symbol" aria-hidden="true">
-                      {op === 'eq' ? <i>x</i> : OPERATIONS[op].symbol}
+                      {op === 'eq' ? <i>x</i> : op === 'fraction' ? <Fraction fraction={[1, 2]} className="stats-meter-fraction" /> : OPERATIONS[op].symbol}
                     </span>
                     <span className="stats-meter-name">{t(`category.${op}`)}</span>
                     <span

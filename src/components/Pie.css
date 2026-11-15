@@ -1,0 +1,51 @@
+.pie {
+  display: block;
+  overflow: visible;
+}
+
+.pie-plate {
+  fill: var(--color-surface);
+}
+
+.pie-colored {
+  fill: var(--color-b);
+}
+
+.pie-line,
+.pie-rim,
+.pie-extra,
+.pie-bold {
+  fill: none;
+  stroke: var(--color-ink);
+  stroke-linecap: round;
+}
+
+.pie-line,
+.pie-rim {
+  stroke-width: 0.045;
+}
+
+.pie-extra {
+  stroke-width: 0.03;
+  stroke-dasharray: 0.08 0.07;
+  opacity: 0.7;
+  animation: pie-help-in 0.4s ease-out;
+}
+
+.pie-bold {
+  stroke-width: 0.12;
+  animation: pie-help-in 0.4s ease-out;
+}
+
+@keyframes pie-help-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pie-extra,
+  .pie-bold {
+    animation: none;
+  }
+}
