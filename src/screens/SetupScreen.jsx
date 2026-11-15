@@ -88,7 +88,6 @@ export default function SetupScreen({ settings, onChange, onStart, header }) {
       <section className="card setup-section">
         <ChoiceGroup
           legend={t('setup.area')}
-          hideLegend
           variant="tabs"
           options={areaOptions}
           value={area.id}

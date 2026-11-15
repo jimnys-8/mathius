@@ -114,8 +114,8 @@ const en = {
   'player.switchLabel': '{name}. Switch player',
   'player.stats': 'My stats',
 
-  'setup.area': 'Area',
-  'setup.category': 'What do you want to practice?',
+  'setup.area': 'What do you want to practice?',
+  'setup.category': 'Which game?',
   'setup.questions': '{count} questions',
   'area.math': 'Math',
   'area.reading': 'Reading',
@@ -276,8 +276,8 @@ const sv = {
   'player.switchLabel': '{name}. Byt spelare',
   'player.stats': 'Mina resultat',
 
-  'setup.area': 'Område',
-  'setup.category': 'Vad vill du öva på?',
+  'setup.area': 'Vad vill du öva på?',
+  'setup.category': 'Vilket spel?',
   'setup.questions': '{count} frågor',
   'area.math': 'Matte',
   'area.reading': 'Läsa',
