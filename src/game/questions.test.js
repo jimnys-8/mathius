@@ -45,6 +45,9 @@ function check(question) {
     case 'digitalClock':
       // Checked in detail in time.test.js.
       return question.choices.includes(b) && Number.isInteger(question.time.minute)
+    case 'odd':
+      // Checked in detail in oddOneOut.test.js.
+      return a === question.group && b === question.answer && question.choices.includes(b)
     default:
       return false
   }

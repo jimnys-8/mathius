@@ -107,7 +107,7 @@ export const GROUPS = {
  * 🐚 🪸 🪺 🍄 🦄 🐉 🍼 🧊 🫙 (unclear what kind of thing they are, or
  * not real animals).
  */
-const KINDS = {
+export const KINDS = {
   animal: [
     ['🐒', 'ape ?africa ?pet'],
     ['🦍', 'ape africa big'],
@@ -391,4 +391,3 @@ const KINDS = {
   ],
 }
 
-export { KINDS }

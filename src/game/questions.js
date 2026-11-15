@@ -1,6 +1,7 @@
 import { OPERATIONS, getCategory, getLevel } from './config.js'
 import { createFractionQuestion } from './fractions.js'
 import { createLetterQuestion } from './letters.js'
+import { createOddQuestion } from './oddOneOut.js'
 import { createReadingQuestion } from './reading.js'
 import { createTimeQuestion } from './time.js'
 import { DEFAULT_LANGUAGE } from '../i18n/strings.js'
@@ -23,13 +24,15 @@ import { DEFAULT_LANGUAGE } from '../i18n/strings.js'
  * Missing-letter questions ('letter', see letters.js) have the emoji,
  * the word with "_" for a letter, and that letter as terms. Fraction
  * questions ('fraction', see fractions.js) have the picture ("1/4+1/2")
- * and the right choice ("stacked:3/4") as terms.
+ * and the right choice ("stacked:3/4") as terms. Odd-one-out questions
+ * ('odd', see oddOneOut.js) have the group and the odd one as terms, and
+ * carry the three that belong together.
  * Clock questions (see time.js) are alike, with what is shown and the
  * answer as terms, and the time itself in `time`.
  *
  * @typedef {Object} Question
  * @property {string} op  'count', 'add', 'sub', 'mul', 'div', 'sqrt', 'eq',
- *   'word', 'picture', 'letter', 'fraction', 'clockDigital', 'clockWords', 'digitalWords' or 'digitalClock'
+ *   'word', 'picture', 'letter', 'fraction', 'odd', 'clockDigital', 'clockWords', 'digitalWords' or 'digitalClock'
  * @property {Array<number|string>} terms
  * @property {0|1|2} unknown
  * @property {number|string} answer   terms[unknown]
@@ -265,6 +268,8 @@ export function createQuestion({ category, level, avoid = [], lang = DEFAULT_LAN
       question = createLetterQuestion(levelConfig.letter, lang, rng)
     } else if (op === 'fraction') {
       question = createFractionQuestion(levelConfig.fraction, rng)
+    } else if (op === 'odd') {
+      question = createOddQuestion(levelConfig.odd, lang, rng, avoid)
     } else if (levelConfig.time) {
       question = createTimeQuestion(op, levelConfig.time, lang, rng)
     } else {

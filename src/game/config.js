@@ -17,6 +17,7 @@ export const OPERATIONS = {
   clockWords: { id: 'clockWords', symbol: '🕗' },
   digitalWords: { id: 'digitalWords', symbol: '8:00' },
   digitalClock: { id: 'digitalClock', symbol: '8:00' },
+  odd: { id: 'odd', symbol: '🧩' },
 }
 
 /**
@@ -186,6 +187,20 @@ const FRACTION_LEVELS = [
   },
 ]
 
+/**
+ * Odd one out (see src/game/oddOneOut.js and groups.js): three things
+ * that belong together and one that doesn't. First different kinds of
+ * things, then things of the same kind, then traits like color, then the
+ * same with words to read, then numbers.
+ */
+const ODD_LEVELS = [
+  { id: 1, odd: { levels: ['far'], show: 'emoji' } },
+  { id: 2, odd: { levels: ['close'], show: 'emoji' } },
+  { id: 3, odd: { levels: ['trait'], show: 'emoji' } },
+  { id: 4, odd: { levels: ['far', 'close'], show: 'words', case: 'upper' } },
+  { id: 5, odd: { numbers: 30 } },
+]
+
 /** Timer choices in seconds; 0 means no timer. */
 export const TIMER_OPTIONS = [0, 30, 60, 120]
 
@@ -223,16 +238,19 @@ export const CATEGORIES = [
   { id: 'clockWords', symbol: '🕗', ops: ['clockWords'], levels: [...TIME_BASICS, { id: 5, time: TIME_NO_NUMBERS }] },
   { id: 'digitalWords', symbol: '8:00', ops: ['digitalWords'], levels: [...TIME_BASICS, { id: 5, time: TIME_24 }] },
   { id: 'digitalClock', symbol: '8:00', ops: ['digitalClock'], levels: [...TIME_BASICS, { id: 5, time: TIME_24 }] },
+  // Patterns: which one doesn't fit?
+  { id: 'odd', symbol: '🧩', ops: ['odd'], levels: ODD_LEVELS },
 ]
 
 /**
  * The categories grouped into areas, which the setup screen shows as
- * tabs: math, reading and telling the time.
+ * tabs: math, reading, telling the time and patterns.
  */
 export const AREAS = [
   { id: 'math', categories: ['count', 'add', 'sub', 'mul', 'div', 'mix', 'sqrt', 'eq', 'fraction'] },
   { id: 'reading', categories: ['word', 'picture', 'letter'] },
   { id: 'time', categories: ['clockDigital', 'clockWords', 'digitalWords', 'digitalClock'] },
+  { id: 'patterns', categories: ['odd'] },
 ]
 
 /** The area a category belongs to. */
