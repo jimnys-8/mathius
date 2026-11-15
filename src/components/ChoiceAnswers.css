@@ -137,14 +137,18 @@
 
 /* Words, in two columns so long words fit, all in one text size that the
    longest word (--chars letters) sets. */
+/* Word buttons come two to a row; the text size is worked out from the
+   row's width (a button can't size its own text by its own width), so
+   the longest word fits (--char-width: about 0.8em per capital letter,
+   0.66em per small one). */
 .choice-answers.is-words {
+  container-type: inline-size;
   grid-template-columns: repeat(2, 1fr);
 }
 
 .choice-answers.is-words .choice-answer {
-  container-type: inline-size;
   padding: 0.5rem 0.75rem;
-  font-size: min(2.2rem, calc(125cqi / var(--chars)));
+  font-size: min(2.2rem, calc((50cqi - 1.9rem) / (var(--char-width) * var(--chars))));
   color: var(--color-ink);
   white-space: nowrap;
 }

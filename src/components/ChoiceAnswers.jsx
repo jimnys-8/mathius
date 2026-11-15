@@ -114,7 +114,8 @@ export default function ChoiceAnswers({
   return (
     <div
       className={`choice-answers is-${as}`}
-      style={chars ? { '--chars': chars } : undefined}
+      // Capitals are wider than small letters.
+      style={chars ? { '--chars': chars, '--char-width': wordCase === 'upper' ? 0.8 : 0.66 } : undefined}
       role="group"
       aria-label={t('play.chooseAnswer')}
     >
