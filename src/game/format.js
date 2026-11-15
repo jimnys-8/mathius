@@ -3,7 +3,8 @@
  * with answer 8 becomes "7 × 8 = 56". Counting facts show the dots,
  * equations say what x is ("3x + 1 = 10, x = 3"), reading facts show
  * the emoji and its word ("🐈 katt"), and clock facts the time
- * ("🕗 8:20: tjugo över åtta").
+ * ("🕗 8:20: tjugo över åtta"). Odd-one-out facts show the three and
+ * the odd one ("🐄 🐖 🐑 ≠ 🦁").
  *
  * @param {{ key: string, op: string, answer: number|string }} fact
  *   `key` has '?' for the hidden term
@@ -17,6 +18,12 @@ export function formatFact({ key, op, answer }, formatNumber = String) {
     // "3/6=1/2": the picture's fraction, and the answer when it differs.
     const [shown, answered] = key.split('=')
     return shown === answered ? shown : spaceSymbols(key)
+  }
+  if (op === 'odd') {
+    // "farm:🐄,🐖,🐑:🦁": the three that go together, and the odd one.
+    const [, three, odd] = key.split(':')
+    const shown = (value) => (/^\d+$/.test(value) ? formatNumber(Number(value)) : value)
+    return `${three.split(',').map(shown).join(' ')} ≠ ${shown(odd)}`
   }
   if (op === 'letter') {
     // "🐈=k_tt" with answer "a": the emoji and the whole word.

@@ -162,7 +162,7 @@ function oddCandidates(catalog, groupId, three, odds) {
   return alike.length > 0 ? alike : odds
 }
 
-/** The group of a question key, "farm:🐄🐖🐑:🦁" → "farm". */
+/** The group of a question key, "farm:🐄,🐖,🐑:🦁" → "farm". */
 export function keyGroup(key) {
   return key.split(':')[0]
 }
@@ -226,6 +226,6 @@ export function createOddQuestion(odd, lang, rng, avoid = []) {
     case: odd.case ?? 'lower',
     three: three.map(describe),
     oddOne: describe(oddOne),
-    key: `${groupId}:${three.map((item) => item.id).sort().join(show === 'numbers' ? ',' : '')}:${oddOne.id}`,
+    key: `${groupId}:${three.map((item) => item.id).sort(show === 'numbers' ? (a, b) => a - b : undefined).join(',')}:${oddOne.id}`,
   }
 }

@@ -41,6 +41,11 @@ describe('formatFact', () => {
     expect(formatFact(fact('digitalClock:20:20=8:20', 'digitalClock', '8:20'))).toBe('20:20 = 🕗')
   })
 
+  it('shows the three that go together and the odd one', () => {
+    expect(formatFact(fact('farm:🐄,🐖,🐑:🦁', 'odd', '🦁'))).toBe('🐄 🐖 🐑 ≠ 🦁')
+    expect(formatFact(fact('even:2,16,22:7', 'odd', 7))).toBe('2 16 22 ≠ 7')
+  })
+
   it('formats numbers for the language', () => {
     const comma = (n) => String(n).replace('.', ',')
     expect(formatFact(fact('3×4=?', 'mul', 12.5), comma)).toBe('3 × 4 = 12,5')
