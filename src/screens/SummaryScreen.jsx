@@ -57,8 +57,14 @@ export default function SummaryScreen({ session, onPlayAgain, onDone, children }
               <span className="summary-mark" aria-hidden="true">
                 <Icon name={result.correct ? 'check' : 'cross'} />
               </span>
-              <span className="summary-fact">{formatFact(result.key, result.answer, formatNumber)}</span>
-              {!result.correct && <span className="summary-given">{t('summary.youSaid', { given: formatNumber(result.given) })}</span>}
+              <span className="summary-fact">{formatFact(result, formatNumber)}</span>
+              {!result.correct && (
+                <span className="summary-given">
+                  {t('summary.youSaid', {
+                    given: typeof result.given === 'string' ? result.given : formatNumber(result.given),
+                  })}
+                </span>
+              )}
               {result.hinted && <span className="summary-hint" title={t('summary.usedHint')}>💡</span>}
             </li>
           ))}

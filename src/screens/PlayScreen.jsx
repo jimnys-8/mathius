@@ -4,7 +4,9 @@ import Countdown from '../components/Countdown.jsx'
 import Equation from '../components/Equation.jsx'
 import Icon from '../components/Icon.jsx'
 import Numpad from '../components/Numpad.jsx'
+import ReadingCard from '../components/ReadingCard.jsx'
 import RoundProgress from '../components/RoundProgress.jsx'
+import { showWord } from '../game/reading.js'
 import { createSession, isTimed, sessionReducer } from '../game/session.js'
 import { useI18n } from '../i18n/i18n.js'
 import { useMediaQuery } from '../useMediaQuery.js'
@@ -18,7 +20,22 @@ import './PlayScreen.css'
  */
 const AUTO_NEXT_MS = 700
 
+function isReading(question) {
+  return question.op === 'word' || question.op === 'picture'
+}
+
+/** An answer as the question shows it: a number, a word or an emoji. */
+function formatAnswer(question, value, formatNumber) {
+  if (question.op === 'word') {
+    return showWord(value, question.case)
+  }
+  return question.op === 'picture' ? value : formatNumber(value)
+}
+
 function hintText(question, t) {
+  if (isReading(question)) {
+    return t('play.hintHelpRead')
+  }
   if (question.op === 'sqrt' && question.choices) {
     return t('play.hintHelpSqrt', { side: Math.floor(Math.sqrt(question.terms[0])) })
   }
@@ -40,7 +57,7 @@ function feedbackText(state, { t, formatNumber }) {
   if (state.lastCorrect) {
     return t('play.praise', { index: state.questionNumber })
   }
-  return t('play.wrong', { answer: formatNumber(state.question.answer) })
+  return t('play.wrong', { answer: formatAnswer(state.question, state.question.answer, formatNumber) })
 }
 
 /**
@@ -48,10 +65,13 @@ function feedbackText(state, { t, formatNumber }) {
  * reports the finished session through `onFinish`.
  */
 export default function PlayScreen({ settings, keypad = false, onKeypadChange, onFinish, onQuit }) {
-  const [state, dispatch] = useReducer(sessionReducer, settings, (initial) => createSession(initial, Date.now()))
-  const inputRef = useRef(null)
   const i18n = useI18n()
   const { t } = i18n
+  // Reading questions use words in the language the session starts in.
+  const [state, dispatch] = useReducer(sessionReducer, settings, (initial) =>
+    createSession({ ...initial, lang: i18n.lang }, Date.now()),
+  )
+  const inputRef = useRef(null)
   // Touch devices get on-screen number keys instead of the system keyboard.
   // With a keyboard, the keys can be brought up too.
   const touch = useMediaQuery('(pointer: coarse)')
@@ -117,6 +137,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
 
   const handleChoose = useCallback((value) => dispatch({ type: 'choose', value, now: Date.now() }), [])
   const { choices } = state.question
+  const reading = isReading(state.question)
   const showKeypad = !choices && (touch || keypad)
 
   // Pressing an on-screen key moves focus off the answer box; put it back
@@ -172,25 +193,36 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
       </header>
 
       <section className="play-viz card">
-        <Visualization
-          key={`${state.questionNumber}-${state.question.key}`}
-          question={state.question}
-          step={state.vizStep}
-          onSettled={handleSettled}
-        />
+        {reading ? (
+          <ReadingCard
+            key={`${state.questionNumber}-${state.question.key}`}
+            question={state.question}
+            step={state.vizStep}
+            onSettled={handleSettled}
+          />
+        ) : (
+          <Visualization
+            key={`${state.questionNumber}-${state.question.key}`}
+            question={state.question}
+            step={state.vizStep}
+            onSettled={handleSettled}
+          />
+        )}
       </section>
 
-      <Equation
-        key={state.questionNumber}
-        question={state.question}
-        input={state.input}
-        onInput={(value) => dispatch({ type: 'input', value })}
-        onEnter={handleEnter}
-        status={status}
-        readOnly={state.phase !== 'answering'}
-        inputRef={inputRef}
-        keyboard={!touch}
-      />
+      {!reading && (
+        <Equation
+          key={state.questionNumber}
+          question={state.question}
+          input={state.input}
+          onInput={(value) => dispatch({ type: 'input', value })}
+          onEnter={handleEnter}
+          status={status}
+          readOnly={state.phase !== 'answering'}
+          inputRef={inputRef}
+          keyboard={!touch}
+        />
+      )}
 
       <p className={`play-feedback is-${status}`} role="status">
         {feedbackText(state, i18n)}
@@ -202,10 +234,12 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
             key={state.questionNumber}
             choices={choices}
             answer={state.question.answer}
-            chosen={state.phase === 'answering' ? null : Number(state.input)}
+            chosen={state.phase === 'answering' ? null : reading ? state.input : Number(state.input)}
             revealed={state.phase !== 'answering'}
             onChoose={handleChoose}
-            as={state.question.choicesAs}
+            as={reading ? (state.question.op === 'word' ? 'words' : 'emoji') : state.question.choicesAs}
+            wordCase={state.question.case}
+            removed={state.hinted ? state.question.hintRemoves : undefined}
             // Picking the dots for a number is about counting them, not
             // matching the number's shape.
             numbersFirst={state.question.op !== 'count'}

@@ -54,6 +54,13 @@
   animation: choice-answer-pop 0.4s ease;
 }
 
+/* Key hints are for keyboards. */
+@media (pointer: coarse) {
+  .choice-answer-key {
+    display: none;
+  }
+}
+
 .choice-answer.is-wrong {
   background: color-mix(in srgb, var(--color-wrong) 10%, var(--color-surface));
   box-shadow: inset 0 0 0 3px var(--color-wrong), 0 4px 0 color-mix(in srgb, var(--color-wrong) 40%, var(--color-line));
@@ -122,4 +129,38 @@
 /* Hidden until answered, but keeping its space so buttons don't jump. */
 .choice-answer-number.is-hidden {
   visibility: hidden;
+}
+
+/* Words, in two columns so long words fit, all in one text size that the
+   longest word (--chars letters) sets. */
+.choice-answers.is-words {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.choice-answers.is-words .choice-answer {
+  container-type: inline-size;
+  padding: 0.5rem 0.75rem;
+  font-size: min(2.2rem, calc(125cqi / var(--chars)));
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+
+.choice-answers.is-words .choice-answer.is-correct {
+  color: var(--color-correct);
+}
+
+.choice-answers.is-words .choice-answer.is-wrong {
+  color: var(--color-wrong);
+}
+
+.choice-answers.is-emoji .choice-answer {
+  min-height: 6rem;
+  font-size: clamp(3.2rem, 14vw, 4.2rem);
+  line-height: 1.2;
+}
+
+/* Taken away by a hint. */
+.choice-answer.is-removed {
+  opacity: 0.2;
+  transform: scale(0.94);
 }

@@ -1,7 +1,7 @@
 # Mathius
 
-A math practice game for kids. Each question comes with a picture made of
-dots that helps find the answer: press **Hint** to see the dots rearranged
+A math and reading practice game for kids. Each math question comes with
+a picture made of dots that helps find the answer: press **Hint** to see the dots rearranged
 so the answer can be counted, and after answering the picture shows the
 solution.
 
@@ -21,6 +21,11 @@ solution.
     from four choices (`√40 ≈ 6.3`)
   - Equations: `x + 3 = 7`, `3x = 12`, `3x + 1 = 10`, then also
     `3x − 2 = 13`
+- Reading: *Which word?* shows an emoji to pick the word for, and
+  *Which picture?* a word to pick the emoji for, among four. Levels go
+  from short words in capitals to all words in lowercase, where the
+  wrong words look like the right one. The words (`src/game/words.js`)
+  follow the app's language, and a hint takes away two wrong answers
 - On easier levels some pictures start half solved; `guided` in
   `src/game/config.js` sets which, per level
 - Rounds of 10 questions, or a timer (30 s, 1 min or 2 min)

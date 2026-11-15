@@ -123,7 +123,7 @@ export default function StatsScreen({ profile, history, onBack }) {
                 <ul className="stats-facts">
                   {stats.tricky.map((fact) => (
                     <li key={fact.key} title={t('stats.missed', { wrong: fact.wrong, count: fact.right + fact.wrong })}>
-                      {formatFact(fact.key, fact.answer, formatNumber)}
+                      {formatFact(fact, formatNumber)}
                     </li>
                   ))}
                 </ul>

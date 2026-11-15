@@ -1,8 +1,10 @@
 import { useEffect } from 'react'
+import { showWord } from '../game/reading.js'
 import { useI18n } from '../i18n/i18n.js'
 import './ChoiceAnswers.css'
 
 const DOTS_PER_ROW = 5
+const NONE = []
 
 /**
  * A count shown as dots in rows of five, like a ten frame. Rows fill from
@@ -47,12 +49,28 @@ function choiceForKey(key, choices, byValue) {
  * With `as="dots"` each choice shows that many dots with its numeral
  * below. With `numbersFirst` off, the numeral only appears once answered,
  * for questions where it would give the answer away.
+ *
+ * With `as="words"` the choices are words, shown in `wordCase`, and with
+ * `as="emoji"` they are emojis. Choices in `removed` (taken away by a
+ * hint) can't be picked.
  */
-export default function ChoiceAnswers({ choices, answer, chosen, revealed, onChoose, as = 'numbers', numbersFirst = true }) {
+export default function ChoiceAnswers({
+  choices,
+  answer,
+  chosen,
+  revealed,
+  onChoose,
+  as = 'numbers',
+  numbersFirst = true,
+  wordCase = 'lower',
+  removed = NONE,
+}) {
   const { t, formatNumber } = useI18n()
   const byValue = choices.every((choice) => Number.isInteger(choice))
   const dots = as === 'dots'
-  const rows = Math.ceil(Math.max(...choices) / DOTS_PER_ROW)
+  const rows = dots ? Math.ceil(Math.max(...choices) / DOTS_PER_ROW) : 0
+  // Word buttons share one text size, set by the longest word.
+  const chars = as === 'words' ? Math.max(4, ...choices.map((choice) => [...choice].length)) : undefined
 
   useEffect(() => {
     if (revealed) {
@@ -60,27 +78,40 @@ export default function ChoiceAnswers({ choices, answer, chosen, revealed, onCho
     }
     const handleKey = (event) => {
       const choice = choiceForKey(event.key, choices, byValue)
-      if (choice !== undefined && !event.repeat) {
+      if (choice !== undefined && !event.repeat && !removed.includes(choice)) {
         onChoose(choice)
       }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [choices, byValue, revealed, onChoose])
+  }, [choices, byValue, revealed, onChoose, removed])
+
+  let label = formatNumber
+  if (as === 'words') {
+    label = (choice) => showWord(choice, wordCase)
+  } else if (as === 'emoji') {
+    label = (choice) => choice
+  }
 
   return (
-    <div className={`choice-answers${dots ? ' is-dots' : ''}`} role="group" aria-label={t('play.chooseAnswer')}>
+    <div
+      className={`choice-answers is-${as}`}
+      style={chars ? { '--chars': chars } : undefined}
+      role="group"
+      aria-label={t('play.chooseAnswer')}
+    >
       {choices.map((choice, index) => {
         let state = ''
         if (revealed) {
           state = choice === answer ? ' is-correct' : choice === chosen ? ' is-wrong' : ' is-dim'
         }
+        const isRemoved = removed.includes(choice)
         return (
           <button
             key={choice}
             type="button"
-            className={`choice-answer${state}`}
-            disabled={revealed}
+            className={`choice-answer${state}${isRemoved ? ' is-removed' : ''}`}
+            disabled={revealed || isRemoved}
             onClick={() => onChoose(choice)}
             aria-label={dots ? t('play.dotCount', { count: choice }) : undefined}
           >
@@ -97,7 +128,7 @@ export default function ChoiceAnswers({ choices, answer, chosen, revealed, onCho
                 </span>
               </>
             ) : (
-              formatNumber(choice)
+              label(choice)
             )}
           </button>
         )

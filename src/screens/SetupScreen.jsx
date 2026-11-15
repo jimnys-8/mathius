@@ -12,6 +12,8 @@ const CATEGORY_COLORS = {
   mix: '#e0457b',
   sqrt: '#0e8fa8',
   eq: '#a14fc4',
+  word: '#c26a1b',
+  picture: '#5b6bd6',
 }
 
 const CATEGORY_ICONS = {

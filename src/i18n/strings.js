@@ -12,6 +12,16 @@ export const LANGUAGES = [
 
 export const DEFAULT_LANGUAGE = 'sv'
 
+/** The same level descriptions for both reading games. */
+function readingLevels(descriptions) {
+  return Object.fromEntries(
+    Object.entries(descriptions).flatMap(([level, desc]) => [
+      [`level.word.${level}.desc`, desc],
+      [`level.picture.${level}.desc`, desc],
+    ]),
+  )
+}
+
 const en = {
   'app.switchLanguage': 'Language: {current}. Switch to {next}',
 
@@ -23,6 +33,8 @@ const en = {
   'category.mix': 'Mix',
   'category.sqrt': 'Square roots',
   'category.eq': 'Equations',
+  'category.word': 'Which word?',
+  'category.picture': 'Which picture?',
 
   'level.0.name': 'Dots',
   'level.0.desc': 'Count up to 10, answer with dots',
@@ -48,6 +60,12 @@ const en = {
   'level.sqrt.3.desc': 'Estimate: choose from four',
   'level.sqrt.4.desc': 'Both ways: √49 = ? and √? = 7',
   'level.sqrt.5.desc': 'Estimate to one decimal',
+  ...readingLevels({
+    1: 'Short words: COW, CAT',
+    2: 'Longer words: ZEBRA',
+    3: 'Small letters: zebra',
+    4: 'All words, and they look alike',
+  }),
 
   'timer.off': 'Off',
   'timer.seconds': '{seconds}\u00a0s',
@@ -86,6 +104,7 @@ const en = {
     `Take ${b} away from both sides. ${a === 1 ? 'How many are left for the bag?' : 'How many are left for each bag?'}`,
   'play.hintHelpEqAdd': 'The left side is {b} short. Add {b} to both sides!',
   'play.hintHelpEqShare': 'Share the dots equally between the {a} bags.',
+  'play.hintHelpRead': 'Two wrong answers are gone. Read carefully!',
   'play.chooseAnswer': 'Choose an answer',
   'play.dotCount': '{count} dots',
   'play.praise': ['Great job!', 'Correct!', 'Well done!', 'Nice one!', 'You got it!', 'Super!'],
@@ -153,6 +172,8 @@ const sv = {
   'category.mix': 'Blandat',
   'category.sqrt': 'Kvadratrötter',
   'category.eq': 'Ekvationer',
+  'category.word': 'Vilket ord?',
+  'category.picture': 'Vilken bild?',
 
   'level.0.name': 'Prickar',
   'level.0.desc': 'Räkna upp till 10, svara med prickar',
@@ -178,6 +199,12 @@ const sv = {
   'level.sqrt.3.desc': 'Uppskatta: välj bland fyra',
   'level.sqrt.4.desc': 'Åt båda hållen: √49 = ? och √? = 7',
   'level.sqrt.5.desc': 'Uppskatta på en decimal',
+  ...readingLevels({
+    1: 'Korta ord: KO, KATT',
+    2: 'Längre ord: ZEBRA',
+    3: 'Små bokstäver: zebra',
+    4: 'Alla ord, och de liknar varandra',
+  }),
 
   'timer.off': 'Av',
   'timer.seconds': '{seconds}\u00a0s',
@@ -216,6 +243,7 @@ const sv = {
     `Ta bort ${b} från båda sidorna. ${a === 1 ? 'Hur många blir kvar till påsen?' : 'Hur många blir det i varje påse?'}`,
   'play.hintHelpEqAdd': 'Vänster sida saknar {b}. Lägg till {b} på båda sidorna!',
   'play.hintHelpEqShare': 'Dela prickarna lika mellan de {a} påsarna.',
+  'play.hintHelpRead': 'Två fel svar är borta. Läs noga!',
   'play.chooseAnswer': 'Välj ett svar',
   'play.dotCount': '{count} prickar',
   'play.praise': ['Bra jobbat!', 'Rätt!', 'Snyggt!', 'Toppen!', 'Du klarade det!', 'Superbra!'],
