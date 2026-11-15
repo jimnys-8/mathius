@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
+import Icon from './components/Icon.jsx'
 import LanguageToggle from './components/LanguageToggle.jsx'
 import PlayerBar from './components/PlayerBar.jsx'
 import { normalizeSettings } from './game/config.js'
-import { fitToUnlocked, unlockedLevels } from './game/progress.js'
-import { I18nContext, createI18n, useI18n } from './i18n/i18n.js'
+import { fitToUnlocked, newlyUnlocked, unlockedLevels } from './game/progress.js'
+import { I18nContext, createI18n, levelText, useI18n } from './i18n/i18n.js'
 import {
   addProfile,
   bestTimedScore,
@@ -29,6 +30,15 @@ function RecordBadge({ correct, previousBest }) {
     return correct > 0 ? <p className="summary-record is-new">🏆 {t('summary.newBest')}</p> : null
   }
   return <p className="summary-record">{t('summary.best', { best: previousBest })}</p>
+}
+
+function UnlockBadge({ category, level }) {
+  const { t } = useI18n()
+  return (
+    <p className="summary-record is-new">
+      <Icon name="unlock" /> {t('summary.unlocked', { level: levelText(t, category, level).name })}
+    </p>
+  )
 }
 
 function Screens({ store, setStore }) {
@@ -69,8 +79,11 @@ function Screens({ store, setStore }) {
 
   const handleFinish = (session) => {
     const previousBest = session.settings.timer > 0 ? bestTimedScore(history, session.settings) : undefined
+    const { category, level } = session.settings
+    const correct = session.results.filter((result) => result.correct).length
+    const unlocked = newlyUnlocked(history, { category, level, total: session.results.length, correct }, Boolean(profile.unlockAll))
     setStore((current) => recordSession(current, profile.id, session))
-    setScreen((current) => ({ name: 'summary', round: current.round, session, previousBest }))
+    setScreen((current) => ({ name: 'summary', round: current.round, session, previousBest, unlocked }))
   }
 
   if (screen.name === 'play') {
@@ -87,13 +100,14 @@ function Screens({ store, setStore }) {
   }
 
   if (screen.name === 'summary') {
-    const { session, previousBest } = screen
+    const { session, previousBest, unlocked } = screen
     const correct = session.results.filter((result) => result.correct).length
     return (
       <SummaryScreen session={session} onPlayAgain={play} onDone={() => show('setup')}>
         {previousBest !== undefined && session.results.length > 0 && (
           <RecordBadge correct={correct} previousBest={previousBest} />
         )}
+        {unlocked !== null && <UnlockBadge category={session.settings.category} level={unlocked} />}
       </SummaryScreen>
     )
   }

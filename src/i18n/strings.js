@@ -161,6 +161,7 @@ const en = {
   'summary.usedHint': 'Used a hint',
   'summary.newBest': 'New best score!',
   'summary.best': 'Your best: {best}',
+  'summary.unlocked': 'New level unlocked: {level}!',
   'summary.done': 'Done',
   'summary.playAgain': 'Play again',
 
@@ -324,6 +325,7 @@ const sv = {
   'summary.usedHint': 'Använde ledtråd',
   'summary.newBest': 'Nytt rekord!',
   'summary.best': 'Ditt rekord: {best}',
+  'summary.unlocked': 'Ny nivå upplåst: {level}!',
   'summary.done': 'Klar',
   'summary.playAgain': 'Spela igen',
 
