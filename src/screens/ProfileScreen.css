@@ -98,6 +98,31 @@
   box-shadow: var(--shadow);
 }
 
+/* Open every level for a player: on when filled in. */
+.profile-unlock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.45rem 0.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 2px var(--color-line);
+  color: var(--color-ink-soft);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.profile-unlock[aria-pressed='true'] {
+  background: #fff1c2;
+  box-shadow: inset 0 0 0 2px #e5b100;
+  color: #8a5a00;
+}
+
 .profiles-footer {
   display: flex;
   justify-content: center;

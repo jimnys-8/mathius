@@ -67,6 +67,7 @@ function Screens({ store, setStore }) {
           show('setup')
         }}
         onRemove={(id) => setStore((current) => removeProfile(current, id))}
+        onUnlockAllChange={(id, unlockAll) => setStore((current) => updateProfile(current, id, { unlockAll }))}
       />
     )
   }

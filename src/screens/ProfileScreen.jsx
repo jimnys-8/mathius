@@ -57,8 +57,11 @@ function NewProfileForm({ onCreate, onCancel, takenAvatars }) {
   )
 }
 
-/** "Who's playing?": pick, add or remove player profiles. */
-export default function ProfileScreen({ profiles, onSelect, onCreate, onRemove, header }) {
+/**
+ * "Who's playing?": pick, add or remove player profiles. Editing also
+ * lets a grown-up open every level for a player, skipping the unlocking.
+ */
+export default function ProfileScreen({ profiles, onSelect, onCreate, onRemove, onUnlockAllChange, header }) {
   const { t } = useI18n()
   const [adding, setAdding] = useState(profiles.length === 0)
   const [editing, setEditing] = useState(false)
@@ -104,6 +107,16 @@ export default function ProfileScreen({ profiles, onSelect, onCreate, onRemove, 
                     }}
                   >
                     <Icon name="cross" />
+                  </button>
+                )}
+                {editing && (
+                  <button
+                    type="button"
+                    className="profile-unlock"
+                    aria-pressed={Boolean(profile.unlockAll)}
+                    onClick={() => onUnlockAllChange(profile.id, !profile.unlockAll)}
+                  >
+                    <Icon name={profile.unlockAll ? 'unlock' : 'lock'} /> {t('profiles.unlockAll')}
                   </button>
                 )}
               </li>

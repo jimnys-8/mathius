@@ -12,6 +12,7 @@
  * @property {{ category: string, level: number, timer: number, levels?: Object<string, number> }} settings
  *   `levels` remembers the level last used in each category.
  * @property {boolean} [keypad]  shows the on-screen number keys on devices with a keyboard
+ * @property {boolean} [unlockAll]  every level is open, without unlocking them one by one
  *
  * @typedef {Object} SessionRecord
  * @property {number} at          when the session ended
