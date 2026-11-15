@@ -61,7 +61,7 @@
 
 .stats-meter {
   display: grid;
-  grid-template-columns: 1.5rem 8.5rem 1fr 6.5rem;
+  grid-template-columns: 2.6rem 8.5rem 1fr 6.5rem;
   align-items: center;
   gap: 0.75rem;
   padding: 0.4rem 0;
@@ -75,6 +75,12 @@
   font-size: 1.4rem;
   font-weight: 900;
   text-align: center;
+  white-space: nowrap;
+}
+
+/* Symbols of several letters (Abc, 8:00) fit the column. */
+.stats-meter-symbol.is-wide {
+  font-size: 1rem;
 }
 
 .stats-meter-name {
@@ -157,7 +163,7 @@
 
 @media (max-width: 540px) {
   .stats-meter {
-    grid-template-columns: 1.5rem 1fr auto;
+    grid-template-columns: 2.6rem 1fr auto;
   }
 
   .stats-meter-track {
