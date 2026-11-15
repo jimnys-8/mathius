@@ -74,7 +74,7 @@ const TABLE = [
   ['🦡', 'grävling', 'badger'],
   ['🐾', 'tassar', 'paws'],
   ['🦃', 'kalkon', 'turkey'],
-  ['🐓', 'höna', 'rooster'],
+  ['🐓', 'tupp', 'rooster'],
   ['🐥', 'kyckling', 'chick'],
   ['🐦', 'fågel', 'bird'],
   ['🐧', 'pingvin', 'penguin'],
