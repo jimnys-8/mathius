@@ -93,3 +93,9 @@
   height: 1.1em;
   margin: -0.05em auto;
 }
+
+.is-tabs .setup-clock-icon {
+  width: 1.35em;
+  height: 1.35em;
+  margin: -0.1em 0;
+}

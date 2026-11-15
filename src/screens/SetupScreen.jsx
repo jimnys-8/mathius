@@ -44,10 +44,10 @@ const CATEGORY_ICONS = {
   clockWords: CLOCK_ICON,
 }
 
-const AREA_ICONS = {
-  math: '+−',
-  reading: 'Abc',
-  time: CLOCK_ICON,
+const AREAS_LOOK = {
+  math: { icon: '123', color: 'var(--color-a)' },
+  reading: { icon: 'ABC', color: '#c26a1b' },
+  time: { icon: CLOCK_ICON, color: '#d1495b' },
 }
 
 const levelStars = (id) => (id === 0 ? '☆' : '★'.repeat(id))
@@ -61,7 +61,7 @@ export default function SetupScreen({ settings, onChange, onStart, header }) {
   const areaOptions = AREAS.map(({ id }) => ({
     value: id,
     label: t(`area.${id}`),
-    icon: AREA_ICONS[id],
+    ...AREAS_LOOK[id],
   }))
 
   const categoryOptions = area.categories.map(getCategory).map((category) => ({
