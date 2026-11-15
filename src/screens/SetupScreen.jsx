@@ -1,5 +1,6 @@
 import AnalogClock from '../components/AnalogClock.jsx'
 import ChoiceGroup from '../components/ChoiceGroup.jsx'
+import Icon from '../components/Icon.jsx'
 import {
   AREAS,
   ROUND_LENGTH,
@@ -32,6 +33,23 @@ const CATEGORY_COLORS = {
 
 const CLOCK_ICON = <AnalogClock className="setup-clock-icon" hour={8} minute={0} numbers={false} />
 
+/**
+ * A clock game's icon: what is shown, an arrow, and what to pick, so the
+ * four games look different even to a child who can't read the labels.
+ */
+const TIME_FACES = {
+  clock: CLOCK_ICON,
+  digital: <span className="setup-pair-digital">8:00</span>,
+  words: <span className="setup-pair-words">Abc</span>,
+}
+const timePair = (from, to) => (
+  <span className="setup-pair">
+    {TIME_FACES[from]}
+    <Icon name="arrowRight" className="setup-pair-arrow" />
+    {TIME_FACES[to]}
+  </span>
+)
+
 const CATEGORY_ICONS = {
   mix: '+−×÷',
   // An italic x, so it isn't mistaken for a times sign.
@@ -40,8 +58,10 @@ const CATEGORY_ICONS = {
       <i>x</i>=?
     </>
   ),
-  clockDigital: CLOCK_ICON,
-  clockWords: CLOCK_ICON,
+  clockDigital: timePair('clock', 'digital'),
+  clockWords: timePair('clock', 'words'),
+  digitalWords: timePair('digital', 'words'),
+  digitalClock: timePair('digital', 'clock'),
 }
 
 const AREAS_LOOK = {

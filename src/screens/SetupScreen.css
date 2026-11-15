@@ -78,12 +78,12 @@
 
 /* Up to eight games per area: rows of four, or of two on phones. */
 .setup-section .is-tiles .choice-options {
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 @media (max-width: 480px) {
   .setup-section .is-tiles .choice-options {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -98,4 +98,34 @@
   width: 1.35em;
   height: 1.35em;
   margin: -0.1em 0;
+}
+
+/* The clock games' "from → to" icons, smaller than a single icon so
+   both sides fit in a tile on a narrow phone. */
+.setup-pair {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.12em;
+  height: 1.5em;
+  vertical-align: top;
+  font-size: 0.58em;
+}
+
+@media (max-width: 360px) {
+  .setup-pair {
+    font-size: 0.48em;
+  }
+}
+
+.setup-pair .setup-clock-icon {
+  width: 1.5em;
+  height: 1.5em;
+  margin: 0;
+}
+
+.setup-pair-arrow {
+  width: 0.8em;
+  height: 0.8em;
+  vertical-align: 0;
+  color: var(--color-muted);
 }
