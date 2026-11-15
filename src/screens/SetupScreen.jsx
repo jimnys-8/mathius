@@ -33,6 +33,7 @@ const CATEGORY_COLORS = {
   clockWords: '#d1495b',
   digitalWords: '#d1495b',
   digitalClock: '#d1495b',
+  odd: '#0f7c8c',
 }
 
 const CLOCK_ICON = <AnalogClock className="setup-clock-icon" hour={8} minute={0} numbers={false} />
@@ -66,7 +67,25 @@ function TimePair({ from, to }) {
   )
 }
 
+/** Three circles and a square: the patterns area, three alike and one odd. */
+const PATTERNS_ICON = (
+  <svg className="setup-patterns-icon" viewBox="0 0 40 10" aria-hidden="true">
+    {[5, 15, 25].map((cx) => (
+      <circle key={cx} cx={cx} cy={5} r={3.6} />
+    ))}
+    <rect x={31.6} y={1.6} width={6.8} height={6.8} rx={1} className="setup-patterns-odd" />
+  </svg>
+)
+
+/** Odd one out: three fruits and a car, ringed. */
+const ODD_ICON = (
+  <span className="setup-odd-icon">
+    🍎🍐🍌<span className="setup-odd-one">🚗</span>
+  </span>
+)
+
 const CATEGORY_ICONS = {
+  odd: ODD_ICON,
   mix: '+−×÷',
   // An italic x, so it isn't mistaken for a times sign.
   eq: (
@@ -83,6 +102,7 @@ const AREAS_LOOK = {
   math: { icon: '123', color: 'var(--color-a)' },
   reading: { icon: 'ABC', color: '#c26a1b' },
   time: { icon: CLOCK_ICON, color: '#d1495b' },
+  patterns: { icon: PATTERNS_ICON, color: '#0f7c8c' },
 }
 
 const levelStars = (id) => (id === 0 ? '☆' : '★'.repeat(id))

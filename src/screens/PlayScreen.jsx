@@ -6,6 +6,7 @@ import FractionCard from '../components/FractionCard.jsx'
 import Icon from '../components/Icon.jsx'
 import LetterCard from '../components/LetterCard.jsx'
 import Numpad from '../components/Numpad.jsx'
+import OddCard from '../components/OddCard.jsx'
 import ReadingCard from '../components/ReadingCard.jsx'
 import TimeCard from '../components/TimeCard.jsx'
 import RoundProgress from '../components/RoundProgress.jsx'
@@ -41,12 +42,15 @@ function choicesAs(question) {
   if (question.op === 'fraction') {
     return 'fractions'
   }
+  if (question.op === 'odd') {
+    return question.show
+  }
   return CLOCK_CHOICES[question.op] ?? question.choicesAs
 }
 
 /** An answer as the question shows it: a number, a word, an emoji or a fraction. */
 function formatAnswer(question, value, { formatNumber, lang }) {
-  if (question.op === 'word' || question.op === 'letter') {
+  if (question.op === 'word' || question.op === 'letter' || question.show === 'words') {
     return showWord(value, question.case)
   }
   if (question.op === 'fraction') {
@@ -62,6 +66,9 @@ function hintText(question, t) {
   }
   if (question.op === 'letter') {
     return t('play.hintHelpLetter')
+  }
+  if (question.op === 'odd') {
+    return t('play.hintHelpOdd')
   }
   if (question.op === 'fraction') {
     const [first, second] = pictureFractions(question.terms[0])
@@ -199,6 +206,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
   const clock = Boolean(state.question.time)
   const letter = state.question.op === 'letter'
   const fraction = state.question.op === 'fraction'
+  const odd = state.question.op === 'odd'
   const answering = state.phase === 'answering'
   const hintButton = (
     <button type="button" className="btn btn-large" onClick={handleHint} disabled={!answering || state.vizStep > 0}>
@@ -267,6 +275,13 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
             step={state.vizStep}
             onSettled={handleSettled}
           />
+        ) : odd ? (
+          <OddCard
+            key={`${state.questionNumber}-${state.question.key}`}
+            question={state.question}
+            step={state.vizStep}
+            onSettled={handleSettled}
+          />
         ) : fraction ? (
           <FractionCard
             key={`${state.questionNumber}-${state.question.key}`}
@@ -298,7 +313,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
         )}
       </section>
 
-      {!reading && !clock && !letter && !fraction && (
+      {!reading && !clock && !letter && !fraction && !odd && (
         <Equation
           key={state.questionNumber}
           question={state.question}

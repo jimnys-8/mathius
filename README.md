@@ -1,6 +1,6 @@
 # Mathius
 
-A math, reading and telling-the-time practice game for kids. Each math question comes with
+A math, reading, telling-the-time and patterns practice game for kids. Each math question comes with
 a picture made of dots that helps find the answer: press **Hint** to see the dots rearranged
 so the answer can be counted, and after answering the picture shows the
 solution.
@@ -42,6 +42,16 @@ solution.
   and digits share colors (hours purple, minutes orange), and a hint
   writes the minutes around the clock. Each game's icon shows what is
   given and what to pick (clock → 2:00, 2:00 → två)
+- Patterns: *Odd one out* shows four things, three of which belong
+  together, to pick the one that doesn't fit. Levels: different kinds of
+  things (three animals and a food), things of one kind (farm or forest
+  animals), traits (color, wings, bigger than you), the same with words
+  to read, and numbers (even, odd, times tables). A hint says what three
+  of them have in common, and the answer is explained ("🐄 🐖 🐑 bor på
+  bondgården, men inte 🦁"). The groups are in `src/game/groups.js`: each
+  emoji lists every group it is in, "?" marks doubtful cases, and a
+  question is thrown away if another group would make a second answer
+  right
 - Levels unlock one at a time: a round with at least 9 right and at most
   1 wrong (timed or not) opens the next level, and the summary says so.
   The easy level, and the Dots level below it, are always open. Under
@@ -49,7 +59,7 @@ solution.
   are in `src/game/progress.js`
 - On easier levels some pictures start half solved; `guided` in
   `src/game/config.js` sets which, per level
-- The setup screen groups the games in areas (math, reading, clock) under
+- The setup screen groups the games in areas (math, reading, clock, patterns) under
   tabs, and a footer keeps the current choice and Start in view; each
   player comes back to the last game they played in each area
 - Rounds of 10 questions, or a timer (30 s, 1 min or 2 min)

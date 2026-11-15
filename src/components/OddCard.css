@@ -1,0 +1,171 @@
+.odd-card {
+  container-type: inline-size;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  animation: odd-card-in 0.3s ease-out;
+}
+
+.odd-face {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  max-width: 100%;
+  text-align: center;
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease,
+    visibility 0.4s;
+}
+
+.odd-card p {
+  margin: 0;
+}
+
+.odd-sign {
+  width: clamp(6rem, 40cqi, 10rem);
+  fill: var(--color-a);
+}
+
+.odd-sign .odd-sign-odd {
+  fill: var(--color-b);
+}
+
+.odd-prompt {
+  font-size: clamp(1.5rem, 8cqi, 2.4rem);
+  font-weight: 900;
+  line-height: 1.15;
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+
+/* The clue keeps its space until the hint shows it, so nothing moves. */
+.odd-clue {
+  font-size: clamp(1.15rem, 6cqi, 1.6rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--color-a);
+  text-wrap: balance;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(0.4rem);
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
+}
+
+.is-hinted .odd-clue {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+}
+
+/* The explanation: the three that go together, and the odd one. */
+.odd-explain {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(0.5rem) scale(0.95);
+}
+
+.is-solved .odd-ask {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.is-solved .odd-explain {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+}
+
+.odd-three {
+  display: flex;
+  justify-content: center;
+  gap: clamp(0.4rem, 3cqi, 1rem);
+  padding: 0.35rem 0.8rem;
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--color-correct) 12%, transparent);
+}
+
+.odd-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+
+.odd-emoji {
+  font-size: clamp(2.6rem, 17cqi, 4.5rem);
+  line-height: 1.15;
+}
+
+.odd-word {
+  font-size: clamp(0.8rem, 4cqi, 1.1rem);
+  font-weight: 800;
+  color: var(--color-ink-soft);
+  white-space: nowrap;
+}
+
+.odd-number {
+  /* Room between numbers, so 2 7 6 doesn't read as 276. */
+  padding: 0 0.3em;
+  font-size: clamp(2.2rem, 13cqi, 3.6rem);
+  font-weight: 900;
+  line-height: 1.15;
+  color: var(--color-ink);
+}
+
+.odd-phrase {
+  font-size: clamp(1.15rem, 6cqi, 1.6rem);
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--color-correct);
+  text-wrap: balance;
+}
+
+.odd-but {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.odd-but-not {
+  font-size: clamp(1.15rem, 6cqi, 1.6rem);
+  font-weight: 800;
+  color: var(--color-ink-soft);
+}
+
+.odd-but .odd-item {
+  padding: 0.25rem 0.6rem;
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--color-b) 16%, transparent);
+}
+
+.odd-but .odd-emoji {
+  font-size: clamp(2.2rem, 13cqi, 3.6rem);
+}
+
+.odd-but .odd-number {
+  color: var(--color-b);
+}
+
+@keyframes odd-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .odd-card {
+    animation: none;
+  }
+
+  .odd-face,
+  .odd-clue {
+    transition: none;
+  }
+}

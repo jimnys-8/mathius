@@ -141,3 +141,31 @@
   vertical-align: 0;
   color: var(--color-muted);
 }
+
+/* The patterns area's icon: three circles and an orange square. */
+.setup-patterns-icon {
+  width: 2.6em;
+  height: 0.65em;
+  fill: currentColor;
+}
+
+.setup-patterns-odd {
+  fill: var(--color-b);
+}
+
+/* Odd one out: four small emojis, the odd one ringed. */
+.setup-odd-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.05em;
+  height: 1.5em;
+  vertical-align: top;
+  font-size: 0.5em;
+}
+
+.setup-odd-one {
+  margin-left: 0.15em;
+  padding: 0.05em 0.1em;
+  border: 0.12em solid var(--color-b);
+  border-radius: 0.4em;
+}
