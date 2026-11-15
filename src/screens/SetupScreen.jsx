@@ -40,19 +40,31 @@ const CLOCK_ICON = <AnalogClock className="setup-clock-icon" hour={8} minute={0}
 /**
  * A clock game's icon: what is shown, an arrow, and what to pick, so the
  * four games look different even to a child who can't read the labels.
+ * All show two o'clock, whose name is short in both languages; the word
+ * is in the hour hand's color, apart from the digital time.
  */
-const TIME_FACES = {
-  clock: CLOCK_ICON,
-  digital: <span className="setup-pair-digital">8:00</span>,
-  words: <span className="setup-pair-words">Abc</span>,
+const TIME_PAIRS = {
+  clockDigital: ['clock', 'digital'],
+  clockWords: ['clock', 'words'],
+  digitalWords: ['digital', 'words'],
+  digitalClock: ['digital', 'clock'],
 }
-const timePair = (from, to) => (
-  <span className="setup-pair">
-    {TIME_FACES[from]}
-    <Icon name="arrowRight" className="setup-pair-arrow" />
-    {TIME_FACES[to]}
-  </span>
-)
+
+function TimePair({ from, to }) {
+  const { t } = useI18n()
+  const faces = {
+    clock: <AnalogClock className="setup-clock-icon" hour={2} minute={0} numbers={false} />,
+    digital: <span className="setup-pair-digital">2:00</span>,
+    words: <span className="setup-pair-words">{t('setup.twoOClock')}</span>,
+  }
+  return (
+    <span className="setup-pair">
+      {faces[from]}
+      <Icon name="arrowRight" className="setup-pair-arrow" />
+      {faces[to]}
+    </span>
+  )
+}
 
 const CATEGORY_ICONS = {
   mix: '+−×÷',
@@ -64,10 +76,7 @@ const CATEGORY_ICONS = {
   ),
   // Drawn stacked: the ½ character is too small, and differs per font.
   fraction: <Fraction fraction={[1, 2]} className="setup-fraction-icon" />,
-  clockDigital: timePair('clock', 'digital'),
-  clockWords: timePair('clock', 'words'),
-  digitalWords: timePair('digital', 'words'),
-  digitalClock: timePair('digital', 'clock'),
+  ...Object.fromEntries(Object.entries(TIME_PAIRS).map(([id, [from, to]]) => [id, <TimePair key={id} from={from} to={to} />])),
 }
 
 const AREAS_LOOK = {

@@ -131,6 +131,10 @@
   margin: 0;
 }
 
+.setup-pair-words {
+  color: var(--color-a);
+}
+
 .setup-pair-arrow {
   width: 0.8em;
   height: 0.8em;
