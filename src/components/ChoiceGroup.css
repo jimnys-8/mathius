@@ -58,6 +58,17 @@
   box-shadow: inset 0 0 0 3px var(--choice-color), 0 3px 0 color-mix(in srgb, var(--choice-color) 55%, var(--color-line));
 }
 
+/* Not available yet, e.g. a level that isn't unlocked. */
+.choice-option input:disabled + label {
+  cursor: default;
+  opacity: 0.45;
+  filter: grayscale(1);
+}
+
+.choice-option input:disabled + label:active {
+  transform: none;
+}
+
 .choice-option input:focus-visible + label {
   outline: 3px solid var(--color-focus);
   outline-offset: 2px;

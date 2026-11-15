@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import LanguageToggle from './components/LanguageToggle.jsx'
 import PlayerBar from './components/PlayerBar.jsx'
 import { normalizeSettings } from './game/config.js'
+import { fitToUnlocked, unlockedLevels } from './game/progress.js'
 import { I18nContext, createI18n, useI18n } from './i18n/i18n.js'
 import {
   addProfile,
@@ -60,8 +61,11 @@ function Screens({ store, setStore }) {
     )
   }
 
-  const settings = normalizeSettings(profile.settings)
   const history = getHistory(store, profile.id)
+  const unlockedFor = (category) => unlockedLevels(history, category, Boolean(profile.unlockAll))
+  // Never land on a locked level, e.g. one picked before levels were locked.
+  const fitSettings = (next) => fitToUnlocked(next, unlockedFor(next.category))
+  const settings = fitSettings(normalizeSettings(profile.settings))
 
   const handleFinish = (session) => {
     const previousBest = session.settings.timer > 0 ? bestTimedScore(history, session.settings) : undefined
@@ -101,7 +105,8 @@ function Screens({ store, setStore }) {
   return (
     <SetupScreen
       settings={settings}
-      onChange={(next) => setStore((current) => updateProfile(current, profile.id, { settings: next }))}
+      unlocked={unlockedFor(settings.category)}
+      onChange={(next) => setStore((current) => updateProfile(current, profile.id, { settings: fitSettings(next) }))}
       onStart={play}
       header={
         <PlayerBar profile={profile} onSwitch={() => setStore((current) => selectProfile(current, null))}>

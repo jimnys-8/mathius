@@ -6,7 +6,7 @@ import './ChoiceGroup.css'
  *
  * @param {Object} props
  * @param {string} props.legend
- * @param {{ value: any, label: React.ReactNode, detail?: React.ReactNode, icon?: React.ReactNode }[]} props.options
+ * @param {{ value: any, label: React.ReactNode, detail?: React.ReactNode, icon?: React.ReactNode, disabled?: boolean }[]} props.options
  * @param {any} props.value
  * @param {(value: any) => void} props.onChange
  * @param {'tiles'|'steps'|'pills'} [props.variant]
@@ -27,6 +27,7 @@ export default function ChoiceGroup({ legend, options, value, onChange, variant 
                 type="radio"
                 name={name}
                 checked={option.value === value}
+                disabled={option.disabled}
                 onChange={() => onChange(option.value)}
               />
               <label htmlFor={id} style={option.color ? { '--choice-color': option.color } : undefined}>

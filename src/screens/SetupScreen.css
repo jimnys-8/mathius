@@ -2,6 +2,10 @@
   padding: 1rem 1.1rem 1.2rem;
 }
 
+.setup-level-lock {
+  vertical-align: -0.1em;
+}
+
 .setup-section .is-steps .choice-icon {
   color: #f0a800;
   font-size: 0.9rem;

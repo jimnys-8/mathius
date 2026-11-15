@@ -124,6 +124,7 @@ const en = {
   'setup.timer': 'Timer',
   'setup.timerHint': 'How many can you get right in {time}?',
   'setup.roundHint': 'Take your time with a round of {count} questions.',
+  'setup.unlockHint': 'Get {correct} out of {total} right to unlock the next level.',
   'setup.start': 'Start',
 
   'play.stop': 'Stop',
@@ -286,6 +287,7 @@ const sv = {
   'setup.timer': 'Tidtagning',
   'setup.timerHint': 'Hur många hinner du svara rätt på under {time}?',
   'setup.roundHint': 'Ta den tid du behöver i en omgång med {count} frågor.',
+  'setup.unlockHint': 'Svara rätt på {correct} av {total} för att låsa upp nästa nivå.',
   'setup.start': 'Starta',
 
   'play.stop': 'Sluta',

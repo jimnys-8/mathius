@@ -11,6 +11,7 @@ import {
   switchCategory,
   switchLevel,
 } from '../game/config.js'
+import { PASS } from '../game/progress.js'
 import { levelText, useI18n } from '../i18n/i18n.js'
 import './SetupScreen.css'
 
@@ -73,7 +74,7 @@ const AREAS_LOOK = {
 const levelStars = (id) => (id === 0 ? '☆' : '★'.repeat(id))
 
 /** Choose what to practice, how hard, and whether to race the clock. */
-export default function SetupScreen({ settings, onChange, onStart, header }) {
+export default function SetupScreen({ settings, unlocked, onChange, onStart, header }) {
   const { t, formatTimer } = useI18n()
   const update = (patch) => onChange({ ...settings, ...patch })
 
@@ -93,8 +94,23 @@ export default function SetupScreen({ settings, onChange, onStart, header }) {
 
   const levelOptions = getCategory(settings.category).levels.map((level) => {
     const { name, desc } = levelText(t, settings.category, level.id)
-    return { value: level.id, label: name, detail: desc, icon: levelStars(level.id), color: '#e59a00' }
+    const locked = !unlocked.has(level.id)
+    return {
+      value: level.id,
+      label: locked ? (
+        <>
+          <Icon name="lock" className="setup-level-lock" /> {name}
+        </>
+      ) : (
+        name
+      ),
+      detail: desc,
+      icon: levelStars(level.id),
+      color: '#e59a00',
+      disabled: locked,
+    }
   })
+  const anyLocked = levelOptions.some((option) => option.disabled)
 
   const timerOptions = TIMER_OPTIONS.map((seconds) => ({
     value: seconds,
@@ -130,6 +146,7 @@ export default function SetupScreen({ settings, onChange, onStart, header }) {
           value={settings.level}
           onChange={(level) => onChange(switchLevel(settings, level))}
         />
+        {anyLocked && <p className="setup-hint">{t('setup.unlockHint', { correct: PASS.correct, total: ROUND_LENGTH })}</p>}
       </section>
 
       <section className="card setup-section">
