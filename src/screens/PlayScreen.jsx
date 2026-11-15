@@ -99,6 +99,21 @@ function feedbackText(state, i18n) {
  * Plays one session: shows questions until the round is over, then
  * reports the finished session through `onFinish`.
  */
+/**
+ * The hint button and the main button (check or next), side by side and
+ * the same size whichever is in use, so nothing moves when a question is
+ * answered and a tap meant for Next can't land on the hint as the next
+ * question appears.
+ */
+function ActionPair({ hint, main }) {
+  return (
+    <div className="play-actions is-pair">
+      {hint}
+      {main}
+    </div>
+  )
+}
+
 export default function PlayScreen({ settings, keypad = false, onKeypadChange, onFinish, onQuit }) {
   const i18n = useI18n()
   const { t } = i18n
@@ -107,6 +122,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
     createSession({ ...initial, lang: i18n.lang }, Date.now()),
   )
   const inputRef = useRef(null)
+  const nextRef = useRef(null)
   // Touch devices get on-screen number keys instead of the system keyboard.
   // With a keyboard, the keys can be brought up too.
   const touch = useMediaQuery('(pointer: coarse)')
@@ -155,6 +171,13 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
     return () => clearTimeout(timer)
   }, [autoNext])
 
+  // Once answered, Next takes the focus, so Enter moves on.
+  useEffect(() => {
+    if (state.phase === 'feedback') {
+      nextRef.current?.focus({ preventScroll: true })
+    }
+  }, [state.phase, questionNumber])
+
   const focusInput = () => inputRef.current?.focus({ preventScroll: true })
 
   const handleEnter = () => {
@@ -176,6 +199,12 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
   const clock = Boolean(state.question.time)
   const letter = state.question.op === 'letter'
   const fraction = state.question.op === 'fraction'
+  const answering = state.phase === 'answering'
+  const hintButton = (
+    <button type="button" className="btn btn-large" onClick={handleHint} disabled={!answering || state.vizStep > 0}>
+      💡 {t('play.hint')}
+    </button>
+  )
   const showKeypad = !choices && (touch || keypad)
 
   // Pressing an on-screen key moves focus off the answer box; put it back
@@ -308,17 +337,20 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
             // matching the number's shape.
             numbersFirst={state.question.op !== 'count'}
           />
-          <div className="play-actions">
-            {state.phase === 'answering' ? (
-              <button type="button" className="btn" onClick={handleHint} disabled={state.vizStep > 0}>
-                💡 {t('play.hint')}
-              </button>
-            ) : (
-              <button type="button" className="btn btn-primary btn-large" onClick={handleEnter} autoFocus>
+          <ActionPair
+            hint={hintButton}
+            main={
+              <button
+                ref={nextRef}
+                type="button"
+                className="btn btn-primary btn-large"
+                onClick={handleEnter}
+                disabled={answering}
+              >
                 {t('play.next')} <Icon name="arrowRight" />
               </button>
-            )}
-          </div>
+            }
+          />
         </div>
       ) : showKeypad ? (
         <div className="play-touch">
@@ -344,12 +376,10 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
           />
         </div>
       ) : (
-        <div className="play-actions">
-          {state.phase === 'answering' ? (
-            <>
-              <button type="button" className="btn" onClick={handleHint} disabled={state.vizStep > 0}>
-                💡 {t('play.hint')}
-              </button>
+        <ActionPair
+          hint={hintButton}
+          main={
+            answering ? (
               <button
                 type="button"
                 className="btn btn-primary btn-large"
@@ -358,13 +388,13 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
               >
                 {t('play.check')}
               </button>
-            </>
-          ) : (
-            <button type="button" className="btn btn-primary btn-large" onClick={handleEnter} autoFocus>
-              {t('play.next')} <Icon name="arrowRight" />
-            </button>
-          )}
-        </div>
+            ) : (
+              <button ref={nextRef} type="button" className="btn btn-primary btn-large" onClick={handleEnter}>
+                {t('play.next')} <Icon name="arrowRight" />
+              </button>
+            )
+          }
+        />
       )}
     </main>
   )

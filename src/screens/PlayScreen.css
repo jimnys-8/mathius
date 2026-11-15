@@ -81,6 +81,19 @@
   flex-wrap: wrap;
 }
 
+/* Hint and check/next: two equal buttons that never move. */
+.play-actions.is-pair {
+  flex-wrap: nowrap;
+}
+
+.play-actions.is-pair .btn {
+  flex: 1 1 0;
+  max-width: 14rem;
+  padding-inline: 0.75rem;
+  font-size: clamp(1.1rem, 5vw, 1.5rem);
+  white-space: nowrap;
+}
+
 .play-choices {
   display: flex;
   flex-direction: column;
