@@ -33,6 +33,12 @@ function check(question) {
       return WORDS.some((word) => word.emoji === a && word.sv === b) && question.choices.includes(b)
     case 'picture':
       return WORDS.some((word) => word.sv === a && word.emoji === b) && question.choices.includes(b)
+    case 'clockDigital':
+    case 'clockWords':
+    case 'digitalWords':
+    case 'digitalClock':
+      // Checked in detail in time.test.js.
+      return question.choices.includes(b) && Number.isInteger(question.time.minute)
     default:
       return false
   }

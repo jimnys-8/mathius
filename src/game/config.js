@@ -11,6 +11,10 @@ export const OPERATIONS = {
   eq: { id: 'eq', symbol: 'x' },
   word: { id: 'word', symbol: 'Abc' },
   picture: { id: 'picture', symbol: '🐈' },
+  clockDigital: { id: 'clockDigital', symbol: '🕗' },
+  clockWords: { id: 'clockWords', symbol: '🕗' },
+  digitalWords: { id: 'digitalWords', symbol: '8:00' },
+  digitalClock: { id: 'digitalClock', symbol: '8:00' },
 }
 
 /**
@@ -123,6 +127,22 @@ const READING_LEVELS = [
   { id: 4, read: { case: 'lower', distractors: 'alike' } },
 ]
 
+/**
+ * Levels for telling the time (see src/game/time.js). `minutes` lists
+ * the minutes a level uses: whole hours, then halves, quarters and every
+ * five minutes. Higher up, digital times can use a 24-hour clock
+ * (`hour24`) and analog clocks can lose their numbers (`numbers: false`).
+ */
+const FIVE_MINUTES = Array.from({ length: 12 }, (_, index) => index * 5)
+const TIME_BASICS = [
+  { id: 1, time: { minutes: [0] } },
+  { id: 2, time: { minutes: [0, 30] } },
+  { id: 3, time: { minutes: [0, 15, 30, 45] } },
+  { id: 4, time: { minutes: FIVE_MINUTES } },
+]
+const TIME_24 = { minutes: FIVE_MINUTES, hour24: true }
+const TIME_NO_NUMBERS = { minutes: FIVE_MINUTES, numbers: false }
+
 /** Multiplication, division and roots start at level 1: counting up to ten is too little for them. */
 const TABLE_LEVELS = ARITHMETIC_LEVELS.filter((level) => level.id > 0)
 
@@ -151,6 +171,16 @@ export const CATEGORIES = [
   // Reading: pick the word for a picture, or the picture for a word.
   { id: 'word', symbol: 'Abc', ops: ['word'], levels: READING_LEVELS },
   { id: 'picture', symbol: '🐈', ops: ['picture'], levels: READING_LEVELS },
+  // Telling the time, from an analog clock or from a digital one.
+  {
+    id: 'clockDigital',
+    symbol: '🕗',
+    ops: ['clockDigital'],
+    levels: [...TIME_BASICS, { id: 5, time: TIME_24 }, { id: 6, time: TIME_NO_NUMBERS }],
+  },
+  { id: 'clockWords', symbol: '🕗', ops: ['clockWords'], levels: [...TIME_BASICS, { id: 5, time: TIME_NO_NUMBERS }] },
+  { id: 'digitalWords', symbol: '8:00', ops: ['digitalWords'], levels: [...TIME_BASICS, { id: 5, time: TIME_24 }] },
+  { id: 'digitalClock', symbol: '8:00', ops: ['digitalClock'], levels: [...TIME_BASICS, { id: 5, time: TIME_24 }] },
 ]
 
 /** The level a category starts on. Every category has it. */

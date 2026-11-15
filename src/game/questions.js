@@ -1,5 +1,6 @@
 import { OPERATIONS, getCategory, getLevel } from './config.js'
 import { createReadingQuestion } from './reading.js'
+import { createTimeQuestion } from './time.js'
 import { DEFAULT_LANGUAGE } from '../i18n/strings.js'
 
 /**
@@ -17,9 +18,12 @@ import { DEFAULT_LANGUAGE } from '../i18n/strings.js'
  *
  * Reading questions ('word' and 'picture', see reading.js) have a word
  * and an emoji as terms, and a string answer picked from `choices`.
+ * Clock questions (see time.js) are alike, with what is shown and the
+ * answer as terms, and the time itself in `time`.
  *
  * @typedef {Object} Question
- * @property {'count'|'add'|'sub'|'mul'|'div'|'sqrt'|'eq'|'word'|'picture'} op
+ * @property {string} op  'count', 'add', 'sub', 'mul', 'div', 'sqrt', 'eq',
+ *   'word', 'picture', 'clockDigital', 'clockWords', 'digitalWords' or 'digitalClock'
  * @property {Array<number|string>} terms
  * @property {0|1|2} unknown
  * @property {number|string} answer   terms[unknown]
@@ -27,6 +31,8 @@ import { DEFAULT_LANGUAGE } from '../i18n/strings.js'
  * @property {Array<number|string>} [choices]  possible answers; numbers smallest first
  * @property {string[]} [hintRemoves]  wrong choices a hint takes away
  * @property {'upper'|'lower'} [case]  how reading questions show words
+ * @property {{ hour: number, minute: number }} [time]  the time a clock question is about
+ * @property {boolean} [numbers]  whether its analog clocks have numbers
  * @property {'dots'} [choicesAs]  show the choices as dots, not numerals
  * @property {boolean} [guided]  start the picture half solved
  */
@@ -249,6 +255,8 @@ export function createQuestion({ category, level, avoid = [], lang = DEFAULT_LAN
       question = createEquationQuestion(levelConfig.eq, rng)
     } else if (op === 'word' || op === 'picture') {
       question = createReadingQuestion(op, levelConfig.read, lang, rng)
+    } else if (levelConfig.time) {
+      question = createTimeQuestion(op, levelConfig.time, lang, rng)
     } else {
       const terms = createTerms(op, levelConfig, rng)
       const unknown = pickWeighted(rng, levelConfig.unknowns)
