@@ -7,7 +7,7 @@
 
 export const LANGUAGES = [
   { id: 'sv', flag: '🇸🇪', name: 'Svenska', locale: 'sv-SE' },
-  { id: 'en', flag: '🇬🇧', name: 'English', locale: 'en-GB' },
+  { id: 'en', flag: '🇺🇸', name: 'English', locale: 'en-US' },
 ]
 
 export const DEFAULT_LANGUAGE = 'sv'
@@ -99,7 +99,7 @@ const en = {
   'play.check': 'Check',
   'play.next': 'Next',
   'play.hintHelp': 'Count the dots to find the answer.',
-  'play.hintHelpSqrt': 'The biggest square that fits has sides of {side}. How far round the next one do the orange dots get?',
+  'play.hintHelpSqrt': 'The biggest square that fits has sides of {side}. How far around the next one do the orange dots get?',
   'play.hintHelpEqTake': ({ a, b }) =>
     `Take ${b} away from both sides. ${a === 1 ? 'How many are left for the bag?' : 'How many are left for each bag?'}`,
   'play.hintHelpEqAdd': 'The left side is {b} short. Add {b} to both sides!',
