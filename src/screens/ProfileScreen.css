@@ -52,9 +52,12 @@
     box-shadow 0.12s ease;
 }
 
-.profile-tile:hover:not(:disabled) {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow), inset 0 0 0 3px var(--color-a);
+/* Only with a mouse: touch screens keep the last tapped tile hovered. */
+@media (hover: hover) {
+  .profile-tile:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow), inset 0 0 0 3px var(--color-a);
+  }
 }
 
 .profile-tile:disabled {
