@@ -9,6 +9,8 @@ export const OPERATIONS = {
   div: { id: 'div', symbol: '÷' },
   sqrt: { id: 'sqrt', symbol: '√' },
   eq: { id: 'eq', symbol: 'x' },
+  word: { id: 'word', symbol: 'Abc' },
+  picture: { id: 'picture', symbol: '🐈' },
 }
 
 /**
@@ -109,6 +111,18 @@ const EQUATION_LEVELS = [
   { id: 4, eq: { a: [2, 5], x: [2, 10], b: [1, 9], sign: 'both' } },
 ]
 
+/**
+ * Levels for the reading games (see src/game/reading.js): longer words,
+ * then lowercase letters, then wrong options that look like the answer.
+ * `maxLength` counts letters.
+ */
+const READING_LEVELS = [
+  { id: 1, read: { maxLength: 4, case: 'upper', distractors: 'distinct' } },
+  { id: 2, read: { maxLength: 6, case: 'upper', distractors: 'any' } },
+  { id: 3, read: { maxLength: 6, case: 'lower', distractors: 'any' } },
+  { id: 4, read: { case: 'lower', distractors: 'alike' } },
+]
+
 /** Multiplication, division and roots start at level 1: counting up to ten is too little for them. */
 const TABLE_LEVELS = ARITHMETIC_LEVELS.filter((level) => level.id > 0)
 
@@ -134,6 +148,9 @@ export const CATEGORIES = [
   // Square roots are a skill of their own, so they are not part of the mix.
   { id: 'sqrt', symbol: '√', ops: ['sqrt'], levels: TABLE_LEVELS },
   { id: 'eq', symbol: 'x', ops: ['eq'], levels: EQUATION_LEVELS },
+  // Reading: pick the word for a picture, or the picture for a word.
+  { id: 'word', symbol: 'Abc', ops: ['word'], levels: READING_LEVELS },
+  { id: 'picture', symbol: '🐈', ops: ['picture'], levels: READING_LEVELS },
 ]
 
 /** The level a category starts on. Every category has it. */

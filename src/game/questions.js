@@ -1,4 +1,6 @@
 import { OPERATIONS, getCategory, getLevel } from './config.js'
+import { createReadingQuestion } from './reading.js'
+import { DEFAULT_LANGUAGE } from '../i18n/strings.js'
 
 /**
  * A question is a fact `terms[0] op terms[1] = terms[2]` where one of the
@@ -13,13 +15,18 @@ import { OPERATIONS, getCategory, getLevel } from './config.js'
  * Square roots have two terms, `√terms[0] = terms[1]`. Estimates
  * (`√40 ≈ 6.3`) come with `choices` to pick the answer from.
  *
+ * Reading questions ('word' and 'picture', see reading.js) have a word
+ * and an emoji as terms, and a string answer picked from `choices`.
+ *
  * @typedef {Object} Question
- * @property {'count'|'add'|'sub'|'mul'|'div'|'sqrt'|'eq'} op
- * @property {[number, number, number]} terms
+ * @property {'count'|'add'|'sub'|'mul'|'div'|'sqrt'|'eq'|'word'|'picture'} op
+ * @property {Array<number|string>} terms
  * @property {0|1|2} unknown
- * @property {number} answer   terms[unknown]
+ * @property {number|string} answer   terms[unknown]
  * @property {string} key      stable identifier, e.g. "7+8=?"
- * @property {number[]} [choices]  possible answers, smallest first
+ * @property {Array<number|string>} [choices]  possible answers; numbers smallest first
+ * @property {string[]} [hintRemoves]  wrong choices a hint takes away
+ * @property {'upper'|'lower'} [case]  how reading questions show words
  * @property {'dots'} [choicesAs]  show the choices as dots, not numerals
  * @property {boolean} [guided]  start the picture half solved
  */
@@ -217,10 +224,11 @@ function createEquationQuestion({ a: aRange, x: xRange, b: bRange, sign }, rng) 
  * @param {string} options.category  category id, see CATEGORIES
  * @param {number} options.level     level id
  * @param {string[]} [options.avoid] question keys to avoid, oldest first (e.g. recent questions)
+ * @param {string} [options.lang]   language of the words in reading questions
  * @param {() => number} [options.rng]
  * @returns {Question}
  */
-export function createQuestion({ category, level, avoid = [], rng = Math.random }) {
+export function createQuestion({ category, level, avoid = [], lang = DEFAULT_LANGUAGE, rng = Math.random }) {
   const levelConfig = getLevel(category, level)
   const categoryOps = getCategory(category).ops
   const ops = levelConfig.ops ? categoryOps.filter((op) => levelConfig.ops.includes(op)) : categoryOps
@@ -239,6 +247,8 @@ export function createQuestion({ category, level, avoid = [], rng = Math.random 
       question = createCountQuestion(levelConfig.count, rng)
     } else if (op === 'eq') {
       question = createEquationQuestion(levelConfig.eq, rng)
+    } else if (op === 'word' || op === 'picture') {
+      question = createReadingQuestion(op, levelConfig.read, lang, rng)
     } else {
       const terms = createTerms(op, levelConfig, rng)
       const unknown = pickWeighted(rng, levelConfig.unknowns)
@@ -264,6 +274,9 @@ export function createQuestion({ category, level, avoid = [], rng = Math.random 
 
 /** Whether an answer is right. Accepts decimal points and commas. */
 export function isCorrect(question, input) {
+  if (typeof question.answer === 'string') {
+    return input === question.answer
+  }
   const trimmed = String(input).trim().replace(',', '.')
   if (trimmed === '' || !/^-?\d+(\.\d+)?$/.test(trimmed)) {
     return false

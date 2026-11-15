@@ -47,6 +47,17 @@ describe('sessionReducer', () => {
     expect(sessionReducer(start, { type: 'choose', value: wrong, now: 1 }).lastCorrect).toBe(false)
   })
 
+  it('answers reading questions with the picked word, in the language of the session', () => {
+    const start = createSession({ category: 'word', level: 1, timer: 0, lang: 'en' }, 0)
+    const { answer, choices } = start.question
+    expect(answer).toMatch(/^[a-z ]+$/)
+    const wrong = choices.find((choice) => choice !== answer)
+    const missed = sessionReducer(start, { type: 'choose', value: wrong, now: 1 })
+    expect(missed.results[0]).toEqual(expect.objectContaining({ correct: false, answer, given: wrong }))
+    const next = sessionReducer(missed, { type: 'next', now: 2 })
+    expect(next.question.answer).toMatch(/^[a-z ]+$/)
+  })
+
   it('marks hinted answers', () => {
     const start = createSession(practice, 0)
     const hinted = sessionReducer(start, { type: 'hint' })

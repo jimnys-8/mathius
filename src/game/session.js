@@ -23,11 +23,12 @@ const RECENT_LIMIT = 6
  * @param {string} settings.category
  * @param {number} settings.level
  * @param {number} settings.timer  seconds, 0 for a round of ROUND_LENGTH questions
+ * @param {string} [settings.lang] language of the words in reading questions
  * @param {number} now             timestamp (ms)
  * @param {() => number} [rng]
  */
 export function createSession(settings, now, rng = Math.random) {
-  const question = createQuestion({ category: settings.category, level: settings.level, rng })
+  const question = createQuestion({ category: settings.category, level: settings.level, lang: settings.lang, rng })
   return {
     settings,
     rng,
@@ -78,6 +79,7 @@ function nextQuestion(state, now) {
     category: state.settings.category,
     level: state.settings.level,
     avoid: state.recent,
+    lang: state.settings.lang,
     rng: state.rng,
   })
   return {
@@ -144,7 +146,8 @@ export function sessionReducer(state, action) {
         key: state.question.key,
         op: state.question.op,
         answer: state.question.answer,
-        given: Number(state.input),
+        // Reading answers are words or emojis; the rest are numbers.
+        given: typeof state.question.answer === 'string' ? state.input : Number(state.input),
         correct,
         hinted: state.hinted,
         ms: action.now - state.questionStartedAt,

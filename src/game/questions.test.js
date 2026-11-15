@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { CATEGORIES } from './config.js'
 import { createQuestion, isCorrect, makeQuestion } from './questions.js'
+import { WORDS } from './words.js'
 
 function seededRng(seed) {
   let state = seed
@@ -27,6 +28,11 @@ function check(question) {
       return a * b === c
     case 'div':
       return b !== 0 && a / b === c
+    case 'word':
+      // An emoji and its word (Swedish, the default language).
+      return WORDS.some((word) => word.emoji === a && word.sv === b) && question.choices.includes(b)
+    case 'picture':
+      return WORDS.some((word) => word.sv === a && word.emoji === b) && question.choices.includes(b)
     default:
       return false
   }
