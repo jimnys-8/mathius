@@ -1,6 +1,15 @@
 import AnalogClock from '../components/AnalogClock.jsx'
 import ChoiceGroup from '../components/ChoiceGroup.jsx'
-import { CATEGORIES, ROUND_LENGTH, TIMER_OPTIONS, getCategory, switchCategory, switchLevel } from '../game/config.js'
+import {
+  AREAS,
+  ROUND_LENGTH,
+  TIMER_OPTIONS,
+  areaOf,
+  getCategory,
+  switchArea,
+  switchCategory,
+  switchLevel,
+} from '../game/config.js'
 import { levelText, useI18n } from '../i18n/i18n.js'
 import './SetupScreen.css'
 
@@ -35,12 +44,27 @@ const CATEGORY_ICONS = {
   clockWords: CLOCK_ICON,
 }
 
+const AREA_ICONS = {
+  math: '+−',
+  reading: 'Abc',
+  time: CLOCK_ICON,
+}
+
+const levelStars = (id) => (id === 0 ? '☆' : '★'.repeat(id))
+
 /** Choose what to practice, how hard, and whether to race the clock. */
 export default function SetupScreen({ settings, onChange, onStart, header }) {
   const { t, formatTimer } = useI18n()
   const update = (patch) => onChange({ ...settings, ...patch })
 
-  const categoryOptions = CATEGORIES.map((category) => ({
+  const area = areaOf(settings.category)
+  const areaOptions = AREAS.map(({ id }) => ({
+    value: id,
+    label: t(`area.${id}`),
+    icon: AREA_ICONS[id],
+  }))
+
+  const categoryOptions = area.categories.map(getCategory).map((category) => ({
     value: category.id,
     label: t(`category.${category.id}`),
     icon: CATEGORY_ICONS[category.id] ?? category.symbol,
@@ -49,7 +73,7 @@ export default function SetupScreen({ settings, onChange, onStart, header }) {
 
   const levelOptions = getCategory(settings.category).levels.map((level) => {
     const { name, desc } = levelText(t, settings.category, level.id)
-    return { value: level.id, label: name, detail: desc, icon: level.id === 0 ? '☆' : '★'.repeat(level.id), color: '#e59a00' }
+    return { value: level.id, label: name, detail: desc, icon: levelStars(level.id), color: '#e59a00' }
   })
 
   const timerOptions = TIMER_OPTIONS.map((seconds) => ({
@@ -62,6 +86,14 @@ export default function SetupScreen({ settings, onChange, onStart, header }) {
       {header}
 
       <section className="card setup-section">
+        <ChoiceGroup
+          legend={t('setup.area')}
+          hideLegend
+          variant="tabs"
+          options={areaOptions}
+          value={area.id}
+          onChange={(id) => onChange(switchArea(settings, id))}
+        />
         <ChoiceGroup
           legend={t('setup.category')}
           variant="tiles"
@@ -95,11 +127,22 @@ export default function SetupScreen({ settings, onChange, onStart, header }) {
         </p>
       </section>
 
-      <div className="setup-start">
+      {/* Always in view: what will be played, and the button to play it. */}
+      <footer className="setup-footer">
+        <p className="setup-summary">
+          <strong>{t(`category.${settings.category}`)}</strong>
+          <span>
+            <span className="setup-summary-stars" aria-hidden="true">
+              {levelStars(settings.level)}
+            </span>{' '}
+            {levelText(t, settings.category, settings.level).name}
+          </span>
+          <span>{settings.timer > 0 ? `⏱ ${formatTimer(settings.timer)}` : t('setup.questions', { count: ROUND_LENGTH })}</span>
+        </p>
         <button type="button" className="btn btn-primary btn-large" onClick={onStart}>
           {t('setup.start')} ▶
         </button>
-      </div>
+      </footer>
     </main>
   )
 }

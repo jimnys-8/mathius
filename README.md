@@ -34,6 +34,9 @@ solution.
   writes the minutes around the clock
 - On easier levels some pictures start half solved; `guided` in
   `src/game/config.js` sets which, per level
+- The setup screen groups the games in areas (math, reading, clock) under
+  tabs, and a footer keeps the current choice and Start in view; each
+  player comes back to the last game they played in each area
 - Rounds of 10 questions, or a timer (30 s, 1 min or 2 min)
 - One profile per player, with remembered settings, stats, best timed
   scores and the facts they miss most often (stored in the browser's
