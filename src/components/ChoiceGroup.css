@@ -112,7 +112,7 @@
   color: var(--choice-color);
 }
 
-/* On phones, icons above labels so three tabs fit side by side. */
+/* On phones, icons above labels so the tabs fit side by side. */
 @media (max-width: 30rem) {
   .is-tabs .choice-options {
     gap: 0.45rem;
@@ -123,6 +123,14 @@
     gap: 0.25rem;
     padding: 0.5rem 0.3rem;
     font-size: 1rem;
+  }
+}
+
+/* On the narrowest phones four tabs don't fit in a row: two by two. */
+@media (max-width: 23rem) {
+  .is-tabs .choice-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row;
   }
 }
 
