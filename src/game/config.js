@@ -183,6 +183,21 @@ export const CATEGORIES = [
   { id: 'digitalClock', symbol: '8:00', ops: ['digitalClock'], levels: [...TIME_BASICS, { id: 5, time: TIME_24 }] },
 ]
 
+/**
+ * The categories grouped into areas, which the setup screen shows as
+ * tabs: math, reading and telling the time.
+ */
+export const AREAS = [
+  { id: 'math', categories: ['count', 'add', 'sub', 'mul', 'div', 'mix', 'sqrt', 'eq'] },
+  { id: 'reading', categories: ['word', 'picture'] },
+  { id: 'time', categories: ['clockDigital', 'clockWords', 'digitalWords', 'digitalClock'] },
+]
+
+/** The area a category belongs to. */
+export function areaOf(categoryId) {
+  return AREAS.find((area) => area.categories.includes(categoryId)) ?? AREAS[0]
+}
+
 /** The level a category starts on. Every category has it. */
 export const DEFAULT_LEVEL = 1
 
@@ -201,18 +216,30 @@ export function getLevel(categoryId, levelId) {
 
 /**
  * Settings with a known category and a level that belongs to it.
- * `levels` remembers the level last picked in each category.
+ * `levels` remembers the level last picked in each category, and
+ * `games` the category last picked in each area.
  */
 export function normalizeSettings(settings) {
   const category = getCategory(settings.category)
   const level = getLevel(category.id, settings.level)
-  return { ...settings, category: category.id, level: level.id, levels: settings.levels ?? {} }
+  return { ...settings, category: category.id, level: level.id, levels: settings.levels ?? {}, games: settings.games ?? {} }
 }
 
 /** Settings for switching to another category, on the level last used there. */
 export function switchCategory(settings, categoryId) {
   const levels = { ...settings.levels, [settings.category]: settings.level }
-  return normalizeSettings({ ...settings, category: categoryId, level: levels[categoryId] ?? DEFAULT_LEVEL, levels })
+  // Remember the game being left as well as the one picked.
+  const games = { ...settings.games, [areaOf(settings.category).id]: settings.category, [areaOf(categoryId).id]: categoryId }
+  return normalizeSettings({ ...settings, category: categoryId, level: levels[categoryId] ?? DEFAULT_LEVEL, levels, games })
+}
+
+/** Settings for switching to another area, on the game last played there. */
+export function switchArea(settings, areaId) {
+  const area = AREAS.find((item) => item.id === areaId) ?? AREAS[0]
+  if (area.categories.includes(settings.category)) {
+    return settings
+  }
+  return switchCategory(settings, settings.games?.[area.id] ?? area.categories[0])
 }
 
 /** Settings for picking another level in the current category. */
