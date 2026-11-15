@@ -1,0 +1,91 @@
+.time-card {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  height: 100%;
+  animation: time-card-in 0.3s ease-out;
+}
+
+.time-card-clock {
+  width: min(78cqi, 38vh, 19rem);
+  height: auto;
+}
+
+.time-card-clock.is-small {
+  width: min(48cqi, 24vh, 12rem);
+}
+
+.time-card-digital {
+  font-size: min(6rem, 30cqi);
+}
+
+.time-card-digital.is-small {
+  font-size: min(3.2rem, 18cqi);
+}
+
+.time-card-words {
+  font-size: min(2.2rem, calc(150cqi / var(--chars)));
+  font-weight: 900;
+  line-height: 1.15;
+  text-align: center;
+  color: var(--color-c);
+}
+
+.time-card-help {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* What is asked for keeps its space until shown, so nothing moves. */
+.time-card-answer,
+.time-card-help {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(0.5rem) scale(0.95);
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
+}
+
+.is-solved .time-card-answer,
+.time-card-help.is-shown {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+}
+
+/* The words below a hinted clock wait for the solution. */
+.time-card-help.is-shown .time-card-answer {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.is-solved .time-card-help.is-shown .time-card-answer {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes time-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .time-card {
+    animation: none;
+  }
+
+  .time-card-answer,
+  .time-card-help {
+    transition: none;
+  }
+}

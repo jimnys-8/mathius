@@ -1,0 +1,66 @@
+.analog-clock {
+  display: block;
+  overflow: visible;
+}
+
+.analog-clock-face {
+  fill: var(--color-surface);
+  stroke: var(--color-ink);
+  stroke-width: 2.5;
+}
+
+.analog-clock-face.is-see-through {
+  fill: none;
+}
+
+.analog-clock-half.is-past {
+  fill: color-mix(in srgb, var(--color-correct) 14%, var(--color-surface));
+}
+
+.analog-clock-half.is-to {
+  fill: color-mix(in srgb, var(--color-b) 14%, var(--color-surface));
+}
+
+.analog-clock-tick {
+  stroke: var(--color-ink-soft);
+  stroke-width: 0.8;
+  stroke-linecap: round;
+}
+
+.analog-clock-tick.is-major {
+  stroke: var(--color-ink);
+  stroke-width: 1.8;
+}
+
+.analog-clock-number {
+  fill: var(--color-ink);
+  font-size: 10px;
+  font-weight: 800;
+  text-anchor: middle;
+}
+
+/* The minutes, in the minute hand's color. */
+.analog-clock-minutes {
+  fill: var(--color-b);
+  font-size: 7.5px;
+  font-weight: 800;
+  text-anchor: middle;
+}
+
+.analog-clock-hand {
+  stroke-linecap: round;
+}
+
+.analog-clock-hand.is-hour {
+  stroke: var(--color-a);
+  stroke-width: 5.5;
+}
+
+.analog-clock-hand.is-minute {
+  stroke: var(--color-b);
+  stroke-width: 3.5;
+}
+
+.analog-clock-pin {
+  fill: var(--color-ink);
+}

@@ -1,0 +1,21 @@
+.digital-time {
+  display: inline-flex;
+  align-items: baseline;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.digital-time-hours {
+  color: var(--color-a);
+}
+
+.digital-time-colon {
+  color: var(--color-ink);
+  padding: 0 0.04em;
+}
+
+.digital-time-minutes {
+  color: var(--color-b);
+}

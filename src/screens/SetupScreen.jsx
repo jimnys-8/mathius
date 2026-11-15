@@ -1,3 +1,4 @@
+import AnalogClock from '../components/AnalogClock.jsx'
 import ChoiceGroup from '../components/ChoiceGroup.jsx'
 import { CATEGORIES, ROUND_LENGTH, TIMER_OPTIONS, getCategory, switchCategory, switchLevel } from '../game/config.js'
 import { levelText, useI18n } from '../i18n/i18n.js'
@@ -14,7 +15,13 @@ const CATEGORY_COLORS = {
   eq: '#a14fc4',
   word: '#c26a1b',
   picture: '#5b6bd6',
+  clockDigital: '#d1495b',
+  clockWords: '#d1495b',
+  digitalWords: '#d1495b',
+  digitalClock: '#d1495b',
 }
+
+const CLOCK_ICON = <AnalogClock className="setup-clock-icon" hour={8} minute={0} numbers={false} />
 
 const CATEGORY_ICONS = {
   mix: '+−×÷',
@@ -24,6 +31,8 @@ const CATEGORY_ICONS = {
       <i>x</i>=?
     </>
   ),
+  clockDigital: CLOCK_ICON,
+  clockWords: CLOCK_ICON,
 }
 
 /** Choose what to practice, how hard, and whether to race the clock. */

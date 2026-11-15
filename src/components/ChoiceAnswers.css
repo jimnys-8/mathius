@@ -168,3 +168,40 @@
   opacity: 0.2;
   transform: scale(0.94);
 }
+
+/* Telling the time. */
+.choice-answers.is-digital .choice-answer {
+  font-size: clamp(2rem, 8vw, 2.6rem);
+}
+
+.choice-answers.is-phrases {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.choice-answers.is-phrases .choice-answer {
+  padding: 0.6rem 0.8rem;
+  font-size: clamp(1.1rem, 4.6vw, 1.5rem);
+  line-height: 1.2;
+  color: var(--color-ink);
+  text-wrap: balance;
+}
+
+.choice-answers.is-clock .choice-answer {
+  display: grid;
+  place-items: center;
+  padding: 0.5rem;
+}
+
+.choice-answers.is-clock .analog-clock {
+  width: min(100%, 7.5rem);
+  height: auto;
+}
+
+.choice-answers.is-phrases .choice-answer.is-correct,
+.choice-answers.is-digital .choice-answer.is-correct {
+  color: var(--color-correct);
+}
+
+.choice-answers.is-phrases .choice-answer.is-wrong {
+  color: var(--color-wrong);
+}

@@ -34,3 +34,10 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* The clock games' icon: a small clock as tall as the other icons. */
+.setup-clock-icon {
+  width: 1.1em;
+  height: 1.1em;
+  margin: -0.05em auto;
+}

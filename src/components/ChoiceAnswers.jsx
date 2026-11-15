@@ -1,6 +1,9 @@
 import { useEffect } from 'react'
 import { showWord } from '../game/reading.js'
+import { parseClock } from '../game/time.js'
 import { useI18n } from '../i18n/i18n.js'
+import AnalogClock from './AnalogClock.jsx'
+import DigitalTime from './DigitalTime.jsx'
 import './ChoiceAnswers.css'
 
 const DOTS_PER_ROW = 5
@@ -53,6 +56,10 @@ function choiceForKey(key, choices, byValue) {
  * With `as="words"` the choices are words, shown in `wordCase`, and with
  * `as="emoji"` they are emojis. Choices in `removed` (taken away by a
  * hint) can't be picked.
+ *
+ * For telling the time: `as="digital"` shows digital times ("8:20"),
+ * `as="phrases"` times in words, and `as="clock"` analog clocks for
+ * times written "8:20", with `clock` options for AnalogClock.
  */
 export default function ChoiceAnswers({
   choices,
@@ -64,6 +71,7 @@ export default function ChoiceAnswers({
   numbersFirst = true,
   wordCase = 'lower',
   removed = NONE,
+  clock = undefined,
 }) {
   const { t, formatNumber } = useI18n()
   const byValue = choices.every((choice) => Number.isInteger(choice))
@@ -89,8 +97,12 @@ export default function ChoiceAnswers({
   let label = formatNumber
   if (as === 'words') {
     label = (choice) => showWord(choice, wordCase)
-  } else if (as === 'emoji') {
+  } else if (as === 'emoji' || as === 'phrases') {
     label = (choice) => choice
+  } else if (as === 'digital') {
+    label = (choice) => <DigitalTime text={choice} />
+  } else if (as === 'clock') {
+    label = (choice) => <AnalogClock {...parseClock(choice)} {...clock} />
   }
 
   return (
@@ -113,7 +125,7 @@ export default function ChoiceAnswers({
             className={`choice-answer${state}${isRemoved ? ' is-removed' : ''}`}
             disabled={revealed || isRemoved}
             onClick={() => onChoose(choice)}
-            aria-label={dots ? t('play.dotCount', { count: choice }) : undefined}
+            aria-label={dots ? t('play.dotCount', { count: choice }) : as === 'clock' ? choice : undefined}
           >
             {!byValue && (
               <span className="choice-answer-key" aria-hidden="true">

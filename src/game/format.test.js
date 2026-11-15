@@ -30,6 +30,17 @@ describe('formatFact', () => {
     expect(formatFact(fact('fox=🦊', 'picture', '🦊'))).toBe('fox 🦊')
   })
 
+  it('shows the clock or digital time and the answer for telling the time', () => {
+    expect(formatFact(fact('clockDigital:8:20=20:20', 'clockDigital', '20:20'))).toBe('🕗 8:20 = 20:20')
+    expect(formatFact(fact('clockWords:8:20=tjugo över åtta', 'clockWords', 'tjugo över åtta'))).toBe(
+      '🕗 8:20: tjugo över åtta',
+    )
+    expect(formatFact(fact('digitalWords:20:20=tjugo över åtta', 'digitalWords', 'tjugo över åtta'))).toBe(
+      '20:20: tjugo över åtta',
+    )
+    expect(formatFact(fact('digitalClock:20:20=8:20', 'digitalClock', '8:20'))).toBe('20:20 = 🕗')
+  })
+
   it('formats numbers for the language', () => {
     const comma = (n) => String(n).replace('.', ',')
     expect(formatFact(fact('3×4=?', 'mul', 12.5), comma)).toBe('3 × 4 = 12,5')

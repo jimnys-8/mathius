@@ -5,12 +5,13 @@ import Equation from '../components/Equation.jsx'
 import Icon from '../components/Icon.jsx'
 import Numpad from '../components/Numpad.jsx'
 import ReadingCard from '../components/ReadingCard.jsx'
+import TimeCard from '../components/TimeCard.jsx'
 import RoundProgress from '../components/RoundProgress.jsx'
 import { showWord } from '../game/reading.js'
 import { createSession, isTimed, sessionReducer } from '../game/session.js'
 import { useI18n } from '../i18n/i18n.js'
 import { useMediaQuery } from '../useMediaQuery.js'
-import { SOLUTION_FRAME } from '../viz/scenes.js'
+import { HINT_FRAME, SOLUTION_FRAME } from '../viz/scenes.js'
 import Visualization from '../viz/Visualization.jsx'
 import './PlayScreen.css'
 
@@ -24,17 +25,30 @@ function isReading(question) {
   return question.op === 'word' || question.op === 'picture'
 }
 
+// How each clock game shows its answer buttons.
+const CLOCK_CHOICES = { clockDigital: 'digital', clockWords: 'phrases', digitalWords: 'phrases', digitalClock: 'clock' }
+
+function choicesAs(question) {
+  if (isReading(question)) {
+    return question.op === 'word' ? 'words' : 'emoji'
+  }
+  return CLOCK_CHOICES[question.op] ?? question.choicesAs
+}
+
 /** An answer as the question shows it: a number, a word or an emoji. */
 function formatAnswer(question, value, formatNumber) {
   if (question.op === 'word') {
     return showWord(value, question.case)
   }
-  return question.op === 'picture' ? value : formatNumber(value)
+  return typeof value === 'string' ? value : formatNumber(value)
 }
 
 function hintText(question, t) {
   if (isReading(question)) {
     return t('play.hintHelpRead')
+  }
+  if (question.time) {
+    return t(question.op === 'clockWords' || question.op === 'digitalWords' ? 'play.hintHelpClockWords' : 'play.hintHelpClock')
   }
   if (question.op === 'sqrt' && question.choices) {
     return t('play.hintHelpSqrt', { side: Math.floor(Math.sqrt(question.terms[0])) })
@@ -138,6 +152,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
   const handleChoose = useCallback((value) => dispatch({ type: 'choose', value, now: Date.now() }), [])
   const { choices } = state.question
   const reading = isReading(state.question)
+  const clock = Boolean(state.question.time)
   const showKeypad = !choices && (touch || keypad)
 
   // Pressing an on-screen key moves focus off the answer box; put it back
@@ -200,6 +215,13 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
             step={state.vizStep}
             onSettled={handleSettled}
           />
+        ) : clock ? (
+          <TimeCard
+            key={`${state.questionNumber}-${state.question.key}`}
+            question={state.question}
+            step={state.vizStep}
+            onSettled={handleSettled}
+          />
         ) : (
           <Visualization
             key={`${state.questionNumber}-${state.question.key}`}
@@ -210,7 +232,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
         )}
       </section>
 
-      {!reading && (
+      {!reading && !clock && (
         <Equation
           key={state.questionNumber}
           question={state.question}
@@ -234,12 +256,17 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
             key={state.questionNumber}
             choices={choices}
             answer={state.question.answer}
-            chosen={state.phase === 'answering' ? null : reading ? state.input : Number(state.input)}
+            chosen={state.phase === 'answering' ? null : typeof state.question.answer === 'string' ? state.input : Number(state.input)}
             revealed={state.phase !== 'answering'}
             onChoose={handleChoose}
-            as={reading ? (state.question.op === 'word' ? 'words' : 'emoji') : state.question.choicesAs}
+            as={choicesAs(state.question)}
             wordCase={state.question.case}
             removed={state.hinted ? state.question.hintRemoves : undefined}
+            clock={
+              clock
+                ? { numbers: state.question.numbers, hint: state.vizStep >= HINT_FRAME ? 'minutes' : null }
+                : undefined
+            }
             // Picking the dots for a number is about counting them, not
             // matching the number's shape.
             numbersFirst={state.question.op !== 'count'}

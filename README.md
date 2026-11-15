@@ -1,6 +1,6 @@
 # Mathius
 
-A math and reading practice game for kids. Each math question comes with
+A math, reading and telling-the-time practice game for kids. Each math question comes with
 a picture made of dots that helps find the answer: press **Hint** to see the dots rearranged
 so the answer can be counted, and after answering the picture shows the
 solution.
@@ -26,6 +26,12 @@ solution.
   from short words in capitals to all words in lowercase, where the
   wrong words look like the right one. The words (`src/game/words.js`)
   follow the app's language, and a hint takes away two wrong answers
+- Telling the time, in four games: an analog clock to read as a digital
+  time or in words ("fem i halv nio"), and a digital time to say in
+  words or find the clock for. Levels go from whole hours to every five
+  minutes, then 24-hour digital times or clocks without numbers. Hands
+  and digits share colors (hours purple, minutes orange), and a hint
+  writes the minutes around the clock
 - On easier levels some pictures start half solved; `guided` in
   `src/game/config.js` sets which, per level
 - Rounds of 10 questions, or a timer (30 s, 1 min or 2 min)
