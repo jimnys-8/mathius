@@ -1,10 +1,6 @@
-import { useEffect, useRef } from 'react'
 import { showWord } from '../game/reading.js'
-import { SOLUTION_FRAME } from '../viz/scenes.js'
+import { useSolutionSettled } from './useSolutionSettled.js'
 import './ReadingCard.css'
-
-// How long the solution takes to appear; see ReadingCard.css.
-const SOLUTION_MS = 500
 
 /**
  * The picture for a reading question: a big emoji to find the word for,
@@ -17,18 +13,7 @@ const SOLUTION_MS = 500
  * @param {(frame: number) => void} [props.onSettled]
  */
 export default function ReadingCard({ question, step, onSettled }) {
-  const solved = step >= SOLUTION_FRAME
-  const onSettledRef = useRef(onSettled)
-  useEffect(() => {
-    onSettledRef.current = onSettled
-  }, [onSettled])
-  useEffect(() => {
-    if (!solved) {
-      return undefined
-    }
-    const timer = setTimeout(() => onSettledRef.current?.(SOLUTION_FRAME), SOLUTION_MS)
-    return () => clearTimeout(timer)
-  }, [solved])
+  const solved = useSolutionSettled(step, onSettled)
 
   const pictureFirst = question.op === 'word'
   const [emoji, word] = pictureFirst ? question.terms : [question.terms[1], question.terms[0]]
