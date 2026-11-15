@@ -53,7 +53,8 @@ function choiceForKey(key, choices, byValue) {
  * below. With `numbersFirst` off, the numeral only appears once answered,
  * for questions where it would give the answer away.
  *
- * With `as="words"` the choices are words, shown in `wordCase`, and with
+ * With `as="words"` the choices are words, shown in `wordCase` (single
+ * letters with `as="letters"`), and with
  * `as="emoji"` they are emojis. Choices in `removed` (taken away by a
  * hint) can't be picked.
  *
@@ -95,7 +96,7 @@ export default function ChoiceAnswers({
   }, [choices, byValue, revealed, onChoose, removed])
 
   let label = formatNumber
-  if (as === 'words') {
+  if (as === 'words' || as === 'letters') {
     label = (choice) => showWord(choice, wordCase)
   } else if (as === 'emoji' || as === 'phrases') {
     label = (choice) => choice

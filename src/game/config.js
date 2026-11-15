@@ -11,6 +11,7 @@ export const OPERATIONS = {
   eq: { id: 'eq', symbol: 'x' },
   word: { id: 'word', symbol: 'Abc' },
   picture: { id: 'picture', symbol: '🐈' },
+  letter: { id: 'letter', symbol: 'A_C' },
   clockDigital: { id: 'clockDigital', symbol: '🕗' },
   clockWords: { id: 'clockWords', symbol: '🕗' },
   digitalWords: { id: 'digitalWords', symbol: '8:00' },
@@ -120,6 +121,18 @@ const EQUATION_LEVELS = [
  * then lowercase letters, then wrong options that look like the answer.
  * `maxLength` counts letters.
  */
+/**
+ * Missing letter: first the first letter of short words, then any letter,
+ * then lowercase, then all words with wrong letters that look or sound
+ * like the right one.
+ */
+const LETTER_LEVELS = [
+  { id: 1, letter: { maxLength: 4, position: 'first', case: 'upper', distractors: 'far' } },
+  { id: 2, letter: { maxLength: 5, position: 'any', case: 'upper', distractors: 'far' } },
+  { id: 3, letter: { maxLength: 6, position: 'any', case: 'lower', distractors: 'far' } },
+  { id: 4, letter: { position: 'any', case: 'lower', distractors: 'near' } },
+]
+
 const READING_LEVELS = [
   { id: 1, read: { maxLength: 4, case: 'upper', distractors: 'distinct' } },
   { id: 2, read: { maxLength: 6, case: 'upper', distractors: 'any' } },
@@ -171,6 +184,7 @@ export const CATEGORIES = [
   // Reading: pick the word for a picture, or the picture for a word.
   { id: 'word', symbol: 'Abc', ops: ['word'], levels: READING_LEVELS },
   { id: 'picture', symbol: '🐈', ops: ['picture'], levels: READING_LEVELS },
+  { id: 'letter', symbol: 'A_C', ops: ['letter'], levels: LETTER_LEVELS },
   // Telling the time, from an analog clock or from a digital one.
   {
     id: 'clockDigital',
@@ -189,7 +203,7 @@ export const CATEGORIES = [
  */
 export const AREAS = [
   { id: 'math', categories: ['count', 'add', 'sub', 'mul', 'div', 'mix', 'sqrt', 'eq'] },
-  { id: 'reading', categories: ['word', 'picture'] },
+  { id: 'reading', categories: ['word', 'picture', 'letter'] },
   { id: 'time', categories: ['clockDigital', 'clockWords', 'digitalWords', 'digitalClock'] },
 ]
 

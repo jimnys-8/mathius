@@ -25,7 +25,10 @@ solution.
   *Which picture?* a word to pick the emoji for, among four. Levels go
   from short words in capitals to all words in lowercase, where the
   wrong words look like the right one. The words (`src/game/words.js`)
-  follow the app's language, and a hint takes away two wrong answers
+  follow the app's language, and a hint takes away two wrong answers.
+  *Which letter?* shows an emoji and its word with a letter missing, to
+  pick from four: first the first letter of short words, then any letter,
+  then lowercase, then wrong letters that look or sound alike (b d p)
 - Telling the time, in four games: an analog clock to read as a digital
   time or in words ("fem i halv nio"), and a digital time to say in
   words or find the clock for. Levels go from whole hours to every five

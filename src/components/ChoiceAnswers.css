@@ -157,6 +157,22 @@
   color: var(--color-wrong);
 }
 
+.choice-answers.is-letters .choice-answer {
+  min-height: 5rem;
+  font-size: 2.8rem;
+  color: var(--color-ink);
+}
+
+.choice-answers.is-letters .choice-answer.is-correct {
+  color: var(--color-correct);
+}
+
+/* Struck through, a single letter would look like another letter. */
+.choice-answers.is-letters .choice-answer.is-wrong {
+  color: var(--color-wrong);
+  text-decoration: none;
+}
+
 .choice-answers.is-emoji .choice-answer {
   min-height: 6rem;
   font-size: clamp(3.2rem, 14vw, 4.2rem);

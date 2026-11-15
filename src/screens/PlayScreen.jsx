@@ -3,6 +3,7 @@ import ChoiceAnswers from '../components/ChoiceAnswers.jsx'
 import Countdown from '../components/Countdown.jsx'
 import Equation from '../components/Equation.jsx'
 import Icon from '../components/Icon.jsx'
+import LetterCard from '../components/LetterCard.jsx'
 import Numpad from '../components/Numpad.jsx'
 import ReadingCard from '../components/ReadingCard.jsx'
 import TimeCard from '../components/TimeCard.jsx'
@@ -32,12 +33,15 @@ function choicesAs(question) {
   if (isReading(question)) {
     return question.op === 'word' ? 'words' : 'emoji'
   }
+  if (question.op === 'letter') {
+    return 'letters'
+  }
   return CLOCK_CHOICES[question.op] ?? question.choicesAs
 }
 
 /** An answer as the question shows it: a number, a word or an emoji. */
 function formatAnswer(question, value, formatNumber) {
-  if (question.op === 'word') {
+  if (question.op === 'word' || question.op === 'letter') {
     return showWord(value, question.case)
   }
   return typeof value === 'string' ? value : formatNumber(value)
@@ -46,6 +50,9 @@ function formatAnswer(question, value, formatNumber) {
 function hintText(question, t) {
   if (isReading(question)) {
     return t('play.hintHelpRead')
+  }
+  if (question.op === 'letter') {
+    return t('play.hintHelpLetter')
   }
   if (question.time) {
     return t(question.op === 'clockWords' || question.op === 'digitalWords' ? 'play.hintHelpClockWords' : 'play.hintHelpClock')
@@ -153,6 +160,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
   const { choices } = state.question
   const reading = isReading(state.question)
   const clock = Boolean(state.question.time)
+  const letter = state.question.op === 'letter'
   const showKeypad = !choices && (touch || keypad)
 
   // Pressing an on-screen key moves focus off the answer box; put it back
@@ -215,6 +223,13 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
             step={state.vizStep}
             onSettled={handleSettled}
           />
+        ) : letter ? (
+          <LetterCard
+            key={`${state.questionNumber}-${state.question.key}`}
+            question={state.question}
+            step={state.vizStep}
+            onSettled={handleSettled}
+          />
         ) : clock ? (
           <TimeCard
             key={`${state.questionNumber}-${state.question.key}`}
@@ -232,7 +247,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
         )}
       </section>
 
-      {!reading && !clock && (
+      {!reading && !clock && !letter && (
         <Equation
           key={state.questionNumber}
           question={state.question}

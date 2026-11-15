@@ -1,4 +1,5 @@
 import { OPERATIONS, getCategory, getLevel } from './config.js'
+import { createLetterQuestion } from './letters.js'
 import { createReadingQuestion } from './reading.js'
 import { createTimeQuestion } from './time.js'
 import { DEFAULT_LANGUAGE } from '../i18n/strings.js'
@@ -18,12 +19,14 @@ import { DEFAULT_LANGUAGE } from '../i18n/strings.js'
  *
  * Reading questions ('word' and 'picture', see reading.js) have a word
  * and an emoji as terms, and a string answer picked from `choices`.
+ * Missing-letter questions ('letter', see letters.js) have the emoji,
+ * the word with "_" for a letter, and that letter as terms.
  * Clock questions (see time.js) are alike, with what is shown and the
  * answer as terms, and the time itself in `time`.
  *
  * @typedef {Object} Question
  * @property {string} op  'count', 'add', 'sub', 'mul', 'div', 'sqrt', 'eq',
- *   'word', 'picture', 'clockDigital', 'clockWords', 'digitalWords' or 'digitalClock'
+ *   'word', 'picture', 'letter', 'clockDigital', 'clockWords', 'digitalWords' or 'digitalClock'
  * @property {Array<number|string>} terms
  * @property {0|1|2} unknown
  * @property {number|string} answer   terms[unknown]
@@ -255,6 +258,8 @@ export function createQuestion({ category, level, avoid = [], lang = DEFAULT_LAN
       question = createEquationQuestion(levelConfig.eq, rng)
     } else if (op === 'word' || op === 'picture') {
       question = createReadingQuestion(op, levelConfig.read, lang, rng)
+    } else if (op === 'letter') {
+      question = createLetterQuestion(levelConfig.letter, lang, rng)
     } else if (levelConfig.time) {
       question = createTimeQuestion(op, levelConfig.time, lang, rng)
     } else {

@@ -26,6 +26,7 @@ const CATEGORY_COLORS = {
   eq: '#a14fc4',
   word: '#c26a1b',
   picture: '#5b6bd6',
+  letter: '#2a9d8f',
   clockDigital: '#d1495b',
   clockWords: '#d1495b',
   digitalWords: '#d1495b',

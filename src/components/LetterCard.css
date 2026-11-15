@@ -1,0 +1,44 @@
+/* The missing letter's slot: as wide as a letter, underlined, filled in
+   with the right letter when the question is solved. */
+.letter-gap {
+  position: relative;
+  display: inline-block;
+  min-width: 0.7em;
+  margin: 0 0.05em;
+  text-align: center;
+}
+
+/* Just under the letters' baseline, like a line to write on. */
+.letter-gap::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.1em;
+  height: 0.08em;
+  border-radius: 0.04em;
+  background: var(--color-c);
+}
+
+.letter-gap-letter {
+  display: inline-block;
+  color: var(--color-c);
+  visibility: hidden;
+  opacity: 0;
+  transform: scale(0.6);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.is-solved .letter-gap-letter {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .letter-gap-letter {
+    transition: none;
+  }
+}

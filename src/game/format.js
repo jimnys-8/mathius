@@ -13,6 +13,10 @@ export function formatFact({ key, op, answer }, formatNumber = String) {
   if (op === 'word' || op === 'picture') {
     return key.replace('=', ' ')
   }
+  if (op === 'letter') {
+    // "🐈=k_tt" with answer "a": the emoji and the whole word.
+    return key.replace('=', ' ').replace('_', answer)
+  }
   if (op in CLOCK_FACTS) {
     // Keys are "op:shown=answer", e.g. "clockWords:8:20=tjugo över åtta".
     const [shown, said] = key.slice(op.length + 1).split('=')

@@ -47,6 +47,7 @@ const en = {
   'category.eq': 'Equations',
   'category.word': 'Which word?',
   'category.picture': 'Which picture?',
+  'category.letter': 'Which letter?',
   'category.clockDigital': 'Clock → digital',
   'category.clockWords': 'Clock → words',
   'category.digitalWords': 'Digital → words',
@@ -83,6 +84,10 @@ const en = {
     3: 'Small letters: zebra',
     4: 'All words, and they look alike',
   }),
+  'level.letter.1.desc': 'The first letter: _AT',
+  'level.letter.2.desc': 'Any letter: ZE_RA',
+  'level.letter.3.desc': 'Small letters: ze_ra',
+  'level.letter.4.desc': 'All words, letters that look alike',
   ...timeLevels(
     { 1: 'Whole hours: 8:00', 2: 'Half hours: 8:30', 3: 'Quarters: 8:15, 8:45', 4: 'Every five minutes: 8:20' },
     {
@@ -139,6 +144,7 @@ const en = {
   'play.hintHelpEqAdd': 'The left side is {b} short. Add {b} to both sides!',
   'play.hintHelpEqShare': 'Share the dots equally between the {a} bags.',
   'play.hintHelpRead': 'Two wrong answers are gone. Read carefully!',
+  'play.hintHelpLetter': 'Two wrong letters are gone. Say the word slowly!',
   'play.hintHelpClock': 'The short hand shows the hour, the long hand the minutes.',
   'play.hintHelpClockWords': 'Minute hand on the right: after the hour. On the left: to the next hour.',
   'play.chooseAnswer': 'Choose an answer',
@@ -212,6 +218,7 @@ const sv = {
   'category.eq': 'Ekvationer',
   'category.word': 'Vilket ord?',
   'category.picture': 'Vilken bild?',
+  'category.letter': 'Vilken bokstav?',
   'category.clockDigital': 'Klocka → digital',
   'category.clockWords': 'Klocka → ord',
   'category.digitalWords': 'Digital → ord',
@@ -248,6 +255,10 @@ const sv = {
     3: 'Små bokstäver: zebra',
     4: 'Alla ord, och de liknar varandra',
   }),
+  'level.letter.1.desc': 'Första bokstaven: _ATT',
+  'level.letter.2.desc': 'Vilken bokstav som helst: ZE_RA',
+  'level.letter.3.desc': 'Små bokstäver: ze_ra',
+  'level.letter.4.desc': 'Alla ord, bokstäver som liknar varandra',
   ...timeLevels(
     { 1: 'Hela timmar: 8:00', 2: 'Halvtimmar: 8:30', 3: 'Kvartar: 8:15, 8:45', 4: 'Var femte minut: 8:20' },
     {
@@ -304,6 +315,7 @@ const sv = {
   'play.hintHelpEqAdd': 'Vänster sida saknar {b}. Lägg till {b} på båda sidorna!',
   'play.hintHelpEqShare': 'Dela prickarna lika mellan de {a} påsarna.',
   'play.hintHelpRead': 'Två fel svar är borta. Läs noga!',
+  'play.hintHelpLetter': 'Två fel bokstäver är borta. Säg ordet långsamt!',
   'play.hintHelpClock': 'Den korta visaren visar timmen, den långa minuterna.',
   'play.hintHelpClockWords': 'Minutvisaren till höger: över timmen. Till vänster: i nästa timme.',
   'play.chooseAnswer': 'Välj ett svar',

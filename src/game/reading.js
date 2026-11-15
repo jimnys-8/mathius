@@ -23,7 +23,7 @@ const CHOICES = 4
 // How many look-alikes to choose the wrong options among, for variety.
 const ALIKE_POOL = 6
 
-function shuffle(items, rng) {
+export function shuffle(items, rng) {
   const result = [...items]
   for (let index = result.length - 1; index > 0; index -= 1) {
     const other = Math.floor(rng() * (index + 1))
