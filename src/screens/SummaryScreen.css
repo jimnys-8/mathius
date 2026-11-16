@@ -74,6 +74,7 @@
 
 .summary-list li {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   gap: 0.5rem;
 }
@@ -98,6 +99,7 @@
 
 .summary-given {
   font-size: 0.85em;
+  white-space: nowrap;
   color: var(--color-wrong);
 }
 
