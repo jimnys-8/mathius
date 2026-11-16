@@ -1,7 +1,7 @@
 import { makeFigure, parseFigure } from '../game/shapes.js'
 import './Figure.css'
 
-// Each shape fits a circle of radius 1 around (0, 0), pointing up.
+// Each shape fits a circle of radius 1 around (0, 0). An arrow points up, a heart down.
 const SHAPE_PATHS = {
   circle: <circle r={0.92} />,
   square: <rect x={-0.8} y={-0.8} width={1.6} height={1.6} rx={0.16} />,
@@ -58,7 +58,7 @@ const DIE = {
 }
 
 // How big a figure is (its radius in the box): alone or one of several.
-const RADIUS = { big: [44, 13], small: [25, 8] }
+const RADIUS = { big: [44, 13], small: [20, 7] }
 
 // The rim, in box units, so big and small figures share one line width.
 const RIM = { solid: 3.5, outline: 7 }
