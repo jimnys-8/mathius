@@ -18,6 +18,7 @@ export const OPERATIONS = {
   digitalWords: { id: 'digitalWords', symbol: '8:00' },
   digitalClock: { id: 'digitalClock', symbol: '8:00' },
   odd: { id: 'odd', symbol: '🧩' },
+  series: { id: 'series', symbol: '246' },
 }
 
 /**
@@ -201,6 +202,24 @@ const ODD_LEVELS = [
   { id: 5, odd: { numbers: 30 } },
 ]
 
+/**
+ * Number series (see src/game/series.js): find the missing number. First
+ * dots that grow by one, then +1, counting by 2, 5 and 10, any step with
+ * the gap anywhere, two steps taking turns and growing steps, then
+ * doubling, halving and square numbers. Expert mixes the last three
+ * levels and the answer is typed, not picked.
+ */
+const HARD_SERIES = ['any', 'alternate', 'growing', 'double', 'triple', 'half', 'square']
+const SERIES_LEVELS = [
+  { id: 0, series: { kinds: ['one'], gap: 'last', min: 1, max: 10, show: 'dots' } },
+  { id: 1, series: { kinds: ['one'], gap: 'last', max: 20 } },
+  { id: 2, series: { kinds: ['skip'], gap: 'last', max: 100 } },
+  { id: 3, series: { kinds: ['any'], gap: 'any', max: 100 } },
+  { id: 4, series: { kinds: ['alternate', 'growing'], gap: 'any' } },
+  { id: 5, series: { kinds: ['double', 'triple', 'half', 'square'], gap: 'any' } },
+  { id: 6, series: { kinds: HARD_SERIES, gap: 'any', max: 100, input: 'keypad' } },
+]
+
 /** Timer choices in seconds; 0 means no timer. */
 export const TIMER_OPTIONS = [0, 30, 60, 120]
 
@@ -238,8 +257,9 @@ export const CATEGORIES = [
   { id: 'clockWords', symbol: '🕗', ops: ['clockWords'], levels: [...TIME_BASICS, { id: 5, time: TIME_NO_NUMBERS }] },
   { id: 'digitalWords', symbol: '8:00', ops: ['digitalWords'], levels: [...TIME_BASICS, { id: 5, time: TIME_24 }] },
   { id: 'digitalClock', symbol: '8:00', ops: ['digitalClock'], levels: [...TIME_BASICS, { id: 5, time: TIME_24 }] },
-  // Patterns: which one doesn't fit?
+  // Patterns: which one doesn't fit, and which number is missing?
   { id: 'odd', symbol: '🧩', ops: ['odd'], levels: ODD_LEVELS },
+  { id: 'series', symbol: '246', ops: ['series'], levels: SERIES_LEVELS },
 ]
 
 /**
@@ -250,7 +270,7 @@ export const AREAS = [
   { id: 'math', categories: ['count', 'add', 'sub', 'mul', 'div', 'mix', 'sqrt', 'eq', 'fraction'] },
   { id: 'reading', categories: ['word', 'picture', 'letter'] },
   { id: 'time', categories: ['clockDigital', 'clockWords', 'digitalWords', 'digitalClock'] },
-  { id: 'patterns', categories: ['odd'] },
+  { id: 'patterns', categories: ['odd', 'series'] },
 ]
 
 /** The area a category belongs to. */

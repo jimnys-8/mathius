@@ -48,6 +48,9 @@ function check(question) {
     case 'odd':
       // Checked in detail in oddOneOut.test.js.
       return a === question.group && b === question.answer && question.choices.includes(b)
+    case 'series':
+      // Checked in detail in series.test.js.
+      return question.choices === undefined || question.choices.includes(question.answer)
     default:
       return false
   }
