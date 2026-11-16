@@ -227,6 +227,11 @@
   width: min(4rem, 70%);
 }
 
+/* Spot tiles hold small figures far apart, so they get more room. */
+.choice-figure.is-spots {
+  width: min(5.5rem, 80%);
+}
+
 /* Taken away by a hint. */
 .choice-answer.is-removed {
   opacity: 0.2;

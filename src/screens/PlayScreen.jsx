@@ -5,6 +5,7 @@ import Equation from '../components/Equation.jsx'
 import FractionCard from '../components/FractionCard.jsx'
 import Icon from '../components/Icon.jsx'
 import LetterCard from '../components/LetterCard.jsx'
+import MatrixCard from '../components/MatrixCard.jsx'
 import Numpad from '../components/Numpad.jsx'
 import OddCard from '../components/OddCard.jsx'
 import ReadingCard from '../components/ReadingCard.jsx'
@@ -48,7 +49,7 @@ function choicesAs(question) {
   if (question.op === 'odd') {
     return question.show
   }
-  if (question.op === 'shapes') {
+  if (question.op === 'shapes' || question.op === 'matrix') {
     return 'figures'
   }
   return CLOCK_CHOICES[question.op] ?? question.choicesAs
@@ -83,6 +84,10 @@ function hintText(question, t) {
     // One attribute repeating says which one: "Titta på färgerna."
     return t(`play.hintHelpShapes.${question.kind === 'one' ? question.rules[0].attributes[0] : question.kind}`)
   }
+  if (question.op === 'matrix') {
+    // A step says what steps: "Räkna formerna i varje ruta."
+    return t(`play.hintHelpMatrix.${question.kind === 'step' ? question.rules[0].attribute : question.kind}`)
+  }
   if (question.op === 'fraction') {
     const [first, second] = pictureFractions(question.terms[0])
     return t(`play.hintHelpFraction.${second && first[1] !== second[1] ? 'addCommon' : question.kind}`)
@@ -112,7 +117,7 @@ function feedbackText(state, i18n) {
   if (state.lastCorrect) {
     return t('play.praise', { index: state.questionNumber })
   }
-  if (state.question.op === 'shapes') {
+  if (state.question.op === 'shapes' || state.question.op === 'matrix') {
     // A figure has no short name; the gap and the buttons show it.
     return t('play.wrongShape')
   }
@@ -226,6 +231,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
   const odd = state.question.op === 'odd'
   const series = state.question.op === 'series'
   const shapes = state.question.op === 'shapes'
+  const matrix = state.question.op === 'matrix'
   const answering = state.phase === 'answering'
   const hintButton = (
     <button type="button" className="btn btn-large" onClick={handleHint} disabled={!answering || state.vizStep > 0}>
@@ -323,6 +329,14 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
             onSettled={handleSettled}
             status={status}
           />
+        ) : matrix ? (
+          <MatrixCard
+            key={`${state.questionNumber}-${state.question.key}`}
+            question={state.question}
+            step={state.vizStep}
+            onSettled={handleSettled}
+            status={status}
+          />
         ) : fraction ? (
           <FractionCard
             key={`${state.questionNumber}-${state.question.key}`}
@@ -354,7 +368,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
         )}
       </section>
 
-      {!reading && !clock && !letter && !fraction && !odd && !series && !shapes && (
+      {!reading && !clock && !letter && !fraction && !odd && !series && !shapes && !matrix && (
         <Equation
           key={state.questionNumber}
           question={state.question}
@@ -393,6 +407,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
             // matching the number's shape.
             numbersFirst={state.question.op !== 'count'}
             dotGrid={series ? SERIES_DOT_GRID : undefined}
+            figurePips={matrix && state.question.pips}
           />
           <ActionPair
             hint={hintButton}

@@ -37,6 +37,7 @@ const CATEGORY_COLORS = {
   odd: '#0f7c8c',
   series: '#6b5bd6',
   shapes: '#c2477a',
+  matrix: '#2f7d4f',
 }
 
 const CLOCK_ICON = <AnalogClock className="setup-clock-icon" hour={8} minute={0} numbers={false} />
@@ -104,10 +105,27 @@ const SHAPES_ICON = (
   </span>
 )
 
+/** Matrix: three colors, one of each in every row and column, and the gap. */
+const MATRIX_COLORS = ['red', 'blue', 'yellow']
+const MATRIX_ICON = (
+  <svg className="setup-matrix-icon" viewBox="0 0 30 30" aria-hidden="true">
+    {Array.from({ length: 8 }, (_, index) => {
+      const [row, col] = [Math.floor(index / 3), index % 3]
+      return (
+        <g key={index} className={`figure-spot is-${MATRIX_COLORS[(row + col) % 3]}`}>
+          <circle className="figure-shape" cx={5 + col * 10} cy={5 + row * 10} r={3.8} />
+        </g>
+      )
+    })}
+    <rect className="setup-matrix-gap" x={21.2} y={21.2} width={7.6} height={7.6} rx={1.4} />
+  </svg>
+)
+
 const CATEGORY_ICONS = {
   odd: ODD_ICON,
   series: SERIES_ICON,
   shapes: SHAPES_ICON,
+  matrix: MATRIX_ICON,
   mix: '+−×÷',
   // An italic x, so it isn't mistaken for a times sign.
   eq: (

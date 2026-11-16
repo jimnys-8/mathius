@@ -192,6 +192,23 @@
   width: 0.75em;
 }
 
+.setup-matrix-icon {
+  width: 1.15em;
+  height: 1.15em;
+  vertical-align: middle;
+}
+
+.setup-matrix-icon .figure-shape {
+  stroke-width: 0.8;
+}
+
+.setup-matrix-gap {
+  fill: none;
+  stroke: var(--color-b);
+  stroke-width: 1;
+  stroke-dasharray: 1.6 1.2;
+}
+
 .setup-series-gap {
   padding: 0 0.2em;
   border: 0.1em dashed var(--color-b);

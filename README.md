@@ -71,8 +71,19 @@ solution.
   a mix with eighth turns and AABB. A hint draws a bracket under each
   round of what repeats and arcs for turns and counts, one row per rule.
   Each wrong choice breaks the pattern somewhere. Figures
-  (`src/game/shapes.js`, `src/components/Figure.jsx`) are meant for more
-  pattern games; the series rules are in `src/game/shapeSeries.js`
+  (`src/game/shapes.js`, `src/components/Figure.jsx`) are shared with
+  the matrices; the series rules are in `src/game/shapeSeries.js`
+- Patterns: *Which box is missing?* shows a 3×3 grid of figures with a
+  tile missing and four tiles to pick from. Levels: the same figure along
+  each row, one of each in every row and column, a table (the row decides
+  the color, the column the shape or count), shapes and colors each one
+  of each in different orders or counts and turns that step along the
+  rows, tiles put together (tile 1 + tile 2 = tile 3 along the rows and
+  down the columns, with small figures in fixed spots), and a mix with
+  counts that add up. A hint draws each rule: what each row has right of
+  it and each column below it, +1 or a turn between tiles, and + and =
+  for putting together. No wrong choice fits the rules; they are in
+  `src/game/matrix.js`
 - Levels unlock one at a time: a round with at least 9 right and at most
   1 wrong (timed or not) opens the next level, and the summary says so.
   The easy level, and the Dots level below it, are always open. Under

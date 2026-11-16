@@ -65,7 +65,7 @@ function choiceForKey(key, choices, byValue) {
  * times written "8:20", with `clock` options for AnalogClock. With
  * `as="fractions"` the choices are fractions ("stacked:3/4", see
  * fractions.js). With `as="figures"` they are figure keys (see shapes.js),
- * drawn.
+ * drawn, with `figurePips` for Figure's `pips`.
  */
 export default function ChoiceAnswers({
   choices,
@@ -79,6 +79,7 @@ export default function ChoiceAnswers({
   removed = NONE,
   clock = undefined,
   dotGrid = undefined,
+  figurePips = false,
 }) {
   const { t, formatNumber } = useI18n()
   const byValue = choices.every((choice) => Number.isInteger(choice))
@@ -111,7 +112,7 @@ export default function ChoiceAnswers({
   } else if (as === 'fractions') {
     label = (choice) => <FractionChoice choice={choice} />
   } else if (as === 'figures') {
-    label = (choice) => <Figure figure={choice} className="choice-figure" />
+    label = (choice) => <Figure figure={choice} pips={figurePips} className="choice-figure" />
   } else if (as === 'clock') {
     label = (choice) => <AnalogClock {...parseClock(choice)} {...clock} />
   }
