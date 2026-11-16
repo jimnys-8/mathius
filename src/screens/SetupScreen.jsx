@@ -34,6 +34,7 @@ const CATEGORY_COLORS = {
   digitalWords: '#d1495b',
   digitalClock: '#d1495b',
   odd: '#0f7c8c',
+  series: '#6b5bd6',
 }
 
 const CLOCK_ICON = <AnalogClock className="setup-clock-icon" hour={8} minute={0} numbers={false} />
@@ -84,8 +85,16 @@ const ODD_ICON = (
   </span>
 )
 
+/** Number series: three numbers and the missing one. */
+const SERIES_ICON = (
+  <span className="setup-series-icon">
+    2 4 6 <span className="setup-series-gap">?</span>
+  </span>
+)
+
 const CATEGORY_ICONS = {
   odd: ODD_ICON,
+  series: SERIES_ICON,
   mix: '+−×÷',
   // An italic x, so it isn't mistaken for a times sign.
   eq: (

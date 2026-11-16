@@ -54,6 +54,7 @@ const en = {
   'category.digitalWords': 'Digital → words',
   'category.digitalClock': 'Digital → clock',
   'category.odd': 'Odd one out',
+  'category.series': 'Which number is missing?',
 
   'level.0.name': 'Dots',
   'level.0.desc': 'Count up to 10, answer with dots',
@@ -100,6 +101,13 @@ const en = {
   'level.odd.3.desc': 'Colors, wings and size',
   'level.odd.4.desc': 'Read the words',
   'level.odd.5.desc': 'Numbers: even, odd, times tables',
+  'level.series.0.desc': 'One dot more or less each time',
+  'level.series.1.desc': 'One at a time: 3 4 5 6',
+  'level.series.2.desc': 'Count by 2, 5 or 10',
+  'level.series.3.desc': 'Any step, the gap can be anywhere',
+  'level.series.4.desc': 'Two steps taking turns, growing steps',
+  'level.series.5.desc': 'Double, half and square numbers',
+  'level.series.6.desc': 'All of it mixed, type the answer',
   ...timeLevels(
     { 1: 'Whole hours: 8:00', 2: 'Half hours: 8:30', 3: 'Quarters: 8:15, 8:45', 4: 'Every five minutes: 8:20' },
     {
@@ -160,6 +168,8 @@ const en = {
   'play.hintHelpRead': 'Two wrong answers are gone. Read carefully!',
   'play.hintHelpLetter': 'Two wrong letters are gone. Say the word slowly!',
   'play.hintHelpOdd': 'Which three go together?',
+  'play.hintHelpSeries': 'Look at the steps between the numbers.',
+  'play.hintHelpSquares': 'A number times itself.',
   'play.oddPrompt': "Which one doesn't fit?",
   'play.oddClue': 'Three of them {phrase}.',
   'play.oddButNot': 'but not',
@@ -248,6 +258,7 @@ const sv = {
   'category.digitalWords': 'Digital → ord',
   'category.digitalClock': 'Digital → klocka',
   'category.odd': 'Vilken passar inte?',
+  'category.series': 'Vilket tal fattas?',
 
   'level.0.name': 'Prickar',
   'level.0.desc': 'Räkna upp till 10, svara med prickar',
@@ -294,6 +305,13 @@ const sv = {
   'level.odd.3.desc': 'Färger, vingar och storlek',
   'level.odd.4.desc': 'Läs orden',
   'level.odd.5.desc': 'Tal: jämna, udda, tabeller',
+  'level.series.0.desc': 'En prick mer eller mindre varje gång',
+  'level.series.1.desc': 'Ett i taget: 3 4 5 6',
+  'level.series.2.desc': 'Räkna med 2, 5 eller 10 i taget',
+  'level.series.3.desc': 'Alla steg, talet kan fattas var som helst',
+  'level.series.4.desc': 'Två steg som turas om, steg som växer',
+  'level.series.5.desc': 'Dubbelt, hälften och kvadrattal',
+  'level.series.6.desc': 'Allt blandat, skriv svaret',
   ...timeLevels(
     { 1: 'Hela timmar: 8:00', 2: 'Halvtimmar: 8:30', 3: 'Kvartar: 8:15, 8:45', 4: 'Var femte minut: 8:20' },
     {
@@ -354,6 +372,8 @@ const sv = {
   'play.hintHelpRead': 'Två fel svar är borta. Läs noga!',
   'play.hintHelpLetter': 'Två fel bokstäver är borta. Säg ordet långsamt!',
   'play.hintHelpOdd': 'Vilka tre hör ihop?',
+  'play.hintHelpSeries': 'Titta på stegen mellan talen.',
+  'play.hintHelpSquares': 'Ett tal gånger sig självt.',
   'play.oddPrompt': 'Vilken passar inte in?',
   'play.oddClue': 'Tre av dem {phrase}.',
   'play.oddButNot': 'men inte',
