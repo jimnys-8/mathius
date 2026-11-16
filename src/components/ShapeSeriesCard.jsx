@@ -11,7 +11,7 @@ const MINUS = '−'
 /**
  * How far a turn rule turns: a faint dial with a thick arc over a
  * quarter or an eighth of it, ending in an arrowhead, clockwise or not,
- * for the arcs between turning arrows.
+ * for the arcs between turning shapes.
  */
 function TurnIcon({ step }) {
   const radius = 8
@@ -101,7 +101,7 @@ function hintMarks(question, figures, { hinted, solved }) {
 /**
  * A shape series with one tile missing. 💡 draws the rules: a bracket
  * under each round of what repeats (with only the repeating attribute
- * drawn, when the rest stays the same), and arcs between arrows that
+ * drawn, when the rest stays the same), and arcs between shapes that
  * turn or tiles that count up. Two rules get a row each. The solution
  * fills in the gap. Like Visualization, calls `onSettled(step)` once the
  * solution is shown.

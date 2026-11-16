@@ -97,6 +97,17 @@ describe('shape series questions', () => {
         expect(new Set(questions.map((question) => question.kind))).toEqual(new Set(shapes.kinds))
       })
 
+      it('turns arrows and hearts, by eighths only where the level allows', () => {
+        const turning = questions.filter((question) => question.rules.some((rule) => rule.type === 'turn'))
+        for (const question of turning) {
+          const { step } = question.rules.find((rule) => rule.type === 'turn')
+          expect(shapes.turns ?? [90]).toContain(Math.abs(step))
+        }
+        if (turning.length > 0) {
+          expect(new Set(turning.map((question) => parseFigure(question.terms[0]).shape))).toEqual(new Set(['arrow', 'heart']))
+        }
+      })
+
       it('puts the gap last on the first levels, anywhere later on', () => {
         const last = questions.filter((question) => question.unknown === question.terms.length - 1)
         if (shapes.gap === 'last') {

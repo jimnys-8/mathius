@@ -3,14 +3,14 @@
 // attributes:
 //
 //   repeat  a unit that repeats: AB AB, ABC ABC, AAB AAB, ABB ABB, AABB
-//   turn    an arrow turns the same way each step, a quarter or an eighth
+//   turn    an arrow or a heart turns the same way each step, a quarter or an eighth
 //   count   one more (or one fewer) figure each step, from 1 to 6
 //
 // The kinds of question, from easy to hard:
 //
 //   whole   the whole figure repeats (shape and color together)
 //   one     one attribute repeats (shape, color, size or fill), the rest stay
-//   turn    an arrow turns, its color stays
+//   turn    an arrow or a heart turns, its color stays
 //   count   the number of figures grows or shrinks, the figure stays
 //   two     two rules at once: shapes AB AB while colors ABC ABC, an arrow
 //           turning while colors take turns, or counting while shapes do
@@ -18,7 +18,7 @@
 // Every wrong choice breaks the pattern of at least one attribute, so
 // there is one right answer.
 
-import { COLORS, FILLS, MAX_COUNT, SHAPES, SIZES, figureKey, makeFigure } from './shapes.js'
+import { COLORS, FILLS, MAX_COUNT, SHAPES, SIZES, TURNING_SHAPES, figureKey, makeFigure } from './shapes.js'
 
 function randomInt(rng, min, max) {
   return min + Math.floor(rng() * (max - min + 1))
@@ -124,7 +124,7 @@ const KINDS = {
     const size = pick(rng, turns)
     const step = rng() < 2 / 3 ? size : -size
     const length = randomInt(rng, 5, 6)
-    const figures = combine(length, { shape: 'arrow', color: pick(rng, COLORS) }, { turn: turnValues(rng, step, length) })
+    const figures = combine(length, { shape: pick(rng, TURNING_SHAPES), color: pick(rng, COLORS) }, { turn: turnValues(rng, step, length) })
     return { figures, rules: [{ type: 'turn', step }] }
   },
   count(rng) {
@@ -162,7 +162,7 @@ const KINDS = {
       const length = randomInt(rng, 6, 7)
       const figures = combine(
         length,
-        { shape: 'arrow' },
+        { shape: pick(rng, TURNING_SHAPES) },
         {
           turn: turnValues(rng, step, length),
           color: repeatValues(colorUnit, pickDistinct(rng, COLORS, lettersIn(colorUnit)), length),
@@ -244,7 +244,7 @@ function pickGap(rng, length, gap) {
 /** Other values for an attribute, as a wrong choice would have them. */
 function otherValues(attribute, figure, figures) {
   if (attribute === 'turn') {
-    // The other ways an arrow points, quarter turns first.
+    // The other ways it points, quarter turns first.
     return [90, 180, 270, 45, 135, 225, 315].map((offset) => (figure.turn + offset) % 360)
   }
   if (attribute === 'count') {
@@ -267,9 +267,9 @@ function otherValues(attribute, figure, figures) {
 function wrongChoices(rng, figures, gap, rules, { fresh = false } = {}) {
   const answer = figures[gap]
   const varying = rules.flatMap((rule) => (rule.type === 'repeat' ? rule.attributes : [rule.type]))
-  // An arrow stays an arrow: other shapes would look odd turned.
+  // A turning shape stays that shape: other shapes would look odd turned.
   const steady = ['shape', 'color'].filter(
-    (attribute) => !varying.includes(attribute) && !(attribute === 'shape' && answer.shape === 'arrow'),
+    (attribute) => !varying.includes(attribute) && !(attribute === 'shape' && varying.includes('turn')),
   )
   const candidates = []
   if (fresh) {

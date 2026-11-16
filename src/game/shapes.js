@@ -9,8 +9,8 @@
 
 export const SHAPES = ['circle', 'square', 'triangle', 'star', 'heart', 'diamond']
 
-/** Shapes that point somewhere, so turning them shows. */
-export const TURNING_SHAPES = ['arrow']
+/** Shapes that point somewhere, so turning them shows: an arrow points up, a heart down. */
+export const TURNING_SHAPES = ['arrow', 'heart']
 
 export const COLORS = ['red', 'blue', 'yellow', 'green', 'purple']
 
@@ -23,7 +23,7 @@ export const MAX_COUNT = 6
 
 /** The values an attribute can take; `turn` is in degrees, clockwise from pointing up. */
 export const VALUES = {
-  shape: [...SHAPES, ...TURNING_SHAPES],
+  shape: [...new Set([...SHAPES, ...TURNING_SHAPES])],
   color: COLORS,
   size: SIZES,
   fill: FILLS,
