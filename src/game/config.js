@@ -20,6 +20,7 @@ export const OPERATIONS = {
   odd: { id: 'odd', symbol: '🧩' },
   series: { id: 'series', symbol: '246' },
   shapes: { id: 'shapes', symbol: '🔷' },
+  matrix: { id: 'matrix', symbol: '🔳' },
 }
 
 /**
@@ -244,6 +245,23 @@ const SHAPE_LEVELS = [
   { id: 5, shapes: { kinds: ['one', 'turn', 'count', 'two'], gap: 'any', units: [...REPEAT_UNITS, 'AABB'], turns: [90, 45] } },
 ]
 
+/**
+ * Matrices (see src/game/matrix.js): find the missing tile in a 3×3
+ * grid. First a figure per row; then three figures, one of each in every
+ * row and column; then a table, where the row decides one thing and the
+ * column another; then shapes and colors each one of each, or counts and
+ * turns that step along the rows; then spot tiles put together. Mästare
+ * mixes the last ones, with counts that add up.
+ */
+const MATRIX_LEVELS = [
+  { id: 0, matrix: { kinds: ['rows'], gap: 'last', fresh: true } },
+  { id: 1, matrix: { kinds: ['latin'], gap: 'last' } },
+  { id: 2, matrix: { kinds: ['table'], gap: 'any' } },
+  { id: 3, matrix: { kinds: ['twoLatin', 'step'], gap: 'any' } },
+  { id: 4, matrix: { kinds: ['union'], gap: 'any' } },
+  { id: 5, matrix: { kinds: ['twoLatin', 'step', 'union', 'sum'], gap: 'any', turns: [90, 45] } },
+]
+
 /** Timer choices in seconds; 0 means no timer. */
 export const TIMER_OPTIONS = [0, 30, 60, 120]
 
@@ -281,10 +299,11 @@ export const CATEGORIES = [
   { id: 'clockWords', symbol: '🕗', ops: ['clockWords'], levels: [...TIME_BASICS, { id: 5, time: TIME_NO_NUMBERS }] },
   { id: 'digitalWords', symbol: '8:00', ops: ['digitalWords'], levels: [...TIME_BASICS, { id: 5, time: TIME_24 }] },
   { id: 'digitalClock', symbol: '8:00', ops: ['digitalClock'], levels: [...TIME_BASICS, { id: 5, time: TIME_24 }] },
-  // Patterns: which one doesn't fit, and which number or shape is missing?
+  // Patterns: which one doesn't fit, and which number, shape or tile is missing?
   { id: 'odd', symbol: '🧩', ops: ['odd'], levels: ODD_LEVELS },
   { id: 'series', symbol: '246', ops: ['series'], levels: SERIES_LEVELS },
   { id: 'shapes', symbol: '🔷', ops: ['shapes'], levels: SHAPE_LEVELS },
+  { id: 'matrix', symbol: '🔳', ops: ['matrix'], levels: MATRIX_LEVELS },
 ]
 
 /**
@@ -295,7 +314,7 @@ export const AREAS = [
   { id: 'math', categories: ['count', 'add', 'sub', 'mul', 'div', 'mix', 'sqrt', 'eq', 'fraction'] },
   { id: 'reading', categories: ['word', 'picture', 'letter'] },
   { id: 'time', categories: ['clockDigital', 'clockWords', 'digitalWords', 'digitalClock'] },
-  { id: 'patterns', categories: ['odd', 'series', 'shapes'] },
+  { id: 'patterns', categories: ['odd', 'series', 'shapes', 'matrix'] },
 ]
 
 /** The area a category belongs to. */

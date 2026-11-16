@@ -54,6 +54,9 @@ function check(question) {
     case 'shapes':
       // Checked in detail in shapeSeries.test.js.
       return question.choices.includes(question.answer) && question.terms.length >= 5
+    case 'matrix':
+      // Checked in detail in matrix.test.js.
+      return question.choices.includes(question.answer) && question.terms.length === 9
     default:
       return false
   }

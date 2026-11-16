@@ -63,3 +63,38 @@ export function parseFigure(key) {
 export function isFigureKey(value) {
   return typeof value === 'string' && value.split('.').length === ATTRIBUTES.length && VALUES.shape.includes(value.split('.')[0])
 }
+
+/**
+ * Spot tiles, for matrices that put tiles together: up to five small
+ * figures, each in its own spot (the corners and the middle, like the
+ * five on a die), so two tiles combine into one by adding up what they
+ * have. A spot tile's key is "spots:" and one entry per spot, a figure's
+ * "shape.color" or "-" for an empty spot: "spots:circle.red|-|-|-|star.blue".
+ */
+export const SPOT_COUNT = 5
+
+const SPOTS_PREFIX = 'spots:'
+
+/** The key for spots: an array of SPOT_COUNT entries, each `{ shape, color }` or null. */
+export function spotsKey(spots) {
+  return SPOTS_PREFIX + spots.map((spot) => (spot ? `${spot.shape}.${spot.color}` : '-')).join('|')
+}
+
+/** The spots a key stands for. */
+export function parseSpots(key) {
+  return key
+    .slice(SPOTS_PREFIX.length)
+    .split('|')
+    .map((entry) => {
+      if (entry === '-') {
+        return null
+      }
+      const [shape, color] = entry.split('.')
+      return { shape, color }
+    })
+}
+
+/** Whether a key is a spot tile's key. */
+export function isSpotsKey(value) {
+  return typeof value === 'string' && value.startsWith(SPOTS_PREFIX)
+}

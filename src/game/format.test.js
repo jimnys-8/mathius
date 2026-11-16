@@ -48,6 +48,14 @@ describe('formatFact', () => {
     expect(formatFact(fact(`?,${blue},${red},${blue}`, 'shapes', red))).toBe('(A) B A B')
   })
 
+  it('shows a matrix row by row, a letter for each tile', () => {
+    const red = 'circle.red.big.solid.1.0'
+    const blue = 'square.blue.big.solid.1.0'
+    expect(formatFact(fact(`${red},${blue},${red},${blue},${red},${blue},${red},${blue},?`, 'matrix', red))).toBe(
+      'A B A / B A B / A B (A)',
+    )
+  })
+
   it('shows a number series with the answer in brackets', () => {
     expect(formatFact(fact('2,4,6,8,?', 'series', 10))).toBe('2 4 6 8 (10)')
     expect(formatFact(fact('7,10,?,16,19', 'series', 13))).toBe('7 10 (13) 16 19')

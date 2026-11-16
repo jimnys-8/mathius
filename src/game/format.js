@@ -7,7 +7,8 @@
  * the odd one ("🐄 🐖 🐑 ≠ 🦁"), and number series the series with the
  * answer in brackets ("2 4 6 8 (10)", "7 10 (13) 16 19"). Shape series
  * are drawn where they are listed (ShapeFact); as text they name each
- * different figure by a letter ("A B A B A (B)").
+ * different figure by a letter ("A B A B A (B)"), and matrices likewise,
+ * row by row ("A B C / B C A / C A (B)").
  *
  * @param {{ key: string, op: string, answer: number|string }} fact
  *   `key` has '?' for the hidden term
@@ -33,14 +34,16 @@ export function formatFact({ key, op, answer }, formatNumber = String) {
     const shown = (part) => (part === '?' ? `(${formatNumber(answer)})` : formatNumber(Number(part)))
     return key.split(',').map(shown).join(' ')
   }
-  if (op === 'shapes') {
+  if (op === 'shapes' || op === 'matrix') {
+    // A letter for each different figure; a matrix row by row: "A B C / B C A / C A (B)".
     const figures = key.split(',').map((part) => (part === '?' ? answer : part))
     const letters = [...new Set(figures)]
     const letter = (figure) => String.fromCharCode(65 + letters.indexOf(figure))
-    return key
-      .split(',')
-      .map((part, index) => (part === '?' ? `(${letter(figures[index])})` : letter(part)))
-      .join(' ')
+    const shown = key.split(',').map((part, index) => (part === '?' ? `(${letter(figures[index])})` : letter(part)))
+    if (op === 'matrix') {
+      return [0, 3, 6].map((start) => shown.slice(start, start + 3).join(' ')).join(' / ')
+    }
+    return shown.join(' ')
   }
   if (op === 'letter') {
     // "🐈=k_tt" with answer "a": the emoji and the whole word.
