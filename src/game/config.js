@@ -204,15 +204,19 @@ const ODD_LEVELS = [
 
 /**
  * Number series (see src/game/series.js): find the missing number. First
- * dots that grow by one, then +1, counting by 2, 5 and 10, any step with
+ * dots (up to nine, in a 3×3 grid) that grow by one or stay the same,
+ * then +1 or +0, counting by 2, 5 and 10, any step with
  * the gap anywhere, two steps taking turns and growing steps, then
  * doubling, halving and square numbers. Expert mixes the last three
  * levels and the answer is typed, not picked.
  */
+// The same number each time (+0) is one in five on the easiest levels:
+// a kind is picked at random from the list, so 'one' is listed four times.
+const SAME_OR_ONE = ['same', 'one', 'one', 'one', 'one']
 const HARD_SERIES = ['any', 'alternate', 'growing', 'double', 'triple', 'half', 'square']
 const SERIES_LEVELS = [
-  { id: 0, series: { kinds: ['one'], gap: 'last', min: 1, max: 10, show: 'dots' } },
-  { id: 1, series: { kinds: ['one'], gap: 'last', max: 20 } },
+  { id: 0, series: { kinds: SAME_OR_ONE, gap: 'last', min: 1, max: 9, show: 'dots' } },
+  { id: 1, series: { kinds: SAME_OR_ONE, gap: 'last', max: 20 } },
   { id: 2, series: { kinds: ['skip'], gap: 'last', max: 100 } },
   { id: 3, series: { kinds: ['any'], gap: 'any', max: 100 } },
   { id: 4, series: { kinds: ['alternate', 'growing'], gap: 'any' } },

@@ -1,6 +1,7 @@
 // Number series: a row of numbers that follow a rule, with one of them
 // missing. The kinds of rule, from easy to hard:
 //
+//   same       the same number each time (+0): 4 4 4 4 ?
 //   one        +1 or −1 each time: 3 4 5 6 ?
 //   skip       counting by 2, 5 or 10: 20 30 40 ?
 //   any        any step from 2 to 9: 7 10 13 16 ?
@@ -71,6 +72,9 @@ const upOrDown = (rng, size) => (rng() < 2 / 3 ? size : -size)
  * hint writes between the numbers or under them.
  */
 const KINDS = {
+  same(rng, range) {
+    return { values: stepSeries(rng, 0, 5, range) }
+  },
   one(rng, range) {
     const values = stepSeries(rng, upOrDown(rng, 1), 5, range)
     return values && { values }
@@ -138,7 +142,7 @@ export const SERIES_KINDS = Object.keys(KINDS)
 /** Whether a full series follows one of the rules above. */
 export function followsARule(values) {
   const steps = differences(values)
-  if (steps.every((step) => step === steps[0]) && steps[0] !== 0) {
+  if (steps.every((step) => step === steps[0])) {
     return true
   }
   if (

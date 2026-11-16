@@ -16,6 +16,7 @@ const levels = CATEGORIES.find((category) => category.id === 'series').levels
 describe('the rules a number series can follow', () => {
   it('knows steps, turns, growing steps, ×2, ×3, ÷2 and squares', () => {
     for (const values of [
+      [4, 4, 4, 4, 4],
       [3, 4, 5, 6, 7],
       [50, 40, 30, 20],
       [1, 3, 2, 4, 3, 5],
@@ -32,7 +33,7 @@ describe('the rules a number series can follow', () => {
   it('rejects series without a rule', () => {
     for (const values of [
       [1, 2, 4, 5, 8],
-      [3, 3, 3, 3],
+      [3, 3, 3, 4],
       [1, 3, 1, 3, 1],
       [2, 3, 5, 9, 17],
     ]) {
