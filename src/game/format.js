@@ -4,7 +4,8 @@
  * equations say what x is ("3x + 1 = 10, x = 3"), reading facts show
  * the emoji and its word ("🐈 katt"), and clock facts the time
  * ("🕗 8:20: tjugo över åtta"). Odd-one-out facts show the three and
- * the odd one ("🐄 🐖 🐑 ≠ 🦁").
+ * the odd one ("🐄 🐖 🐑 ≠ 🦁"), and number series the series with the
+ * answer in brackets ("2 4 6 8 (10)", "7 10 (13) 16 19").
  *
  * @param {{ key: string, op: string, answer: number|string }} fact
  *   `key` has '?' for the hidden term
@@ -24,6 +25,11 @@ export function formatFact({ key, op, answer }, formatNumber = String) {
     const [, three, odd] = key.split(':')
     const shown = (value) => (/^\d+$/.test(value) ? formatNumber(Number(value)) : value)
     return `${three.split(',').map(shown).join(' ')} ≠ ${shown(odd)}`
+  }
+  if (op === 'series') {
+    // "7,10,?,16,19": Nunito has no arrow, so the answer goes in brackets.
+    const shown = (part) => (part === '?' ? `(${formatNumber(answer)})` : formatNumber(Number(part)))
+    return key.split(',').map(shown).join(' ')
   }
   if (op === 'letter') {
     // "🐈=k_tt" with answer "a": the emoji and the whole word.

@@ -41,6 +41,11 @@ describe('formatFact', () => {
     expect(formatFact(fact('digitalClock:20:20=8:20', 'digitalClock', '8:20'))).toBe('20:20 = 🕗')
   })
 
+  it('shows a number series with the answer in brackets', () => {
+    expect(formatFact(fact('2,4,6,8,?', 'series', 10))).toBe('2 4 6 8 (10)')
+    expect(formatFact(fact('7,10,?,16,19', 'series', 13))).toBe('7 10 (13) 16 19')
+  })
+
   it('shows the three that go together and the odd one', () => {
     expect(formatFact(fact('farm:🐄,🐖,🐑:🦁', 'odd', '🦁'))).toBe('🐄 🐖 🐑 ≠ 🦁')
     expect(formatFact(fact('even:2,16,22:7', 'odd', 7))).toBe('2 16 22 ≠ 7')
