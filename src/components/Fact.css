@@ -23,6 +23,8 @@
   display: inline-grid;
   grid-template-columns: repeat(3, 1.4em);
   gap: 0.12em;
+  /* Lists space their lines for text; a grid needs room of its own, or the next one runs into it. */
+  margin-block: 0.45em;
   vertical-align: middle;
 }
 
