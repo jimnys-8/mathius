@@ -118,6 +118,17 @@ describe('shape series questions', () => {
         }
       })
 
+      if (shapes.gap === 'last') {
+        it('never ends a unit of three just before the gap, where the row looks finished', () => {
+          for (const question of questions) {
+            const [rule] = question.rules
+            if (rule.period >= 3) {
+              expect(question.unknown % rule.period, question.key).not.toBe(0)
+            }
+          }
+        })
+      }
+
       it('fits a phone: five to eight tiles', () => {
         for (const question of questions) {
           expect(question.terms.length).toBeGreaterThanOrEqual(5)

@@ -45,12 +45,20 @@ function pickDistinct(rng, values, count) {
 /** The attributes a repeat can vary, and the values each can take. */
 const REPEATABLE = { shape: SHAPES, color: COLORS, size: SIZES, fill: FILLS }
 
-/** How many tiles a series of a unit gets: the unit twice and a bit, at most eight tiles. */
-function lengthFor(rng, period) {
+/**
+ * How many tiles a series of a unit gets: the unit twice and a bit, at
+ * most eight tiles. With the gap last, a unit of three never ends just
+ * before the gap (AAB AAB ?), where the row looks finished; it stops
+ * inside a round instead (AAB AA ?, AAB AAB A ?).
+ */
+function lengthFor(rng, period, gap) {
   if (period >= 4) {
     return 8
   }
-  return period === 3 ? randomInt(rng, 6, 7) : randomInt(rng, 5, 6)
+  if (period === 3) {
+    return gap === 'last' ? pick(rng, [6, 8]) : randomInt(rng, 6, 7)
+  }
+  return randomInt(rng, 5, 6)
 }
 
 /** The values of a repeat over `length` tiles: unit "AAB" with values [x, y] gives x x y x x y … */
@@ -98,16 +106,16 @@ function baseFigure(rng, { shapes = SHAPES } = {}) {
  * `{ type: 'count', step }`.
  */
 const KINDS = {
-  whole(rng, { units }) {
+  whole(rng, { units, gap }) {
     const unit = pick(rng, units)
-    const length = lengthFor(rng, unit.length)
+    const length = lengthFor(rng, unit.length, gap)
     const letters = lettersIn(unit)
     const shapes = pickDistinct(rng, SHAPES, letters)
     const colors = pickDistinct(rng, COLORS, letters)
     const figures = combine(length, {}, { shape: repeatValues(unit, shapes, length), color: repeatValues(unit, colors, length) })
     return { figures, rules: [{ type: 'repeat', attributes: ['shape', 'color'], period: unit.length }] }
   },
-  one(rng, { units }) {
+  one(rng, { units, gap }) {
     const attribute = pick(rng, Object.keys(REPEATABLE))
     const values = REPEATABLE[attribute]
     // Size and fill have two values, so their units have two letters.
@@ -115,7 +123,7 @@ const KINDS = {
       rng,
       units.filter((item) => lettersIn(item) <= values.length),
     )
-    const length = lengthFor(rng, unit.length)
+    const length = lengthFor(rng, unit.length, gap)
     const base = baseFigure(rng)
     const figures = combine(length, base, { [attribute]: repeatValues(unit, pickDistinct(rng, values, lettersIn(unit)), length) })
     return { figures, rules: [{ type: 'repeat', attributes: [attribute], period: unit.length }] }
@@ -314,7 +322,7 @@ function wrongChoices(rng, figures, gap, rules, { fresh = false } = {}) {
  * @returns {import('./questions.js').Question}
  */
 export function createShapeSeriesQuestion(shapes, rng) {
-  const options = { units: shapes.units ?? ['AB'], turns: shapes.turns ?? [90] }
+  const options = { units: shapes.units ?? ['AB'], turns: shapes.turns ?? [90], gap: shapes.gap }
   for (;;) {
     const kind = pick(rng, shapes.kinds)
     const { figures, rules } = KINDS[kind](rng, options)
