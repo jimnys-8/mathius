@@ -39,10 +39,12 @@ describe('spot keys', () => {
 })
 
 describe('the patterns a matrix can follow', () => {
-  it('knows rows, columns, one of each, steps, sums and putting together', () => {
+  it('knows rows, columns, diagonals, one of each, steps, sums and putting together', () => {
     for (const tiles of [
       [x, x, x, y, y, y, z, z, z],
       [x, y, z, x, y, z, x, y, z],
+      [x, y, y, z, x, y, z, z, x],
+      [x, y, x, y, x, y, x, y, x],
       [x, y, z, y, z, x, z, x, y],
       [x, y, z, z, x, y, y, z, x],
       // Colors by row, shapes by column.
@@ -66,6 +68,8 @@ describe('the patterns a matrix can follow', () => {
       [x, x, x, y, y, y, z, z, y],
       [x, y, z, y, z, x, z, x, x],
       [x, y, z, y, z, x, z, x, fig('star', 'red')],
+      [x, y, y, z, x, y, z, z, y],
+      [x, y, x, y, x, y, x, y, y],
       [1, 2, 3, 2, 3, 4, 3, 4, 6].map((count) => fig('star', 'red', { count })),
       [1, 2, 3, 1, 1, 2, 2, 3, 4].map((count) => fig('circle', 'red', { count })),
       ['a', 'b', 'ab', 'c', 'd', 'cd', 'ac', 'bd', 'abc'].map(spots),
@@ -142,16 +146,35 @@ describe('matrix questions', () => {
     })
   }
 
-  it('makes the easiest wrong choices other rows or figures not in the grid', () => {
+  it('makes the easiest wrong choices other figures in the grid or figures not in it', () => {
     for (let seed = 1; seed <= 100; seed += 1) {
       const question = createQuestion({ category: 'matrix', level: 0, rng: seededRng(seed) })
       const inGrid = new Set(question.terms)
-      expect(inGrid.size).toBe(3)
+      expect(inGrid.size).toBe(question.kind === 'checker' ? 2 : 3)
       for (const choice of question.choices.filter((item) => item !== question.answer && !inGrid.has(item))) {
         const { shape, color } = parseFigure(choice)
         expect(question.terms.some((key) => parseFigure(key).shape === shape || parseFigure(key).color === color)).toBe(false)
       }
     }
+  })
+
+  it('keeps the gap on the diagonal', () => {
+    for (let seed = 1; seed <= 300; seed += 1) {
+      const question = createQuestion({ category: 'matrix', level: 0, rng: seededRng(seed) })
+      if (question.kind === 'diagonal') {
+        expect([0, 4, 8]).toContain(question.unknown)
+      }
+    }
+  })
+
+  it('turns the one of each square both ways', () => {
+    const firstRows = new Set()
+    for (let seed = 1; seed <= 100; seed += 1) {
+      const { terms } = createQuestion({ category: 'matrix', level: 1, rng: seededRng(seed) })
+      // Whether the second row starts with the first row's second or third figure.
+      firstRows.add(terms[3] === terms[1] ? 'left' : 'right')
+    }
+    expect(firstRows).toEqual(new Set(['left', 'right']))
   })
 
   it('has only one set of spots that fits the gap', () => {

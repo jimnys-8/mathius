@@ -4,6 +4,9 @@
 //
 //   rows    the same along each row (each row its own)
 //   cols    the same down each column
+//   diagonal  the same along the diagonal, in the triangle above it and
+//             in the one below
+//   checker   the same on every other tile, like a checkerboard's colors
 //   latin   one of each in every row and every column
 //   step    a count or a turn that goes up by the same step along the
 //           rows (and maybe down the columns): 1 2 3 / 2 3 4 / 3 4 5
@@ -15,6 +18,9 @@
 // The kinds of question, from easy to hard:
 //
 //   rows      one figure per row
+//   cols      one figure per column
+//   diagonal  one figure on the diagonal, one above it and one below
+//   checker   two figures taking turns, like a checkerboard
 //   latin     three figures, one of each in every row and column
 //   table     the row decides one attribute, the column another
 //   twoLatin  shapes one of each and colors one of each, in different orders
@@ -119,6 +125,33 @@ const KINDS = {
     return {
       tiles: grid((row) => figureKey({ shape: shapes[row], color: colors[row] })),
       rules: [{ type: 'rows', attributes: ['shape', 'color'] }],
+    }
+  },
+  cols(rng) {
+    const shapes = threeValues(rng, 'shape')
+    const colors = threeValues(rng, 'color')
+    return {
+      tiles: grid((_, col) => figureKey({ shape: shapes[col], color: colors[col] })),
+      rules: [{ type: 'cols', attributes: ['shape', 'color'] }],
+    }
+  },
+  diagonal(rng) {
+    // The gap stays on the diagonal, where the line leads to it.
+    const shapes = threeValues(rng, 'shape')
+    const colors = threeValues(rng, 'color')
+    const part = (row, col) => (col === row ? 0 : col > row ? 1 : 2)
+    return {
+      tiles: grid((row, col) => figureKey({ shape: shapes[part(row, col)], color: colors[part(row, col)] })),
+      rules: [{ type: 'diagonal', attributes: ['shape', 'color'] }],
+      gaps: [0, 4, 8],
+    }
+  },
+  checker(rng) {
+    const shapes = pickDistinct(rng, SHAPES, 2)
+    const colors = pickDistinct(rng, COLORS, 2)
+    return {
+      tiles: grid((row, col) => figureKey({ shape: shapes[(row + col) % 2], color: colors[(row + col) % 2] })),
+      rules: [{ type: 'checker', attributes: ['shape', 'color'] }],
     }
   },
   latin(rng) {
@@ -248,6 +281,20 @@ function followsARule(attribute, values) {
   if (new Set(values).size === SIDE && rows(values).every(distinct) && cols(values).every(distinct)) {
     return true
   }
+  // Parts of the grid that are the same throughout: the diagonal and the
+  // triangles on either side, or a checkerboard's two colors. (Not any
+  // slanted line: the corners off a diagonal are lines of one tile, where
+  // anything would fit.)
+  const partsAlike = (part) => {
+    const seen = new Map()
+    return values.every((value, index) => {
+      const key = part(rowOf(index), colOf(index))
+      return (seen.get(key) ?? value) === value && seen.set(key, value)
+    })
+  }
+  if (partsAlike((row, col) => Math.sign(col - row)) || partsAlike((row, col) => (row + col) % 2)) {
+    return true
+  }
   if (attribute === 'count' || attribute === 'turn') {
     const modulo = attribute === 'turn' ? 360 : undefined
     if (oneStep(rows(values), modulo) && oneStep(cols(values), modulo)) {
@@ -297,12 +344,15 @@ export function fitsAMatrix(keys) {
   )
 }
 
-/** Where the gap goes: last, or anywhere, still last half the time. */
-function pickGap(rng, gap) {
+/** Where the gap goes: last, or anywhere a kind allows (`gaps`), still last half the time. */
+function pickGap(rng, gap, gaps) {
   if (gap === 'last' || rng() < 0.5) {
     return TILES - 1
   }
-  return randomInt(rng, 0, TILES - 2)
+  return pick(
+    rng,
+    (gaps ?? grid((row, col) => row * SIDE + col)).filter((index) => index !== TILES - 1),
+  )
 }
 
 /** Other values for an attribute, as a wrong choice would have them: values from the grid first. */
@@ -417,11 +467,11 @@ export function createMatrixQuestion(matrix, rng) {
   const options = { turns: matrix.turns ?? [90] }
   for (;;) {
     const kind = pick(rng, matrix.kinds)
-    const { tiles, rules, figures } = KINDS[kind](rng, options)
+    const { tiles, rules, figures, gaps } = KINDS[kind](rng, options)
     if (!fitsAMatrix(tiles)) {
       continue
     }
-    const gap = pickGap(rng, matrix.gap)
+    const gap = pickGap(rng, matrix.gap, gaps)
     if (kind === 'union' && !onlyAnswerCombines(tiles, gap, figures)) {
       continue
     }

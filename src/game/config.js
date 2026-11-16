@@ -247,14 +247,15 @@ const SHAPE_LEVELS = [
 
 /**
  * Matrices (see src/game/matrix.js): find the missing tile in a 3×3
- * grid. First a figure per row; then three figures, one of each in every
+ * grid. First a figure per row or column, along a diagonal or taking
+ * turns like a checkerboard; then three figures, one of each in every
  * row and column; then a table, where the row decides one thing and the
  * column another; then shapes and colors each one of each, or counts and
  * turns that step along the rows; then spot tiles put together. Mästare
  * mixes the last ones, with counts that add up.
  */
 const MATRIX_LEVELS = [
-  { id: 0, matrix: { kinds: ['rows'], gap: 'last', fresh: true } },
+  { id: 0, matrix: { kinds: ['rows', 'cols', 'diagonal', 'checker'], gap: 'any', fresh: true } },
   { id: 1, matrix: { kinds: ['latin'], gap: 'last' } },
   { id: 2, matrix: { kinds: ['table'], gap: 'any' } },
   { id: 3, matrix: { kinds: ['twoLatin', 'step'], gap: 'any' } },
