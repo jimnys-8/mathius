@@ -1,5 +1,5 @@
+import Fact, { GivenAnswer } from '../components/Fact.jsx'
 import Icon from '../components/Icon.jsx'
-import { formatFact } from '../game/format.js'
 import { summarize } from '../game/session.js'
 import { useI18n } from '../i18n/i18n.js'
 import './SummaryScreen.css'
@@ -20,7 +20,7 @@ function starsFor(correct, total) {
 
 /** Results of a finished session. */
 export default function SummaryScreen({ session, onPlayAgain, onDone, children }) {
-  const { t, formatNumber } = useI18n()
+  const { t } = useI18n()
   const { total, correct } = summarize(session.results)
   const stars = starsFor(correct, total)
   const timed = session.settings.timer > 0
@@ -57,12 +57,12 @@ export default function SummaryScreen({ session, onPlayAgain, onDone, children }
               <span className="summary-mark" aria-hidden="true">
                 <Icon name={result.correct ? 'check' : 'cross'} />
               </span>
-              <span className="summary-fact">{formatFact(result, formatNumber)}</span>
+              <span className="summary-fact">
+                <Fact fact={result} />
+              </span>
               {!result.correct && (
                 <span className="summary-given">
-                  {t('summary.youSaid', {
-                    given: typeof result.given === 'string' ? result.given : formatNumber(result.given),
-                  })}
+                  <GivenAnswer result={result} />
                 </span>
               )}
               {result.hinted && <span className="summary-hint" title={t('summary.usedHint')}>💡</span>}

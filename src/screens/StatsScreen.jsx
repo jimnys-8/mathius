@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import Fraction from '../components/Fraction.jsx'
+import Fact from '../components/Fact.jsx'
 import Icon from '../components/Icon.jsx'
 import { OPERATIONS } from '../game/config.js'
-import { formatFact } from '../game/format.js'
 import { levelText, useI18n } from '../i18n/i18n.js'
 import { computeStats } from '../profiles/stats.js'
 import './StatsScreen.css'
@@ -36,7 +36,7 @@ function Tile({ label, value }) {
 /** A player's results: totals, accuracy per operation, records and tricky facts. */
 export default function StatsScreen({ profile, history, onBack }) {
   const i18n = useI18n()
-  const { t, formatNumber, formatPercent, formatTimer } = i18n
+  const { t, formatPercent, formatTimer } = i18n
   const [now] = useState(() => Date.now())
   const describeSettings = (session) =>
     [t(`category.${session.category}`), levelText(t, session.category, session.level).name]
@@ -127,7 +127,7 @@ export default function StatsScreen({ profile, history, onBack }) {
                 <ul className="stats-facts">
                   {stats.tricky.map((fact) => (
                     <li key={fact.key} title={t('stats.missed', { wrong: fact.wrong, count: fact.right + fact.wrong })}>
-                      {formatFact(fact, formatNumber)}
+                      <Fact fact={fact} />
                     </li>
                   ))}
                 </ul>

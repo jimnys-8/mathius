@@ -1,0 +1,19 @@
+/* A shape series in a line of text: figures a little taller than the letters. */
+.fact-shapes {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15em;
+  vertical-align: -0.25em;
+}
+
+.fact-shapes .figure {
+  width: 1.1em;
+}
+
+/* The answer, where the gap was: boxed like the gap tile. */
+.fact-shapes-answer {
+  display: inline-flex;
+  padding: 0.05em;
+  border: 0.1em dashed var(--color-b);
+  border-radius: 0.3em;
+}
