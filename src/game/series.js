@@ -267,7 +267,9 @@ export function createSeriesQuestion(series, rng) {
       key: values.map((value, index) => (index === gap ? '?' : value)).join(','),
     }
     if (series.input !== 'keypad') {
-      const choiceRange = { min: range.min, max: series.show === 'dots' ? range.max : Infinity }
+      // No 0 among the choices unless the series has one: 4 2 ? is not 0.
+      const min = series.min ?? (Math.min(...values) > 0 ? 1 : 0)
+      const choiceRange = { min, max: series.show === 'dots' ? range.max : Infinity }
       const wrong = wrongChoices(rng, values, gap, choiceRange)
       if (wrong.length < 3) {
         continue
