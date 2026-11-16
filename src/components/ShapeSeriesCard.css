@@ -1,0 +1,79 @@
+.shapes-card {
+  container-type: inline-size;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  animation: shapes-card-in 0.3s ease-out;
+}
+
+.shapes-figure {
+  width: 90%;
+}
+
+.shapes-gap {
+  font-size: calc(var(--tile) * 0.5);
+  font-weight: 900;
+  line-height: 1;
+}
+
+/* A second rule's marks in green, the first's in purple. */
+.shapes-card .tile-mark.is-second {
+  color: var(--color-c);
+}
+
+/* Under a bracket: the repeating attribute of each figure, small. */
+.shapes-card .tile-bracket .tile-mark-label {
+  gap: 0.15rem;
+  padding-top: 0.15rem;
+}
+
+.shapes-unit-figure {
+  width: clamp(0.7rem, calc(var(--tile) * 0.36), 1.2rem);
+}
+
+.shapes-unit-gap {
+  width: clamp(0.7rem, calc(var(--tile) * 0.36), 1.2rem);
+  color: var(--color-b);
+  font-size: clamp(0.75rem, calc(var(--tile) * 0.36), 1.1rem);
+  line-height: 1;
+  text-align: center;
+}
+
+.shapes-turn-icon {
+  width: 1.6em;
+  height: 1.6em;
+}
+
+.shapes-turn-icon path,
+.shapes-turn-dial {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.shapes-turn-dial {
+  stroke-width: 1.5;
+  opacity: 0.3;
+}
+
+.shapes-turn-icon polygon {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+
+@keyframes shapes-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shapes-card {
+    animation: none;
+  }
+}

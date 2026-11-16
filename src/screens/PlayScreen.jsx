@@ -9,6 +9,7 @@ import Numpad from '../components/Numpad.jsx'
 import OddCard from '../components/OddCard.jsx'
 import ReadingCard from '../components/ReadingCard.jsx'
 import SeriesCard from '../components/SeriesCard.jsx'
+import ShapeSeriesCard from '../components/ShapeSeriesCard.jsx'
 import TimeCard from '../components/TimeCard.jsx'
 import RoundProgress from '../components/RoundProgress.jsx'
 import { fractionWords, parseChoice, pictureFractions } from '../game/fractions.js'
@@ -47,6 +48,9 @@ function choicesAs(question) {
   if (question.op === 'odd') {
     return question.show
   }
+  if (question.op === 'shapes') {
+    return 'figures'
+  }
   return CLOCK_CHOICES[question.op] ?? question.choicesAs
 }
 
@@ -74,6 +78,10 @@ function hintText(question, t) {
   }
   if (question.op === 'series') {
     return t(question.notes ? 'play.hintHelpSquares' : 'play.hintHelpSeries')
+  }
+  if (question.op === 'shapes') {
+    // One attribute repeating says which one: "Titta på färgerna."
+    return t(`play.hintHelpShapes.${question.kind === 'one' ? question.rules[0].attributes[0] : question.kind}`)
   }
   if (question.op === 'fraction') {
     const [first, second] = pictureFractions(question.terms[0])
@@ -103,6 +111,10 @@ function feedbackText(state, i18n) {
   }
   if (state.lastCorrect) {
     return t('play.praise', { index: state.questionNumber })
+  }
+  if (state.question.op === 'shapes') {
+    // A figure has no short name; the gap and the buttons show it.
+    return t('play.wrongShape')
   }
   return t('play.wrong', { answer: formatAnswer(state.question, state.question.answer, i18n) })
 }
@@ -213,6 +225,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
   const fraction = state.question.op === 'fraction'
   const odd = state.question.op === 'odd'
   const series = state.question.op === 'series'
+  const shapes = state.question.op === 'shapes'
   const answering = state.phase === 'answering'
   const hintButton = (
     <button type="button" className="btn btn-large" onClick={handleHint} disabled={!answering || state.vizStep > 0}>
@@ -302,6 +315,14 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
             readOnly={state.phase !== 'answering'}
             keyboard={!touch}
           />
+        ) : shapes ? (
+          <ShapeSeriesCard
+            key={`${state.questionNumber}-${state.question.key}`}
+            question={state.question}
+            step={state.vizStep}
+            onSettled={handleSettled}
+            status={status}
+          />
         ) : fraction ? (
           <FractionCard
             key={`${state.questionNumber}-${state.question.key}`}
@@ -333,7 +354,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
         )}
       </section>
 
-      {!reading && !clock && !letter && !fraction && !odd && !series && (
+      {!reading && !clock && !letter && !fraction && !odd && !series && !shapes && (
         <Equation
           key={state.questionNumber}
           question={state.question}

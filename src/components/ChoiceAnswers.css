@@ -216,6 +216,17 @@
   line-height: 1.2;
 }
 
+/* Figures, drawn as on the shape series tiles. */
+.choice-answers.is-figures .choice-answer {
+  display: grid;
+  place-items: center;
+  min-height: 6rem;
+}
+
+.choice-figure {
+  width: min(4rem, 70%);
+}
+
 /* Taken away by a hint. */
 .choice-answer.is-removed {
   opacity: 0.2;

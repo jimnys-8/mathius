@@ -1,5 +1,6 @@
 import AnalogClock from '../components/AnalogClock.jsx'
 import ChoiceGroup from '../components/ChoiceGroup.jsx'
+import Figure from '../components/Figure.jsx'
 import Fraction from '../components/Fraction.jsx'
 import Icon from '../components/Icon.jsx'
 import {
@@ -35,6 +36,7 @@ const CATEGORY_COLORS = {
   digitalClock: '#d1495b',
   odd: '#0f7c8c',
   series: '#6b5bd6',
+  shapes: '#c2477a',
 }
 
 const CLOCK_ICON = <AnalogClock className="setup-clock-icon" hour={8} minute={0} numbers={false} />
@@ -92,9 +94,20 @@ const SERIES_ICON = (
   </span>
 )
 
+/** Shape series: a circle and a square taking turns, and the gap. */
+const SHAPES_ICON = (
+  <span className="setup-shapes-icon">
+    <Figure figure={{ shape: 'circle', color: 'red' }} />
+    <Figure figure={{ shape: 'square', color: 'blue' }} />
+    <Figure figure={{ shape: 'circle', color: 'red' }} />
+    <span className="setup-series-gap">?</span>
+  </span>
+)
+
 const CATEGORY_ICONS = {
   odd: ODD_ICON,
   series: SERIES_ICON,
+  shapes: SHAPES_ICON,
   mix: '+−×÷',
   // An italic x, so it isn't mistaken for a times sign.
   eq: (

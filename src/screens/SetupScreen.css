@@ -179,6 +179,19 @@
   white-space: nowrap;
 }
 
+/* Shape series: red, blue, red and the gap. */
+.setup-shapes-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1em;
+  font-size: 0.7em;
+  white-space: nowrap;
+}
+
+.setup-shapes-icon .figure {
+  width: 0.95em;
+}
+
 .setup-series-gap {
   padding: 0 0.2em;
   border: 0.1em dashed var(--color-b);
