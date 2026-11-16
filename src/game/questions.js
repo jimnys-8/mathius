@@ -296,7 +296,12 @@ export function createQuestion({ category, level, avoid = [], lang = DEFAULT_LAN
   }
 
   const oldestFirst = [...recent.values()].sort((a, b) => a.seen - b.seen)
-  const older = oldestFirst.slice(0, Math.ceil(oldestFirst.length / 2))
+  // If only a few questions came up in the attempts, the older half may
+  // still hold the one before last: leave out the last two when anything
+  // older came up.
+  const notLatest = oldestFirst.filter(({ seen }) => seen < avoid.length - 2)
+  const pool = notLatest.length > 0 ? notLatest : oldestFirst
+  const older = pool.slice(0, Math.ceil(pool.length / 2))
   return older[randomInt(rng, 0, older.length - 1)].question
 }
 
