@@ -52,6 +52,15 @@ solution.
   emoji lists every group it is in, "?" marks doubtful cases, and a
   question is thrown away if another group would make a second answer
   right
+- Patterns: *Which number is missing?* shows a number series with a gap
+  and four numbers to pick from. Levels: dots that grow by one (answered
+  with dots), +1, counting by 2, 5 and 10, any step with the gap
+  anywhere, two steps taking turns (+2 −1) and growing steps (+1 +2 +3),
+  then doubling, halving, ×3 and square numbers, and Expert, which mixes
+  the hard kinds and has the answer typed. A hint draws the steps between
+  the numbers (two steps taking turns in two colors, 3×3 under square
+  numbers). A series is only asked if exactly one number fits the gap
+  under every rule; the rules are in `src/game/series.js`
 - Levels unlock one at a time: a round with at least 9 right and at most
   1 wrong (timed or not) opens the next level, and the summary says so.
   The easy level, and the Dots level below it, are always open. Under
