@@ -7,36 +7,6 @@
   animation: series-card-in 0.3s ease-out;
 }
 
-/*
- * The tiles sit in equal columns, and each step's arc spans two columns
- * from the middle of one tile to the middle of the next.
- */
-.series-row {
-  --gap: clamp(0.3rem, 2cqi, 0.7rem);
-  --tile: min(5.5rem, calc((100cqi - 1rem - (var(--count) - 1) * var(--gap)) / var(--count)));
-  display: grid;
-  grid-template-columns: repeat(var(--count), var(--tile));
-  grid-template-rows: auto auto;
-  column-gap: var(--gap);
-  row-gap: 0.25rem;
-}
-
-.series-tile {
-  grid-row: 1;
-  position: relative;
-  display: grid;
-  place-items: center;
-  height: calc(var(--tile) * 1.1);
-  border: 0.14rem solid var(--color-line);
-  border-radius: 0.8rem;
-  background: var(--color-surface);
-  color: var(--color-ink);
-  transition:
-    color 0.3s ease,
-    border-color 0.3s ease,
-    background-color 0.3s ease;
-}
-
 .series-number {
   font-size: calc(var(--tile) * 0.5);
   font-weight: 900;
@@ -59,28 +29,6 @@
   fill: var(--color-c);
   stroke: color-mix(in srgb, var(--color-c) 70%, #000);
   stroke-width: 0.06;
-}
-
-/* The gap: dashed and orange until it is filled in. */
-.series-tile.is-gap {
-  border-style: dashed;
-  border-color: var(--color-b);
-  background: color-mix(in srgb, var(--color-b) 8%, var(--color-surface));
-  color: var(--color-b);
-}
-
-.series-tile.is-gap.is-correct {
-  border-style: solid;
-  border-color: var(--color-correct);
-  background: color-mix(in srgb, var(--color-correct) 14%, var(--color-surface));
-  color: var(--color-correct);
-  animation: series-pop 0.4s ease;
-}
-
-.series-tile.is-gap.is-wrong {
-  border-style: solid;
-  border-color: var(--color-correct);
-  color: var(--color-correct);
 }
 
 .is-gap .series-dots circle {
@@ -126,85 +74,32 @@
   opacity: 1;
 }
 
-.series-tile.is-gap:focus-within {
+.series-card .tile.is-gap:focus-within {
   box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--color-b) 30%, transparent);
 }
 
-/* The steps: hidden until 💡, but keeping their room so nothing moves. */
-.series-arc,
-.series-note {
-  grid-row: 2;
-  opacity: 0;
-  transform: translateY(-0.3rem);
-  transition:
-    opacity 0.4s ease,
-    transform 0.4s ease;
-}
-
-.series-arc.is-shown,
-.series-note.is-shown {
-  opacity: 1;
-  transform: none;
-}
-
-.series-arc {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-inline: calc(var(--tile) / 2);
-  color: var(--color-a);
-}
-
-.series-arc-line {
-  align-self: stretch;
-  height: 0.75rem;
-  margin-inline: 0.15rem;
-  border: 0.16rem solid currentColor;
-  border-top: 0;
-  border-radius: 0 0 50% 50% / 0 0 100% 100%;
-}
-
-.series-arc-label,
-.series-note {
-  font-size: clamp(0.85rem, 4.2cqi, 1.2rem);
-  font-weight: 900;
-  line-height: 1.3;
-  white-space: nowrap;
-}
-
-.series-arc-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.05em;
-}
-
+/* "+●" on the dots level. */
 .series-arc-dot {
   width: 0.55em;
   height: 0.55em;
   fill: currentColor;
 }
 
-.series-note {
-  justify-self: center;
-  padding-top: 0.15rem;
-  color: var(--color-a);
-}
-
 /*
  * Two steps taking turns: each number and the step after it share a
  * color, purple or green (orange is the gap's).
  */
-.series-tile.is-turn-0:not(.is-gap) {
+.series-card .tile.is-turn-0:not(.is-gap) {
   border-color: color-mix(in srgb, var(--color-a) 45%, var(--color-surface));
   color: var(--color-a);
 }
 
-.series-tile.is-turn-1:not(.is-gap) {
+.series-card .tile.is-turn-1:not(.is-gap) {
   border-color: color-mix(in srgb, var(--color-c) 50%, var(--color-surface));
   color: var(--color-c);
 }
 
-.series-arc.is-turn-1 {
+.series-card .tile-arc.is-turn-1 {
   color: var(--color-c);
 }
 
@@ -215,21 +110,8 @@
   }
 }
 
-@keyframes series-pop {
-  50% {
-    transform: scale(1.08);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .series-card,
-  .series-tile.is-gap.is-correct {
+  .series-card {
     animation: none;
-  }
-
-  .series-tile,
-  .series-arc,
-  .series-note {
-    transition: none;
   }
 }

@@ -1,6 +1,7 @@
 import { SERIES_DOT_GRID } from '../game/series.js'
 import { useI18n } from '../i18n/i18n.js'
 import { HINT_FRAME } from '../viz/scenes.js'
+import TileRow from './TileRow.jsx'
 import { useSolutionSettled } from './useSolutionSettled.js'
 import './SeriesCard.css'
 
@@ -74,7 +75,7 @@ export default function SeriesCard({ question, step, onSettled, input, status, o
   const dots = question.show === 'dots'
   const long = !dots && Math.max(...terms) >= 100
   // Colors for two steps taking turns: each number and the step after it.
-  const turn = (index) => (alternate && hinted ? ` is-turn-${index % 2}` : '')
+  const turn = (index) => (alternate && hinted ? `is-turn-${index % 2}` : '')
   const shown = (index) => solved || (hinted && index !== gap)
 
   const gapContent = () => {
@@ -110,50 +111,34 @@ export default function SeriesCard({ question, step, onSettled, input, status, o
   }
 
   const spoken = terms.map((value, index) => (index === gap && !solved ? '?' : formatNumber(value))).join(', ')
+  const tiles = terms.map((value, index) =>
+    index === gap ? (
+      <>
+        {gapContent()}
+        {solved && status === 'wrong' && input !== '' && (
+          <span className="series-wrong" aria-hidden="true">
+            {formatNumber(Number(input))}
+          </span>
+        )}
+      </>
+    ) : (
+      <Value value={value} dots={dots} />
+    ),
+  )
+  const marks = [
+    arcs?.map((label, index) => ({
+      kind: 'arc',
+      from: index,
+      label: <ArcLabel label={label} dots={dots} />,
+      shown: shown(index) && shown(index + 1),
+      className: turn(index),
+    })) ??
+      notes.map((note, index) => ({ kind: 'note', from: index, label: note, shown: shown(index) })),
+  ]
 
   return (
-    <div className={`series-card${dots ? ' is-dots' : ''}${long ? ' is-long' : ''}`} style={{ '--count': terms.length }}>
-      <div className="series-row" role="img" aria-label={spoken}>
-        {terms.map((value, index) =>
-          index === gap ? (
-            <span key={index} className={`series-tile is-gap is-${status}${turn(index)}`} style={{ gridColumn: index + 1 }}>
-              {gapContent()}
-              {solved && status === 'wrong' && input !== '' && (
-                <span className="series-wrong" aria-hidden="true">
-                  {formatNumber(Number(input))}
-                </span>
-              )}
-            </span>
-          ) : (
-            <span key={index} className={`series-tile${turn(index)}`} style={{ gridColumn: index + 1 }}>
-              <Value value={value} dots={dots} />
-            </span>
-          ),
-        )}
-        {arcs?.map((label, index) => (
-          <span
-            key={`arc-${index}`}
-            className={`series-arc${shown(index) && shown(index + 1) ? ' is-shown' : ''}${turn(index)}`}
-            style={{ gridColumn: `${index + 1} / span 2` }}
-            aria-hidden="true"
-          >
-            <span className="series-arc-line" />
-            <span className="series-arc-label">
-              <ArcLabel label={label} dots={dots} />
-            </span>
-          </span>
-        ))}
-        {notes?.map((note, index) => (
-          <span
-            key={`note-${index}`}
-            className={`series-note${shown(index) ? ' is-shown' : ''}`}
-            style={{ gridColumn: index + 1 }}
-            aria-hidden="true"
-          >
-            {note}
-          </span>
-        ))}
-      </div>
+    <div className={`series-card${long ? ' is-long' : ''}`}>
+      <TileRow tiles={tiles} gap={gap} status={status} label={spoken} tileClass={turn} marks={marks} />
     </div>
   )
 }
