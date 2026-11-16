@@ -111,6 +111,11 @@
   height: auto;
 }
 
+/* A 3×3 grid, the same as the number series tiles. */
+.choice-dots.is-square {
+  width: min(100%, 4.2rem);
+}
+
 .choice-dots circle {
   fill: var(--color-c);
   stroke: color-mix(in srgb, var(--color-c) 70%, #000);

@@ -14,15 +14,14 @@ const NONE = []
  * A count shown as dots in rows of five, like a ten frame. Rows fill from
  * the bottom up, so the dots of every button rest on the same line.
  */
-function DotCount({ count, rows }) {
-  const width = DOTS_PER_ROW
+function DotCount({ count, rows, perRow = DOTS_PER_ROW }) {
   return (
-    <svg className="choice-dots" viewBox={`0 0 ${width} ${rows}`} aria-hidden="true">
+    <svg className={`choice-dots${perRow < DOTS_PER_ROW ? ' is-square' : ''}`} viewBox={`0 0 ${perRow} ${rows}`} aria-hidden="true">
       {Array.from({ length: count }, (_, index) => (
         <circle
           key={index}
-          cx={(index % DOTS_PER_ROW) + 0.5}
-          cy={rows - Math.floor(index / DOTS_PER_ROW) - 0.5}
+          cx={(index % perRow) + 0.5}
+          cy={rows - Math.floor(index / perRow) - 0.5}
           r={0.38}
         />
       ))}
@@ -51,7 +50,8 @@ function choiceForKey(key, choices, byValue) {
  * pick red.
  *
  * With `as="dots"` each choice shows that many dots with its numeral
- * below. With `numbersFirst` off, the numeral only appears once answered,
+ * below, in rows of five or in the `dotGrid` given as [per row, rows].
+ *  With `numbersFirst` off, the numeral only appears once answered,
  * for questions where it would give the answer away.
  *
  * With `as="words"` the choices are words, shown in `wordCase` (single
@@ -76,11 +76,12 @@ export default function ChoiceAnswers({
   wordCase = 'lower',
   removed = NONE,
   clock = undefined,
+  dotGrid = undefined,
 }) {
   const { t, formatNumber } = useI18n()
   const byValue = choices.every((choice) => Number.isInteger(choice))
   const dots = as === 'dots'
-  const rows = dots ? Math.ceil(Math.max(...choices) / DOTS_PER_ROW) : 0
+  const [perRow, rows] = dotGrid ?? [DOTS_PER_ROW, dots ? Math.ceil(Math.max(...choices) / DOTS_PER_ROW) : 0]
   // Word buttons share one text size, set by the longest word.
   const chars = as === 'words' ? Math.max(4, ...choices.map((choice) => [...choice].length)) : undefined
 
@@ -141,7 +142,7 @@ export default function ChoiceAnswers({
             )}
             {dots ? (
               <>
-                <DotCount count={choice} rows={rows} />
+                <DotCount count={choice} rows={rows} perRow={perRow} />
                 <span className={`choice-answer-number${revealed || numbersFirst ? '' : ' is-hidden'}`} aria-hidden="true">
                   {formatNumber(choice)}
                 </span>

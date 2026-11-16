@@ -1,15 +1,12 @@
+import { SERIES_DOT_GRID } from '../game/series.js'
 import { useI18n } from '../i18n/i18n.js'
 import { HINT_FRAME } from '../viz/scenes.js'
 import { useSolutionSettled } from './useSolutionSettled.js'
 import './SeriesCard.css'
 
-const DOTS_PER_ROW = 2
-const DOT_ROWS = 5
+const [DOTS_PER_ROW, DOT_ROWS] = SERIES_DOT_GRID
 
-/**
- * Up to ten dots in rows of two, filled from the bottom up, so a row of
- * tiles that grows by one dot grows like a staircase.
- */
+/** Dots in a 3×3 grid, filled from the bottom up, like on the answer buttons. */
 function Dots({ count }) {
   return (
     <svg className="series-dots" viewBox={`0 0 ${DOTS_PER_ROW} ${DOT_ROWS}`} aria-hidden="true">
@@ -31,10 +28,16 @@ function Value({ value, dots }) {
   return dots ? <Dots count={value} /> : <span className="series-number">{formatNumber(value)}</span>
 }
 
-/** "+1" on the dots level reads as "+●", for children who can't read numerals. */
+/**
+ * "+1" on the dots level reads as "+●", for children who can't read
+ * numerals, and "+0" as "=".
+ */
 function ArcLabel({ label, dots }) {
   if (!dots) {
     return label
+  }
+  if (label === '+0') {
+    return '='
   }
   return (
     <>

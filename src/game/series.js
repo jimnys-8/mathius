@@ -32,6 +32,13 @@ function shuffle(items, rng) {
 
 const MINUS = '−'
 
+/**
+ * How the dots level draws its dots, [per row, rows]: a 3×3 grid, on the
+ * tiles and on the answer buttons alike, so a child can match them by
+ * looking. Nine dots at most.
+ */
+export const SERIES_DOT_GRID = [3, 3]
+
 /** A step as the hint writes it: "+2", "−1". */
 function stepLabel(step) {
   return step < 0 ? `${MINUS}${-step}` : `+${step}`

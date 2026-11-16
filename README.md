@@ -53,8 +53,9 @@ solution.
   question is thrown away if another group would make a second answer
   right
 - Patterns: *Which number is missing?* shows a number series with a gap
-  and four numbers to pick from. Levels: dots that grow by one (answered
-  with dots), +1, counting by 2, 5 and 10, any step with the gap
+  and four numbers to pick from. Levels: up to nine dots that grow by
+  one or stay the same (answered with dots, in the same 3×3 grid as the
+  tiles), +1 or +0, counting by 2, 5 and 10, any step with the gap
   anywhere, two steps taking turns (+2 −1) and growing steps (+1 +2 +3),
   then doubling, halving, ×3 and square numbers, and Expert, which mixes
   the hard kinds and has the answer typed. A hint draws the steps between

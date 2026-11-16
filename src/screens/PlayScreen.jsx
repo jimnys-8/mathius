@@ -13,6 +13,7 @@ import TimeCard from '../components/TimeCard.jsx'
 import RoundProgress from '../components/RoundProgress.jsx'
 import { fractionWords, parseChoice, pictureFractions } from '../game/fractions.js'
 import { showWord } from '../game/reading.js'
+import { SERIES_DOT_GRID } from '../game/series.js'
 import { createSession, isTimed, sessionReducer } from '../game/session.js'
 import { useI18n } from '../i18n/i18n.js'
 import { useMediaQuery } from '../useMediaQuery.js'
@@ -370,6 +371,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
             // Picking the dots for a number is about counting them, not
             // matching the number's shape.
             numbersFirst={state.question.op !== 'count'}
+            dotGrid={series ? SERIES_DOT_GRID : undefined}
           />
           <ActionPair
             hint={hintButton}

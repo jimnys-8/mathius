@@ -49,14 +49,16 @@
   font-size: calc(var(--tile) * 0.36);
 }
 
-.is-dots .series-tile {
-  height: calc(var(--tile) * 2.3);
+.series-dots {
+  width: 80%;
+  max-height: 85%;
 }
 
-.series-dots {
-  width: 70%;
-  max-height: 92%;
-  fill: var(--color-a);
+/* Teal with a dark rim, like the dots on the answer buttons. */
+.series-dots circle {
+  fill: var(--color-c);
+  stroke: color-mix(in srgb, var(--color-c) 70%, #000);
+  stroke-width: 0.06;
 }
 
 /* The gap: dashed and orange until it is filled in. */
@@ -81,8 +83,9 @@
   color: var(--color-correct);
 }
 
-.is-gap .series-dots {
+.is-gap .series-dots circle {
   fill: currentColor;
+  stroke: color-mix(in srgb, currentColor 70%, #000);
 }
 
 /* A wrong answer, struck out above the right one. */
