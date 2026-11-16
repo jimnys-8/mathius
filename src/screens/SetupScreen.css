@@ -183,13 +183,13 @@
 .setup-shapes-icon {
   display: inline-flex;
   align-items: center;
-  gap: 0.1em;
+  gap: 0.08em;
   font-size: 0.7em;
   white-space: nowrap;
 }
 
 .setup-shapes-icon .figure {
-  width: 0.95em;
+  width: 0.75em;
 }
 
 .setup-series-gap {
