@@ -1,4 +1,4 @@
-import { makeFigure, parseFigure } from '../game/shapes.js'
+import { isSpotsKey, makeFigure, parseFigure, parseSpots } from '../game/shapes.js'
 import './Figure.css'
 
 // Each shape fits a circle of radius 1 around (0, 0). An arrow points up, a heart down.
@@ -63,19 +63,47 @@ const RADIUS = { big: [44, 13], small: [20, 7] }
 // The rim, in box units, so big and small figures share one line width.
 const RIM = { solid: 3.5, outline: 7 }
 
+/** A spot tile (see src/game/shapes.js): small figures in the five spots of a die, each in its own color. */
+function Spots({ spots, className }) {
+  return (
+    <svg className={['figure', 'is-spots', className].filter(Boolean).join(' ')} viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+      {spots.map(
+        (spot, index) =>
+          spot && (
+            <g key={index} className={`figure-spot is-${spot.color}`}>
+              <g
+                className="figure-shape"
+                transform={`translate(${DIE[5][index].join(' ')}) scale(${SPOT_RADIUS})`}
+                strokeWidth={RIM.solid / SPOT_RADIUS}
+              >
+                {SHAPE_PATHS[spot.shape]}
+              </g>
+            </g>
+          ),
+      )}
+    </svg>
+  )
+}
+
+const SPOT_RADIUS = 14
+
 /**
  * A figure (see src/game/shapes.js), drawn in a square: its shape in its
  * color, solid or as an outline, big or small, turned, and up to six of
- * it laid out like the dots on a die. Takes a figure or a figure key.
- * Sizes itself to its container's width.
+ * it laid out like the dots on a die. Takes a figure or a figure key, or
+ * a spot tile's key. Sizes itself to its container's width.
  *
  * With `plain`, the figure is drawn in gray: for hints that show only
- * an attribute other than color.
+ * an attribute other than color. With `pips`, a lone figure is drawn as
+ * small as one of several, for grids where counts are added up.
  */
-export default function Figure({ figure, className = '', plain = false }) {
+export default function Figure({ figure, className = '', plain = false, pips = false }) {
+  if (isSpotsKey(figure)) {
+    return <Spots spots={parseSpots(figure)} className={className} />
+  }
   const { shape, color, size, fill, count, turn } = typeof figure === 'string' ? parseFigure(figure) : makeFigure(figure)
   const [alone, several] = RADIUS[size]
-  const radius = count === 1 ? alone : several
+  const radius = count === 1 && !pips ? alone : several
   const classes = ['figure', `is-${plain ? 'plain' : color}`, `is-${fill}`, className].filter(Boolean).join(' ')
   return (
     <svg className={classes} viewBox="0 0 100 100" aria-hidden="true" focusable="false">

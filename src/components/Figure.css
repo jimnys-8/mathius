@@ -10,23 +10,28 @@
   overflow: visible;
 }
 
-.figure.is-red {
+.figure.is-red,
+.figure-spot.is-red {
   --figure: #e8453c;
 }
 
-.figure.is-blue {
+.figure.is-blue,
+.figure-spot.is-blue {
   --figure: #2f7de1;
 }
 
-.figure.is-yellow {
+.figure.is-yellow,
+.figure-spot.is-yellow {
   --figure: #f6be1f;
 }
 
-.figure.is-green {
+.figure.is-green,
+.figure-spot.is-green {
   --figure: #27a85a;
 }
 
-.figure.is-purple {
+.figure.is-purple,
+.figure-spot.is-purple {
   --figure: #9152e0;
 }
 
