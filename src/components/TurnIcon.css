@@ -1,0 +1,25 @@
+/* A dial with an arc and an arrowhead: how far something turns. */
+.turn-icon {
+  width: 1.6em;
+  height: 1.6em;
+}
+
+.turn-icon path,
+.turn-icon-dial {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.turn-icon-dial {
+  stroke-width: 1.5;
+  opacity: 0.3;
+}
+
+.turn-icon polygon {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1;
+  stroke-linejoin: round;
+}

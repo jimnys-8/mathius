@@ -40,31 +40,6 @@
   text-align: center;
 }
 
-.shapes-turn-icon {
-  width: 1.6em;
-  height: 1.6em;
-}
-
-.shapes-turn-icon path,
-.shapes-turn-dial {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 3;
-  stroke-linecap: round;
-}
-
-.shapes-turn-dial {
-  stroke-width: 1.5;
-  opacity: 0.3;
-}
-
-.shapes-turn-icon polygon {
-  fill: currentColor;
-  stroke: currentColor;
-  stroke-width: 1;
-  stroke-linejoin: round;
-}
-
 @keyframes shapes-card-in {
   from {
     opacity: 0;
