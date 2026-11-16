@@ -43,6 +43,8 @@ const valueOf = (figure, attributes) => attributes.map((attribute) => figure[att
  *   same order on every row, with "?" where the gap's row misses one
  * - step: +1 or a turn between the tiles, waiting for the solution next to the gap
  * - sum / union: + and = between the tiles, along the rows and down the columns
+ * - diagonal: a line through the diagonal, to the gap
+ * - checker: (in the card) the tiles tinted in turn, all but the gap
  */
 function hintMarks(question, figures, { hinted, solved }) {
   const { rules, unknown: gap } = question
@@ -106,7 +108,19 @@ function hintMarks(question, figures, { hinted, solved }) {
           }
         }
       }
-    } else {
+    } else if (rule.type === 'diagonal') {
+      // Through the middle of the corner tiles, which the grid's own diagonal passes.
+      add({
+        row: '1 / 6',
+        col: '1 / 6',
+        place: 'over',
+        content: (
+          <svg className="matrix-diagonal" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <line x1={15} y1={15} x2={85} y2={85} />
+          </svg>
+        ),
+      })
+    } else if (rule.type === 'sum' || rule.type === 'union') {
       // Tile 1 + tile 2 = tile 3, along every row and down every column.
       for (let line = 0; line < SIDE; line += 1) {
         ;['+', '='].forEach((sign, between) => {
@@ -142,6 +156,9 @@ export default function MatrixCard({ question, step, onSettled, status }) {
   const sideLines = Math.max(0, ...rules.map((rule) => (rule.type === 'latin' ? 3 : rule.type === 'rows' ? 1 : 0)))
   const side = rules.filter((rule) => rule.type === 'latin' || rule.type === 'rows').length
   const below = rules.some((rule) => rule.type === 'cols')
+  // A checkerboard's hint tints the tiles in turn, all but the gap.
+  const checker = hinted && rules.some((rule) => rule.type === 'checker')
+  const tint = (index) => (checker && (index !== gap || solved) ? ` is-tint-${index % 2}` : '')
 
   // Read out row by row, a letter for each different tile: "A, B, C; B, C, A; C, A, ?".
   const letters = [...new Set(terms)]
@@ -166,7 +183,7 @@ export default function MatrixCard({ question, step, onSettled, status }) {
         {terms.map((key, index) => (
           <span
             key={index}
-            className={`tile matrix-tile${index === gap ? ` is-gap is-${status}` : ''}`}
+            className={`tile matrix-tile${index === gap ? ` is-gap is-${status}` : ''}${tint(index)}`}
             style={{ gridRow: tileTrack(Math.floor(index / SIDE)), gridColumn: tileTrack(index % SIDE) }}
           >
             {index === gap && !solved ? <span className="matrix-gap">?</span> : <Figure figure={key} pips={pips} className="matrix-figure" />}

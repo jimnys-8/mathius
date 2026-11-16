@@ -72,6 +72,37 @@
   align-items: flex-end;
 }
 
+/* The diagonal's line, over the tiles, see-through so the figures show. */
+.matrix-marks.is-over {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.matrix-marks.is-over .matrix-mark,
+.matrix-diagonal {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.matrix-diagonal line {
+  stroke: currentColor;
+  stroke-width: calc(var(--tile) * 0.14);
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+  opacity: 0.35;
+}
+
+/* A checkerboard's hint: the tiles tinted in turn. */
+.matrix-grid .matrix-tile.is-tint-0 {
+  background: color-mix(in srgb, var(--color-a) 14%, var(--color-surface));
+}
+
+.matrix-grid .matrix-tile.is-tint-1 {
+  background: color-mix(in srgb, var(--color-c) 16%, var(--color-surface));
+}
+
 .matrix-mark {
   display: inline-flex;
   align-items: center;
