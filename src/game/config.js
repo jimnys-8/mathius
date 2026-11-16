@@ -230,9 +230,9 @@ const SERIES_LEVELS = [
  * First two figures taking turns, told apart by shape and color, with
  * wrong choices that look nothing alike; then units of three; then one
  * attribute that repeats while the rest stay (only the colors change);
- * then an arrow that turns and figures that grow in number; then two
- * rules at once. Mästare mixes the last three, with eighth turns and
- * AABB.
+ * then an arrow or a heart that turns a quarter and figures that grow in
+ * number; then two rules at once, with eighth turns too. Mästare mixes
+ * the last three, with AABB.
  */
 const REPEAT_UNITS = ['AB', 'ABC', 'AAB', 'ABB']
 const SHAPE_LEVELS = [
@@ -240,7 +240,7 @@ const SHAPE_LEVELS = [
   { id: 1, shapes: { kinds: ['whole'], gap: 'last', units: ['ABC', 'AAB', 'ABB'] } },
   { id: 2, shapes: { kinds: ['one'], gap: 'any', units: REPEAT_UNITS } },
   { id: 3, shapes: { kinds: ['turn', 'count'], gap: 'any' } },
-  { id: 4, shapes: { kinds: ['two'], gap: 'any' } },
+  { id: 4, shapes: { kinds: ['two'], gap: 'any', turns: [90, 45] } },
   { id: 5, shapes: { kinds: ['one', 'turn', 'count', 'two'], gap: 'any', units: [...REPEAT_UNITS, 'AABB'], turns: [90, 45] } },
 ]
 
