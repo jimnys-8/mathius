@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Icon from './components/Icon.jsx'
 import LanguageToggle from './components/LanguageToggle.jsx'
 import PlayerBar from './components/PlayerBar.jsx'
-import { normalizeSettings } from './game/config.js'
+import { getCategory, normalizeSettings, switchLevel } from './game/config.js'
 import { fitToUnlocked, newlyUnlocked, unlockedLevels } from './game/progress.js'
 import { I18nContext, createI18n, levelText, useI18n } from './i18n/i18n.js'
 import {
@@ -103,8 +103,24 @@ function Screens({ store, setStore }) {
   if (screen.name === 'summary') {
     const { session, previousBest, unlocked } = screen
     const correct = session.results.filter((result) => result.correct).length
+    // The levels next to the one just played, to play a round on straight away.
+    const { category, level } = session.settings
+    const { levels } = getCategory(category)
+    const index = levels.findIndex((item) => item.id === level)
+    const [easier, harder] = [levels[index - 1], levels[index + 1]]
+    const playLevel = (levelId) => {
+      setStore((current) => updateProfile(current, profile.id, { settings: switchLevel(settings, levelId) }))
+      play()
+    }
     return (
-      <SummaryScreen session={session} onPlayAgain={play} onDone={() => show('setup')}>
+      <SummaryScreen
+        session={session}
+        onPlayAgain={play}
+        onDone={() => show('setup')}
+        onEasier={easier && (() => playLevel(easier.id))}
+        onHarder={harder && (() => playLevel(harder.id))}
+        harderLocked={Boolean(harder) && !unlockedFor(category).has(harder.id)}
+      >
         {previousBest !== undefined && session.results.length > 0 && (
           <RecordBadge correct={correct} previousBest={previousBest} />
         )}

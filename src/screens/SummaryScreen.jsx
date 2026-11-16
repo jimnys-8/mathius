@@ -1,5 +1,7 @@
 import Fact, { GivenAnswer } from '../components/Fact.jsx'
 import Icon from '../components/Icon.jsx'
+import { ROUND_LENGTH } from '../game/config.js'
+import { PASS } from '../game/progress.js'
 import { summarize } from '../game/session.js'
 import { useI18n } from '../i18n/i18n.js'
 import './SummaryScreen.css'
@@ -18,8 +20,12 @@ function starsFor(correct, total) {
   return ratio >= 0.4 ? 1 : 0
 }
 
-/** Results of a finished session. */
-export default function SummaryScreen({ session, onPlayAgain, onDone, children }) {
+/**
+ * Results of a finished session. `onEasier` and `onHarder` play a round
+ * on the level below or above, when there is one; with `harderLocked`
+ * the harder one shows a padlock and how to open it.
+ */
+export default function SummaryScreen({ session, onPlayAgain, onDone, onEasier, onHarder, harderLocked = false, children }) {
   const { t } = useI18n()
   const { total, correct } = summarize(session.results)
   const stars = starsFor(correct, total)
@@ -72,12 +78,31 @@ export default function SummaryScreen({ session, onPlayAgain, onDone, children }
       )}
 
       <div className="summary-actions">
-        <button type="button" className="btn" onClick={onDone}>
-          {t('summary.done')}
-        </button>
-        <button type="button" className="btn btn-primary btn-large" onClick={onPlayAgain} autoFocus>
-          {t('summary.playAgain')}
-        </button>
+        {(onEasier || onHarder) && (
+          <div className="summary-levels">
+            {onEasier && (
+              <button type="button" className="btn" onClick={onEasier}>
+                <Icon name="arrowLeft" /> {t('summary.easier')}
+              </button>
+            )}
+            {onHarder && (
+              <button type="button" className="btn summary-harder" onClick={onHarder} disabled={harderLocked}>
+                {harderLocked && <Icon name="lock" />} {t('summary.harder')} {!harderLocked && <Icon name="arrowRight" />}
+              </button>
+            )}
+          </div>
+        )}
+        {onHarder && harderLocked && (
+          <p className="summary-unlock-hint">{t('setup.unlockHint', { correct: PASS.correct, total: ROUND_LENGTH })}</p>
+        )}
+        <div className="summary-main">
+          <button type="button" className="btn" onClick={onDone}>
+            {t('summary.done')}
+          </button>
+          <button type="button" className="btn btn-primary btn-large" onClick={onPlayAgain} autoFocus>
+            {t('summary.playAgain')}
+          </button>
+        </div>
       </div>
     </main>
   )

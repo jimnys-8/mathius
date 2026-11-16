@@ -220,6 +220,8 @@ const en = {
   'summary.unlocked': 'New level unlocked: {level}!',
   'summary.done': 'Done',
   'summary.playAgain': 'Play again',
+  'summary.easier': 'Easier',
+  'summary.harder': 'Harder',
 
   'stats.back': 'Back',
   'stats.empty': 'Play a game and your results will show up here!',
@@ -441,6 +443,8 @@ const sv = {
   'summary.unlocked': 'Ny nivå upplåst: {level}!',
   'summary.done': 'Klar',
   'summary.playAgain': 'Spela igen',
+  'summary.easier': 'Lättare',
+  'summary.harder': 'Svårare',
 
   'stats.back': 'Tillbaka',
   'stats.empty': 'Spela en omgång så syns dina resultat här!',
