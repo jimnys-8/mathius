@@ -62,6 +62,17 @@ solution.
   the numbers (two steps taking turns in two colors, 3×3 under square
   numbers). A series is only asked if exactly one number fits the gap
   under every rule; the rules are in `src/game/series.js`
+- Patterns: *Which shape is missing?* shows a row of drawn figures with a
+  gap and four figures to pick from. Levels: two figures taking turns
+  (the wrong choices look nothing alike), units of three (ABC, AAB,
+  ABB), one thing repeating while the rest stays (shape, color, size or
+  filled/empty), an arrow turning and figures growing in number (laid
+  out like a die), two rules at once (shapes AB while colors ABC), and
+  a mix with eighth turns and AABB. A hint draws a bracket under each
+  round of what repeats and arcs for turns and counts, one row per rule.
+  Each wrong choice breaks the pattern somewhere. Figures
+  (`src/game/shapes.js`, `src/components/Figure.jsx`) are meant for more
+  pattern games; the series rules are in `src/game/shapeSeries.js`
 - Levels unlock one at a time: a round with at least 9 right and at most
   1 wrong (timed or not) opens the next level, and the summary says so.
   The easy level, and the Dots level below it, are always open. Under
