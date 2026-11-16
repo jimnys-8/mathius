@@ -1,0 +1,45 @@
+/*
+ * Figure colors: bright and far apart, with a darker rim. Shapes differ
+ * as well as colors on the easy levels, so a child who mixes up colors
+ * can still see the pattern.
+ */
+.figure {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.figure.is-red {
+  --figure: #e8453c;
+}
+
+.figure.is-blue {
+  --figure: #2f7de1;
+}
+
+.figure.is-yellow {
+  --figure: #f6be1f;
+}
+
+.figure.is-green {
+  --figure: #27a85a;
+}
+
+.figure.is-purple {
+  --figure: #9152e0;
+}
+
+.figure.is-plain {
+  --figure: var(--color-muted);
+}
+
+.figure-shape {
+  fill: var(--figure);
+  stroke: color-mix(in srgb, var(--figure) 72%, #000);
+}
+
+.figure.is-outline .figure-shape {
+  fill: var(--color-surface);
+  stroke: var(--figure);
+}
