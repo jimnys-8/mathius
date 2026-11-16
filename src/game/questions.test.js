@@ -51,6 +51,9 @@ function check(question) {
     case 'series':
       // Checked in detail in series.test.js.
       return question.choices === undefined || question.choices.includes(question.answer)
+    case 'shapes':
+      // Checked in detail in shapeSeries.test.js.
+      return question.choices.includes(question.answer) && question.terms.length >= 5
     default:
       return false
   }

@@ -4,6 +4,7 @@ import { createLetterQuestion } from './letters.js'
 import { createOddQuestion } from './oddOneOut.js'
 import { createReadingQuestion } from './reading.js'
 import { createSeriesQuestion } from './series.js'
+import { createShapeSeriesQuestion } from './shapeSeries.js'
 import { createTimeQuestion } from './time.js'
 import { DEFAULT_LANGUAGE } from '../i18n/strings.js'
 
@@ -29,13 +30,14 @@ import { DEFAULT_LANGUAGE } from '../i18n/strings.js'
  * ('odd', see oddOneOut.js) have the group and the odd one as terms, and
  * carry the three that belong together. Number series ('series', see
  * series.js) have the whole series as terms, with the missing number at
- * `unknown`.
+ * `unknown`. Shape series ('shapes', see shapeSeries.js) are alike, with
+ * figure keys (see shapes.js) as terms and choices.
  * Clock questions (see time.js) are alike, with what is shown and the
  * answer as terms, and the time itself in `time`.
  *
  * @typedef {Object} Question
  * @property {string} op  'count', 'add', 'sub', 'mul', 'div', 'sqrt', 'eq',
- *   'word', 'picture', 'letter', 'fraction', 'odd', 'series', 'clockDigital', 'clockWords', 'digitalWords' or 'digitalClock'
+ *   'word', 'picture', 'letter', 'fraction', 'odd', 'series', 'shapes', 'clockDigital', 'clockWords', 'digitalWords' or 'digitalClock'
  * @property {Array<number|string>} terms
  * @property {0|1|2} unknown
  * @property {number|string} answer   terms[unknown]
@@ -275,6 +277,8 @@ export function createQuestion({ category, level, avoid = [], lang = DEFAULT_LAN
       question = createOddQuestion(levelConfig.odd, lang, rng, avoid)
     } else if (op === 'series') {
       question = createSeriesQuestion(levelConfig.series, rng)
+    } else if (op === 'shapes') {
+      question = createShapeSeriesQuestion(levelConfig.shapes, rng)
     } else if (levelConfig.time) {
       question = createTimeQuestion(op, levelConfig.time, lang, rng)
     } else {
