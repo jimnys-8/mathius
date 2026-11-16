@@ -17,3 +17,28 @@
   border: 0.1em dashed var(--color-b);
   border-radius: 0.3em;
 }
+
+/* A matrix in a list: three by three small tiles in faint frames. */
+.fact-matrix {
+  display: inline-grid;
+  grid-template-columns: repeat(3, 1.4em);
+  gap: 0.12em;
+  vertical-align: middle;
+}
+
+.fact-matrix-tile {
+  display: inline-grid;
+  place-items: center;
+  width: 1.4em;
+  height: 1.4em;
+  padding: 0.12em;
+  box-sizing: border-box;
+  border: 0.06em solid var(--color-line);
+  border-radius: 0.25em;
+  vertical-align: middle;
+}
+
+/* The answer, where the gap was: dashed like the gap tile. */
+.fact-matrix-tile.is-answer {
+  border: 0.1em dashed var(--color-b);
+}
