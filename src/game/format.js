@@ -1,3 +1,5 @@
+import { fillGaps } from './letters.js'
+
 /**
  * A solved fact as text, with the hidden term filled in: the key "7×?=56"
  * with answer 8 becomes "7 × 8 = 56". Counting facts show the dots,
@@ -46,8 +48,8 @@ export function formatFact({ key, op, answer }, formatNumber = String) {
     return shown.join(' ')
   }
   if (op === 'letter') {
-    // "🐈=k_tt" with answer "a": the emoji and the whole word.
-    return key.replace('=', ' ').replace('_', answer)
+    // "🐈=k_tt" with answer "a" (or "🐈=k_t_" with "at"): the emoji and the whole word.
+    return fillGaps(key.replace('=', ' '), answer)
   }
   if (op in CLOCK_FACTS) {
     // Keys are "op:shown=answer", e.g. "clockWords:8:20=tjugo över åtta".

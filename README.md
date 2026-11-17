@@ -34,7 +34,8 @@ solution.
   follow the app's language, and a hint takes away two wrong answers.
   *Which letter?* shows an emoji and its word with a letter missing, to
   pick from four: first the first letter of short words, then any letter,
-  then lowercase, then wrong letters that look or sound alike (b d p)
+  then lowercase, then wrong letters that look or sound alike (b d p),
+  then two letters missing, filled in one at a time
 - Telling the time, in four games: an analog clock to read as a digital
   time or in words ("fem i halv nio"), and a digital time to say in
   words or find the clock for. Levels go from whole hours to every five

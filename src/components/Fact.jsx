@@ -1,4 +1,5 @@
 import { formatFact } from '../game/format.js'
+import { fillGaps } from '../game/letters.js'
 import { isFigureKey, parseFigure } from '../game/shapes.js'
 import { useI18n } from '../i18n/i18n.js'
 import Figure from './Figure.jsx'
@@ -57,9 +58,15 @@ export default function Fact({ fact }) {
   return fact.op === 'shapes' ? <ShapeFact fact={fact} text={text} /> : text
 }
 
-/** "you said 7", with a figure drawn for a shape series or a matrix. */
+/**
+ * "you said 7", with a figure drawn for a shape series or a matrix. Two
+ * missing letters show the word as filled in ("you said ket_").
+ */
 export function GivenAnswer({ result }) {
   const { t, formatNumber } = useI18n()
+  if (result.op === 'letter' && result.answer.length > 1) {
+    return t('summary.youSaid', { given: fillGaps(result.key.split('=')[1], result.given) })
+  }
   if (result.op !== 'shapes' && result.op !== 'matrix') {
     return t('summary.youSaid', { given: typeof result.given === 'string' ? result.given : formatNumber(result.given) })
   }

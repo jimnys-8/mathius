@@ -31,14 +31,40 @@
     transform 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
 }
 
-.is-solved .letter-gap-letter {
+.is-solved .letter-gap-letter,
+.letter-gap.is-filled .letter-gap-letter {
   visibility: visible;
   opacity: 1;
   transform: none;
 }
 
+/* With two gaps, the one being asked: a thicker line that breathes, the
+   other a faint one. */
+.letter-card:has(.letter-gap.is-asked) .letter-gap:not(.is-asked, .is-filled)::after {
+  opacity: 0.35;
+}
+
+.letter-gap.is-asked::after {
+  height: 0.14em;
+  border-radius: 0.07em;
+  animation: letter-gap-asked 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes letter-gap-asked {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(1.25);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .letter-gap-letter {
     transition: none;
+  }
+
+  .letter-gap.is-asked::after {
+    animation: none;
   }
 }

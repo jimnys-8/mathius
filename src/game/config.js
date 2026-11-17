@@ -129,13 +129,14 @@ const EQUATION_LEVELS = [
 /**
  * Missing letter: first the first letter of short words, then any letter,
  * then lowercase, then all words with wrong letters that look or sound
- * like the right one.
+ * like the right one, then two letters left out.
  */
 const LETTER_LEVELS = [
   { id: 1, letter: { maxLength: 4, position: 'first', case: 'upper', distractors: 'far' } },
   { id: 2, letter: { maxLength: 5, position: 'any', case: 'upper', distractors: 'far' } },
   { id: 3, letter: { maxLength: 6, position: 'any', case: 'lower', distractors: 'far' } },
   { id: 4, letter: { position: 'any', case: 'lower', distractors: 'near' } },
+  { id: 5, letter: { minLength: 4, gaps: 2, position: 'any', case: 'lower', distractors: 'near' } },
 ]
 
 const READING_LEVELS = [

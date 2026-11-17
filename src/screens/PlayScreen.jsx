@@ -358,6 +358,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
           <LetterCard
             key={`${state.questionNumber}-${state.question.key}`}
             question={state.question}
+            filled={state.step}
             step={state.vizStep}
             onSettled={handleSettled}
           />

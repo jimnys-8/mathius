@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { CATEGORIES } from './config.js'
 import { createQuestion, isCorrect, makeQuestion } from './questions.js'
+import { fillGaps } from './letters.js'
 import { WORDS } from './words.js'
 
 function seededRng(seed) {
@@ -37,8 +38,8 @@ function check(question) {
       // Checked in detail in fractions.test.js.
       return b === question.answer && question.choices.includes(b) && typeof a === 'string'
     case 'letter':
-      // An emoji, its word with a gap, and the letter that fills it.
-      return WORDS.some((word) => word.emoji === a && word.sv === b.replace('_', c)) && question.choices.includes(c)
+      // An emoji, its word with a gap (or two), and the letters that fill them.
+      return WORDS.some((word) => word.emoji === a && word.sv === fillGaps(b, c)) && question.choices.includes(c[0])
     case 'clockDigital':
     case 'clockWords':
     case 'digitalWords':

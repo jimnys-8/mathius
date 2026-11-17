@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { CATEGORIES } from './config.js'
 import { formatFact } from './format.js'
+import { fillGaps } from './letters.js'
 import { createQuestion, isCorrect } from './questions.js'
+import { createSession, sessionReducer } from './session.js'
 import { WORDS, letterCount } from './words.js'
 
 function seededRng(seed) {
@@ -21,24 +23,38 @@ describe('missing-letter questions', () => {
     const byEmoji = new Map(WORDS.map((word) => [word.emoji, word[lang]]))
 
     for (const { id: level, letter } of levels) {
-      it(`leaves out one letter of a word of the level (${lang}, level ${level})`, () => {
+      it(`leaves out letters of a word of the level (${lang}, level ${level})`, () => {
+        const gaps = letter.gaps ?? 1
         for (let i = 0; i < 300; i += 1) {
           const question = createQuestion({ category: 'letter', level, lang, rng })
           const [emoji, gapped] = question.terms
-          const index = [...gapped].indexOf('_')
-          const word = gapped.replace('_', question.answer)
+          const indexes = [...gapped].flatMap((char, index) => (char === '_' ? [index] : []))
+          const word = fillGaps(gapped, question.answer)
           expect(byEmoji.get(emoji)).toBe(word)
           expect(letterCount(word)).toBeLessThanOrEqual(letter.maxLength ?? Infinity)
-          expect([...word][index]).toBe(question.answer)
-          expect(question.answer).toMatch(/^\p{L}$/u)
+          expect(letterCount(word)).toBeGreaterThanOrEqual(letter.minLength ?? 0)
+          expect(indexes).toHaveLength(gaps)
+          expect(indexes.map((index) => [...word][index]).join('')).toBe(question.answer)
           if (letter.position === 'first') {
-            expect(index).toBe(0)
+            expect(indexes[0]).toBe(0)
           }
-          expect(question.choices).toHaveLength(4)
-          expect(new Set(question.choices).size).toBe(4)
-          expect(question.choices).toContain(question.answer)
-          expect(question.hintRemoves).toHaveLength(2)
-          expect(question.hintRemoves).not.toContain(question.answer)
+          // Two gaps are never side by side.
+          if (gaps === 2) {
+            expect(indexes[1] - indexes[0]).toBeGreaterThan(1)
+          }
+          const steps = question.steps ?? [question]
+          expect(steps).toHaveLength(gaps)
+          expect(steps.map((step) => step.answer).join('')).toBe(question.answer)
+          for (const step of steps) {
+            expect(step.answer).toMatch(/^\p{L}$/u)
+            expect(step.choices).toHaveLength(4)
+            expect(new Set(step.choices).size).toBe(4)
+            expect(step.choices).toContain(step.answer)
+            expect(step.hintRemoves).toHaveLength(2)
+            expect(step.hintRemoves).not.toContain(step.answer)
+            expect(step.choices).toEqual(expect.arrayContaining(step.hintRemoves))
+          }
+          expect(question.choices).toEqual(steps[0].choices)
           expect(question.case).toBe(letter.case)
           expect(isCorrect(question, question.answer)).toBe(true)
         }
@@ -67,5 +83,54 @@ describe('missing-letter questions', () => {
 
   it('shows the whole word in the list of results', () => {
     expect(formatFact({ op: 'letter', key: '🐈=k_tt', answer: 'a' })).toBe('🐈 katt')
+    expect(formatFact({ op: 'letter', key: '🐈=k_t_', answer: 'at' })).toBe('🐈 katt')
+  })
+
+  it('fills the gaps left to right, leaving the rest open', () => {
+    expect(fillGaps('k_t_', 'a')).toBe('kat_')
+    expect(fillGaps('k_t_', 'at')).toBe('katt')
+    expect(fillGaps('k_t_', '')).toBe('k_t_')
+  })
+})
+
+describe('answering two missing letters', () => {
+  const twoGaps = levels.find(({ letter }) => letter.gaps === 2).id
+  const start = createSession({ category: 'letter', level: twoGaps, timer: 0, lang: 'sv' }, 0, seededRng(5))
+  const [first, second] = start.question.steps
+  const wrongOf = (step) => step.choices.find((choice) => choice !== step.answer)
+
+  it('moves on to the second gap after a right first letter', () => {
+    const halfway = sessionReducer(start, { type: 'choose', value: first.answer, now: 1 })
+    expect(halfway.phase).toBe('answering')
+    expect(halfway.step).toBe(1)
+    expect(halfway.picked).toEqual([first.answer])
+    expect(halfway.results).toHaveLength(0)
+    // The first gap's choices are no longer the ones asked.
+    const stale = first.choices.find((choice) => !second.choices.includes(choice))
+    if (stale) {
+      expect(sessionReducer(halfway, { type: 'choose', value: stale, now: 2 })).toBe(halfway)
+    }
+    const done = sessionReducer(halfway, { type: 'choose', value: second.answer, now: 2 })
+    expect(done.phase).toBe('feedback')
+    expect(done.results[0]).toEqual(expect.objectContaining({ correct: true, given: start.question.answer }))
+  })
+
+  it('ends the question at a wrong first letter', () => {
+    const missed = sessionReducer(start, { type: 'choose', value: wrongOf(first), now: 1 })
+    expect(missed.phase).toBe('feedback')
+    expect(missed.results[0]).toEqual(expect.objectContaining({ correct: false, given: wrongOf(first) }))
+  })
+
+  it('counts a wrong second letter as wrong', () => {
+    const halfway = sessionReducer(start, { type: 'choose', value: first.answer, now: 1 })
+    const missed = sessionReducer(halfway, { type: 'choose', value: wrongOf(second), now: 2 })
+    expect(missed.results[0]).toEqual(expect.objectContaining({ correct: false, given: first.answer + wrongOf(second) }))
+  })
+
+  it('starts the next question at its first step', () => {
+    const missed = sessionReducer(start, { type: 'choose', value: wrongOf(first), now: 1 })
+    const next = sessionReducer(missed, { type: 'next', now: 2 })
+    expect(next.step).toBe(0)
+    expect(next.picked).toEqual([])
   })
 })
