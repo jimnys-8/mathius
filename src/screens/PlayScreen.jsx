@@ -85,8 +85,12 @@ function hintText(question, t) {
     return t(`play.hintHelpShapes.${question.kind === 'one' ? question.rules[0].attributes[0] : question.kind}`)
   }
   if (question.op === 'matrix') {
-    // A step says what steps: "Räkna formerna i varje ruta."
-    return t(`play.hintHelpMatrix.${question.kind === 'step' ? question.rules[0].attribute : question.kind}`)
+    // A step says what steps ("Räkna formerna i varje ruta."), one of each which thing.
+    const [rule] = question.rules
+    if (question.kind === 'latinOne') {
+      return t(`play.hintHelpMatrix.latinOne.${rule.attributes[0]}`)
+    }
+    return t(`play.hintHelpMatrix.${rule.type === 'step' ? rule.attribute : question.kind}`)
   }
   if (question.op === 'fraction') {
     const [first, second] = pictureFractions(question.terms[0])
