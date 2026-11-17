@@ -6,12 +6,17 @@
   min-width: 0.7em;
   margin: 0 0.05em;
   text-align: center;
+  /* Its own layer, so the line can go behind the letter. */
+  isolation: isolate;
 }
 
-/* Just under the letters' baseline, like a line to write on. */
+/* Just under the letters' baseline, like a line to write on, behind the
+   letter so a g or p reaches down over it. */
 .letter-gap::after {
   content: '';
   position: absolute;
+  z-index: -1;
+  transition: background 0.3s ease;
   left: 0;
   right: 0;
   bottom: 0.1em;
@@ -39,9 +44,11 @@
 }
 
 /* With two gaps, the one being asked: a thicker line that breathes. The
-   other lines are gray, so a filled-in letter reaching down to its line
-   (g, j, p) stands out from it. */
-.letter-card.has-two-gaps .letter-gap:not(.is-asked)::after {
+   other lines are gray, and so is every line once the answer is shown,
+   so a filled-in letter reaching down to its line (g, j, p) stands out
+   from it. */
+.letter-card.has-two-gaps .letter-gap:not(.is-asked)::after,
+.letter-card.is-solved .letter-gap::after {
   background: var(--color-muted);
 }
 
