@@ -90,6 +90,9 @@ function hintText(question, t) {
     if (question.kind === 'latinOne') {
       return t(`play.hintHelpMatrix.latinOne.${rule.attributes[0]}`)
     }
+    if (question.kind === 'unionLine') {
+      return t(`play.hintHelpMatrix.unionLine.${rule.lines[0]}`)
+    }
     return t(`play.hintHelpMatrix.${rule.type === 'step' ? rule.attribute : question.kind}`)
   }
   if (question.op === 'fraction') {

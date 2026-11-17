@@ -58,9 +58,29 @@ describe('the patterns a matrix can follow', () => {
       [1, 2, 3, 1, 1, 2, 2, 3, 5].map((count) => fig('circle', 'red', { count })),
       ['a', 'b', 'ab', 'c', 'd', 'cd', 'ac', 'bd', 'abcd'].map(spots),
       ['a', 'b', 'ab', 'b', 'c', 'bc', 'ab', 'bc', 'abc'].map(spots),
+      // What both have cancels.
+      ['ab', 'bc', 'ac', 'c', 'cd', 'd', 'abc', 'bd', 'acd'].map(spots),
+      // Only what both have.
+      ['abc', 'ab', 'ab', 'acd', 'ad', 'a', 'ac', 'a', 'a'].map(spots),
+      // Along the rows only, each row its own; or down the columns only.
+      ['a', 'b', 'ab', 'cd', 'e', 'cde', 'b', 'c', 'bc'].map(spots),
+      ['a', 'cd', 'b', 'b', 'e', 'c', 'ab', 'cde', 'bc'].map(spots),
     ]) {
       expect(fitsAMatrix(tiles), tiles.join(' ')).toBe(true)
     }
+  })
+
+  it('holds a gap to every way the rest of the grid puts together', () => {
+    const grid = ['a', 'b', 'ab', 'c', 'd', 'cd', 'ac', 'bd', 'abcd'].map(spots)
+    const tryAt = (gap, letters) => fitsAMatrix(grid.map((tile, index) => (index === gap ? spots(letters) : tile)), gap)
+    expect(tryAt(2, 'ab')).toBe(true)
+    // Puts together down the column, but not along the row.
+    expect(tryAt(2, 'abe')).toBe(false)
+    // Without a gap, the rows alone are enough.
+    expect(fitsAMatrix(['a', 'b', 'ab', 'cd', 'e', 'cde', 'b', 'c', 'bc'].map(spots))).toBe(true)
+    // Spots that cancel: putting it all together is wrong.
+    const cancels = ['ab', 'bc', 'ac', 'c', 'cd', 'd', 'abc', 'bd', 'acd'].map(spots)
+    expect(fitsAMatrix(cancels.map((tile, index) => (index === 8 ? spots('abcd') : tile)), 8)).toBe(false)
   })
 
   it('rejects grids without a pattern', () => {
@@ -74,6 +94,10 @@ describe('the patterns a matrix can follow', () => {
       [1, 2, 3, 1, 1, 2, 2, 3, 4].map((count) => fig('circle', 'red', { count })),
       ['a', 'b', 'ab', 'c', 'd', 'cd', 'ac', 'bd', 'abc'].map(spots),
       ['a', 'b', 'ab', 'c', 'd', 'cd', 'ac', 'bd', 'abcde'].map(spots),
+      // Cancelling on one row, not on the others.
+      ['ab', 'bc', 'ac', 'c', 'cd', 'cd', 'b', 'c', 'bc'].map(spots),
+      // An empty tile is no tile.
+      ['ab', 'bc', 'ac', 'c', 'cd', 'd', 'abc', 'bd', ''].map(spots),
       // Spots and figures don't mix.
       ['a', 'b', 'ab', 'c', 'd', 'cd', 'ac', 'bd'].map(spots).concat(x),
     ]) {
@@ -93,9 +117,9 @@ describe('matrix questions', () => {
       it('fits a pattern with the answer, and with no wrong choice', () => {
         for (const question of questions) {
           const fill = (choice) => question.terms.map((key, index) => (index === question.unknown ? choice : key))
-          expect(fitsAMatrix(fill(question.answer)), question.key).toBe(true)
+          expect(fitsAMatrix(fill(question.answer), question.unknown), question.key).toBe(true)
           for (const choice of question.choices.filter((item) => item !== question.answer)) {
-            expect(fitsAMatrix(fill(choice)), `${question.key} with ${choice}`).toBe(false)
+            expect(fitsAMatrix(fill(choice), question.unknown), `${question.key} with ${choice}`).toBe(false)
           }
           expect(isCorrect(question, question.answer)).toBe(true)
         }
@@ -181,19 +205,40 @@ describe('matrix questions', () => {
   })
 
   it('has only one set of spots that fits the gap', () => {
-    for (let seed = 1; seed <= 100; seed += 1) {
+    for (let seed = 1; seed <= 300; seed += 1) {
       const question = createQuestion({ category: 'matrix', level: 4, rng: seededRng(seed) })
       // Each spot's figure, from wherever it shows.
       const figures = [0, 1, 2, 3, 4].map((spot) => question.terms.map(parseSpots).find((tile) => tile[spot])?.[spot] ?? null)
       const fitting = new Set()
       for (let mask = 1; mask < 32; mask += 1) {
         const key = spotsKey(figures.map((figure, spot) => ((mask >> spot) & 1 ? figure : null)))
-        if (fitsAMatrix(question.terms.map((tile, index) => (index === question.unknown ? key : tile)))) {
+        if (fitsAMatrix(question.terms.map((tile, index) => (index === question.unknown ? key : tile)), question.unknown)) {
           fitting.add(key)
         }
       }
       expect([...fitting], question.key).toEqual([question.answer])
     }
+  })
+
+  it('cancels spots that both tiles have, so the last tile is not every spot', () => {
+    for (let seed = 1; seed <= 300; seed += 1) {
+      const question = createQuestion({ category: 'matrix', level: 4, rng: seededRng(seed) })
+      if (question.kind === 'xor') {
+        const every = new Set(question.terms.flatMap((tile) => parseSpots(tile).flatMap((spot, index) => (spot ? [index] : []))))
+        expect(parseSpots(question.terms[8]).filter(Boolean).length, question.key).toBeLessThan(every.size)
+      }
+    }
+  })
+
+  it('puts tiles together along the rows only, or the columns only, half each', () => {
+    const lines = new Set()
+    for (let seed = 1; seed <= 300; seed += 1) {
+      const question = createQuestion({ category: 'matrix', level: 4, rng: seededRng(seed) })
+      if (question.kind === 'unionLine') {
+        lines.add(question.rules[0].lines.join())
+      }
+    }
+    expect(lines).toEqual(new Set(['rows', 'cols']))
   })
 
   it('has a key with the gap', () => {

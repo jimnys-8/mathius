@@ -79,10 +79,12 @@ solution.
   the color, the column the shape or count), shapes and colors each one
   of each in different orders or counts and turns that step along the
   rows, tiles put together (tile 1 + tile 2 = tile 3 along the rows and
-  down the columns, with small figures in fixed spots), and a mix with
-  counts that add up. A hint draws each rule: what each row has right of
-  it and each column below it, +1 or a turn between tiles, and + and =
-  for putting together. No wrong choice fits the rules; they are in
+  down the columns, with small figures in fixed spots: all of both,
+  what both have cancelling, only what both have, or each row its own),
+  and a mix with counts that add up. A hint draws each rule: what each
+  row has right of it and each column below it, +1 or a turn between
+  tiles, and + and = for putting together, with the spots that drop out
+  crossed out. No wrong choice fits the rules; they are in
   `src/game/matrix.js`
 - Levels unlock one at a time: a round with at least 9 right and at most
   1 wrong (timed or not) opens the next level, and the summary says so.

@@ -12,8 +12,10 @@
 //           rows (and maybe down the columns): 1 2 3 / 2 3 4 / 3 4 5
 //   sum     counts that add up: tile 1 + tile 2 = tile 3, along the
 //           rows and down the columns
-//   union   spot tiles (see shapes.js) put together: tile 3 has what
-//           tiles 1 and 2 have, along the rows and down the columns
+//   join    spot tiles (see shapes.js) put together: tile 3 has what
+//           tiles 1 and 2 have (union), what only one of them has, so
+//           what both have cancels (xor), or what both have (both);
+//           along the rows and down the columns, or only one of them
 //
 // The kinds of question, from easy to hard:
 //
@@ -28,6 +30,10 @@
 //   twoLatin  shapes one of each and colors one of each, in different orders
 //   step      counting up or turning along the rows, a figure per row
 //   union     spot tiles put together
+//   xor       the same, but what both tiles have cancels
+//   both      spot tiles that keep only what both have
+//   unionLine spot tiles put together along the rows only (or the
+//             columns only): each row its own
 //   sum       counts that add up
 //
 // Every wrong choice breaks a rule, so there is one right answer.
@@ -93,6 +99,32 @@ function spotFigures(rng) {
 /** Two spot sets (arrays of spot indexes) where neither holds the other, so putting them together makes something new. */
 const apart = (a, b) => a.some((spot) => !b.includes(spot)) && b.some((spot) => !a.includes(spot))
 
+const SPOT_INDEXES = Array.from({ length: SPOT_COUNT }, (_, index) => index)
+
+/** From `min` to `max` different spot indexes, leaving out `without`. */
+const someSpots = (rng, min, max, without = []) =>
+  pickDistinct(rng, SPOT_INDEXES.filter((spot) => !without.includes(spot)), randomInt(rng, min, max))
+
+/** The ways to put two spot sets together. */
+const JOIN = {
+  union: (a, b) => [...new Set([...a, ...b])],
+  xor: (a, b) => [...a.filter((spot) => !b.includes(spot)), ...b.filter((spot) => !a.includes(spot))],
+  both: (a, b) => a.filter((spot) => b.includes(spot)),
+}
+
+const sameSpots = (a, b) => a.length === b.length && a.every((spot) => b.includes(spot))
+
+/** Nine spot sets put together from the four top-left ones, along the rows and down the columns. */
+function fromCorners([a, b, c, d], join) {
+  return [a, b, join(a, b), c, d, join(c, d), join(a, c), join(b, d), join(join(a, b), join(c, d))]
+}
+
+/** The lines of a grid, as tile indexes: the rows and the columns. */
+const LINES = {
+  rows: [0, 1, 2].map((row) => [0, 1, 2].map((col) => row * SIDE + col)),
+  cols: [0, 1, 2].map((col) => [0, 1, 2].map((row) => row * SIDE + col)),
+}
+
 /** Spot indexes → a spots key. */
 const spotsFrom = (figures, spots) => spotsKey(figures.map((figure, index) => (spots.includes(index) ? figure : null)))
 
@@ -118,7 +150,8 @@ const SUM_STARTS = (() => {
  * the hint draws and the wrong choices break. A rule is
  * `{ type: 'rows'|'cols'|'latin', attributes }`,
  * `{ type: 'step', attribute, across, down }` (the step along a row and
- * down a column), `{ type: 'sum' }` or `{ type: 'union' }`.
+ * down a column), `{ type: 'sum' }` or
+ * `{ type: 'join', how: 'union'|'xor'|'both', lines: ['rows', 'cols'] }`.
  */
 const KINDS = {
   rows(rng) {
@@ -262,9 +295,64 @@ const KINDS = {
       if (!(apart(a, b) && apart(c, d) && apart(a, c) && apart(b, d))) {
         continue
       }
-      const join = (...sets) => [...new Set(sets.flat())]
-      const spots = [a, b, join(a, b), c, d, join(c, d), join(a, c), join(b, d), join(a, b, c, d)]
-      return { tiles: spots.map((set) => spotsFrom(figures, set)), rules: [{ type: 'union' }], figures }
+      const spots = fromCorners(corner, JOIN.union)
+      return { tiles: spots.map((set) => spotsFrom(figures, set)), rules: [joinRule('union')], figures }
+    }
+  },
+  xor(rng) {
+    // Like union, but the tiles share spots, which cancel: on at least
+    // half the lines, and the last tile isn't simply every spot.
+    const figures = spotFigures(rng)
+    for (;;) {
+      const corner = [0, 1, 2, 3].map(() => someSpots(rng, 1, 3))
+      const spots = fromCorners(corner, JOIN.xor)
+      const cancels = [...LINES.rows, ...LINES.cols].filter(([first, second]) =>
+        spots[first].some((spot) => spots[second].includes(spot)),
+      )
+      const every = [...new Set(corner.flat())]
+      if (spots.some((set) => set.length === 0) || cancels.length < 3 || sameSpots(spots[8], every)) {
+        continue
+      }
+      return { tiles: spots.map((set) => spotsFrom(figures, set)), rules: [joinRule('xor')], figures }
+    }
+  },
+  both(rng) {
+    // One spot in all four top-left tiles, so every tile keeps something,
+    // and one or two more each, so every line drops something.
+    const figures = spotFigures(rng)
+    for (;;) {
+      const shared = pick(rng, SPOT_INDEXES)
+      const corner = [0, 1, 2, 3].map(() => [shared, ...someSpots(rng, 1, 2, [shared])])
+      const spots = fromCorners(corner, JOIN.both)
+      const drops = [...LINES.rows, ...LINES.cols].every(([first, second]) => apart(spots[first], spots[second]))
+      if (!drops) {
+        continue
+      }
+      return { tiles: spots.map((set) => spotsFrom(figures, set)), rules: [joinRule('both')], figures }
+    }
+  },
+  unionLine(rng) {
+    // Each row puts its own two together into something of its own, and
+    // the columns don't: no column puts together in any way. Half the
+    // time turned, by columns.
+    const figures = spotFigures(rng)
+    const lines = [pick(rng, ['rows', 'cols'])]
+    for (;;) {
+      const rowSpots = [0, 1, 2].flatMap(() => {
+        const [a, b] = [someSpots(rng, 1, 2), someSpots(rng, 1, 2)]
+        return [a, b, JOIN.union(a, b)]
+      })
+      const pairsApart = LINES.rows.every(([first, second]) => apart(rowSpots[first], rowSpots[second]))
+      const colsJoin = LINES.cols.some(([first, second, third]) =>
+        Object.values(JOIN).some((join) => sameSpots(join(rowSpots[first], rowSpots[second]), rowSpots[third])),
+      )
+      const thirds = [2, 5, 8].map((index) => rowSpots[index])
+      const thirdsDiffer = thirds.every((set, index) => thirds.slice(index + 1).every((other) => !sameSpots(set, other)))
+      if (!pairsApart || colsJoin || !thirdsDiffer) {
+        continue
+      }
+      const spots = lines[0] === 'rows' ? rowSpots : grid((row, col) => rowSpots[col * SIDE + row])
+      return { tiles: spots.map((set) => spotsFrom(figures, set)), rules: [joinRule('union', lines)], figures }
     }
   },
   sum(rng) {
@@ -276,6 +364,11 @@ const KINDS = {
 }
 
 export const MATRIX_KINDS = Object.keys(KINDS)
+
+/** A rule for spot tiles put together `how`, along `lines`. */
+function joinRule(how, lines = ['rows', 'cols']) {
+  return { type: 'join', how, lines }
+}
 
 const rows = (values) => [0, 1, 2].map((row) => values.slice(row * SIDE, row * SIDE + SIDE))
 const cols = (values) => [0, 1, 2].map((col) => [0, 1, 2].map((row) => values[row * SIDE + col]))
@@ -328,32 +421,52 @@ function followsARule(attribute, values) {
   return false
 }
 
-/** Two spot tiles put together, or null if a spot holds different figures. */
-function putTogether(first, second) {
+/** What each spot keeps when two spot tiles are put together, by whether each has it. */
+const KEEPS = {
+  union: (a, b) => a ?? b,
+  xor: (a, b) => (a && b ? null : (a ?? b)),
+  both: (a, b) => (a && b ? a : null),
+}
+
+/** Two spot tiles put together `how`, or null if a spot holds different figures. */
+function putTogether(first, second, how) {
   const spots = []
   for (let index = 0; index < SPOT_COUNT; index += 1) {
     const [a, b] = [first[index], second[index]]
     if (a && b && (a.shape !== b.shape || a.color !== b.color)) {
       return null
     }
-    spots.push(a ?? b)
+    spots.push(KEEPS[how](a, b))
   }
   return spotsKey(spots)
 }
 
-/** Whether spot tiles put together along every row and down every column. */
-function combines(keys) {
-  const adds = (line) => putTogether(parseSpots(line[0]), parseSpots(line[1])) === line[2]
-  return rows(keys).every(adds) && cols(keys).every(adds)
+/**
+ * Whether spot tiles put together in one way, along the rows, down the
+ * columns or both. Which of those counts is up to the lines without the
+ * gap: where those all put together, the gap's line has to as well. So a
+ * grid that puts together both ways only takes an answer that does too.
+ */
+function combines(keys, gap) {
+  const tiles = keys.map(parseSpots)
+  if (tiles.some((tile) => tile.every((spot) => !spot))) {
+    return false
+  }
+  return Object.keys(KEEPS).some((how) => {
+    const works = ([first, second, third]) => putTogether(tiles[first], tiles[second], how) === keys[third]
+    const counted = Object.values(LINES).filter((lines) => lines.filter((line) => !line.includes(gap)).every(works))
+    return counted.length > 0 && counted.every((lines) => lines.every(works))
+  })
 }
 
 /**
  * Whether nine tiles (keys, row by row) follow a pattern: spot tiles
  * that put together, or figures where every attribute follows a rule.
+ * For spot tiles, `gap` is the tile being tried, see combines.
  */
-export function fitsAMatrix(keys) {
+export function fitsAMatrix(keys, gap = -1) {
   if (keys.some(isSpotsKey)) {
-    return keys.every(isSpotsKey) && combines(keys)
+    return keys.every(isSpotsKey) && combines(keys, gap)
   }
   const figures = keys.map(parseFigure)
   return ['shape', 'color', 'size', 'fill', 'count', 'turn'].every((attribute) =>
@@ -440,16 +553,28 @@ function figureCandidates(rng, tiles, gap, rules, fresh) {
   return [...candidates, ...others]
 }
 
-/** Wrong spot tiles: the answer with a spot taken away, added or swapped, and tiles from the grid. */
+/** A spot tile's spot indexes. */
+const heldSpots = (key) => parseSpots(key).flatMap((spot, index) => (spot ? [index] : []))
+
+/**
+ * Wrong spot tiles: the gap's tiles put together another way (all spots
+ * where they cancel), the answer with a spot taken away, added or
+ * swapped, and tiles from the grid.
+ */
 function spotCandidates(rng, tiles, gap, figures) {
-  const answer = parseSpots(tiles[gap])
-  const held = answer.flatMap((spot, index) => (spot ? [index] : []))
-  const empty = answer.flatMap((spot, index) => (spot ? [] : [index]))
+  const held = heldSpots(tiles[gap])
+  const empty = SPOT_INDEXES.filter((spot) => !held.includes(spot))
   const spots = (set) => spotsFrom(figures, set)
+  const otherWays = [LINES.rows[rowOf(gap)], LINES.cols[colOf(gap)]]
+    .filter((line) => line[2] === gap)
+    .flatMap(([first, second]) => Object.values(JOIN).map((join) => spots(join(heldSpots(tiles[first]), heldSpots(tiles[second])))))
   const fewer = held.length > 1 ? held.map((spot) => spots(held.filter((other) => other !== spot))) : []
   const more = empty.map((spot) => spots([...held, spot]))
   const swapped = held.flatMap((spot) => empty.map((other) => spots([...held.filter((item) => item !== spot), other])))
-  return [...shuffle([...shuffle(fewer, rng).slice(0, 1), ...shuffle(more, rng).slice(0, 1), ...neighbors(tiles, gap).slice(0, 2)], rng), ...shuffle([...fewer, ...more, ...swapped], rng), ...tiles]
+  const first = [otherWays, fewer, more, neighbors(tiles, gap).slice(0, 2)].map((options) => shuffle(options, rng).slice(0, 1))
+  return [...shuffle(first.flat(), rng), ...shuffle([...otherWays, ...fewer, ...more, ...swapped], rng), ...tiles].filter(
+    (key) => key !== spots([]),
+  )
 }
 
 /** The first three candidates that are new and break the pattern. */
@@ -458,7 +583,7 @@ function wrongChoices(tiles, gap, candidates) {
   const keys = new Set([tiles[gap]])
   for (const candidate of candidates) {
     const filled = tiles.map((tile, index) => (index === gap ? candidate : tile))
-    if (chosen.length < 3 && !keys.has(candidate) && !fitsAMatrix(filled)) {
+    if (chosen.length < 3 && !keys.has(candidate) && !fitsAMatrix(filled, gap)) {
       keys.add(candidate)
       chosen.push(candidate)
     }
@@ -471,7 +596,7 @@ function onlyAnswerCombines(tiles, gap, figures) {
   for (let mask = 1; mask < 2 ** SPOT_COUNT; mask += 1) {
     const set = figures.flatMap((_, index) => ((mask >> index) & 1 ? [index] : []))
     const key = spotsFrom(figures, set)
-    if (key !== tiles[gap] && fitsAMatrix(tiles.map((tile, index) => (index === gap ? key : tile)))) {
+    if (key !== tiles[gap] && fitsAMatrix(tiles.map((tile, index) => (index === gap ? key : tile)), gap)) {
       return false
     }
   }
@@ -492,11 +617,10 @@ export function createMatrixQuestion(matrix, rng) {
       continue
     }
     const gap = pickGap(rng, matrix.gap, gaps)
-    if (kind === 'union' && !onlyAnswerCombines(tiles, gap, figures)) {
+    if (figures && !(fitsAMatrix(tiles, gap) && onlyAnswerCombines(tiles, gap, figures))) {
       continue
     }
-    const candidates =
-      kind === 'union' ? spotCandidates(rng, tiles, gap, figures) : figureCandidates(rng, tiles, gap, rules, matrix.fresh)
+    const candidates = figures ? spotCandidates(rng, tiles, gap, figures) : figureCandidates(rng, tiles, gap, rules, matrix.fresh)
     const wrong = wrongChoices(tiles, gap, candidates)
     if (wrong.length < 3) {
       continue

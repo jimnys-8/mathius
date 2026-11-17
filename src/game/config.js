@@ -260,8 +260,8 @@ const MATRIX_LEVELS = [
   { id: 1, matrix: { kinds: ['latin', 'latinOne', 'countUp'], gap: 'any' } },
   { id: 2, matrix: { kinds: ['table'], gap: 'any' } },
   { id: 3, matrix: { kinds: ['twoLatin', 'step'], gap: 'any' } },
-  { id: 4, matrix: { kinds: ['union'], gap: 'any' } },
-  { id: 5, matrix: { kinds: ['twoLatin', 'step', 'union', 'sum'], gap: 'any', turns: [90, 45] } },
+  { id: 4, matrix: { kinds: ['union', 'xor', 'both', 'unionLine'], gap: 'any' } },
+  { id: 5, matrix: { kinds: ['twoLatin', 'step', 'xor', 'both', 'unionLine', 'sum'], gap: 'any', turns: [90, 45] } },
 ]
 
 /** Timer choices in seconds; 0 means no timer. */

@@ -42,7 +42,8 @@ const valueOf = (figure, attributes) => attributes.map((attribute) => figure[att
  * - latin: right of each row, the three it has one of each of, in the
  *   same order on every row, with "?" where the gap's row misses one
  * - step: +1 or a turn between the tiles, waiting for the solution next to the gap
- * - sum / union: + and = between the tiles, along the rows and down the columns
+ * - sum / join: + and = between the tiles, along the rows and down the
+ *   columns (or only one of them, for a join along one)
  * - diagonal: a line through the diagonal, to the gap
  * - checker: (in the card) the tiles tinted in turn, all but the gap
  */
@@ -120,12 +121,17 @@ function hintMarks(question, figures, { hinted, solved }) {
           </svg>
         ),
       })
-    } else if (rule.type === 'sum' || rule.type === 'union') {
+    } else if (rule.type === 'sum' || rule.type === 'join') {
       // Tile 1 + tile 2 = tile 3, along every row and down every column.
+      const lines = rule.lines ?? ['rows', 'cols']
       for (let line = 0; line < SIDE; line += 1) {
         ;['+', '='].forEach((sign, between) => {
-          add({ row: tileTrack(line), col: tileTrack(between) + 1, place: 'across', content: sign, sign: true })
-          add({ row: tileTrack(between) + 1, col: tileTrack(line), place: 'down', content: sign, sign: true })
+          if (lines.includes('rows')) {
+            add({ row: tileTrack(line), col: tileTrack(between) + 1, place: 'across', content: sign, sign: true })
+          }
+          if (lines.includes('cols')) {
+            add({ row: tileTrack(between) + 1, col: tileTrack(line), place: 'down', content: sign, sign: true })
+          }
         })
       }
     }
