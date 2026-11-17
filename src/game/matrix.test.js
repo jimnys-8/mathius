@@ -170,7 +170,10 @@ describe('matrix questions', () => {
   it('turns the one of each square both ways', () => {
     const firstRows = new Set()
     for (let seed = 1; seed <= 100; seed += 1) {
-      const { terms } = createQuestion({ category: 'matrix', level: 1, rng: seededRng(seed) })
+      const { terms, kind } = createQuestion({ category: 'matrix', level: 1, rng: seededRng(seed) })
+      if (kind === 'countUp') {
+        continue
+      }
       // Whether the second row starts with the first row's second or third figure.
       firstRows.add(terms[3] === terms[1] ? 'left' : 'right')
     }

@@ -22,6 +22,8 @@
 //   diagonal  one figure on the diagonal, one above it and one below
 //   checker   two figures taking turns, like a checkerboard
 //   latin     three figures, one of each in every row and column
+//   latinOne  the same, but only the shapes or only the colors change
+//   countUp   the same figure, one more along each row: 1 2 3
 //   table     the row decides one attribute, the column another
 //   twoLatin  shapes one of each and colors one of each, in different orders
 //   step      counting up or turning along the rows, a figure per row
@@ -164,6 +166,24 @@ const KINDS = {
         return figureKey({ shape: shapes[index], color: colors[index] })
       }),
       rules: [{ type: 'latin', attributes: ['shape', 'color'] }],
+    }
+  },
+  latinOne(rng) {
+    const attribute = pick(rng, ['shape', 'color'])
+    const values = threeValues(rng, attribute)
+    const base = { shape: pick(rng, SHAPES), color: pick(rng, COLORS) }
+    const way = pick(rng, [1, 2])
+    return {
+      tiles: grid((row, col) => figureKey({ ...base, [attribute]: values[latinIndex(way, row, col)] })),
+      rules: [{ type: 'latin', attributes: [attribute] }],
+    }
+  },
+  countUp(rng) {
+    const start = randomInt(rng, 1, MAX_COUNT - SIDE + 1)
+    const base = { shape: pick(rng, SHAPES), color: pick(rng, COLORS) }
+    return {
+      tiles: grid((_, col) => figureKey({ ...base, count: start + col })),
+      rules: [{ type: 'step', attribute: 'count', across: 1, down: 0 }],
     }
   },
   table(rng) {
