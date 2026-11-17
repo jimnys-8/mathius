@@ -46,6 +46,10 @@ import { DEFAULT_LANGUAGE } from '../i18n/strings.js'
  * @property {string} key      stable identifier, e.g. "7+8=?"
  * @property {Array<number|string>} [choices]  possible answers; numbers smallest first
  * @property {string[]} [hintRemoves]  wrong choices a hint takes away
+ * @property {Array<{ answer: string, choices: string[], hintRemoves: string[] }>} [steps]
+ *   for an answer picked in steps (two missing letters, one at a time):
+ *   each step's answer and choices, and `answer` is the steps' answers
+ *   joined; `choices` and `hintRemoves` are the first step's
  * @property {'upper'|'lower'} [case]  how reading questions show words
  * @property {{ hour: number, minute: number }} [time]  the time a clock question is about
  * @property {boolean} [numbers]  whether its analog clocks have numbers
@@ -314,6 +318,11 @@ export function createQuestion({ category, level, avoid = [], lang = DEFAULT_LAN
 }
 
 /** Whether an answer is right. Accepts decimal points and commas. */
+/** What is asked at a step: its answer, choices and hint, the question's own without steps. */
+export function questionStep(question, step) {
+  return question.steps?.[step] ?? question
+}
+
 export function isCorrect(question, input) {
   if (typeof question.answer === 'string') {
     return input === question.answer

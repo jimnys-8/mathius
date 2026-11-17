@@ -1,5 +1,5 @@
 import { ROUND_LENGTH } from './config.js'
-import { createQuestion, isCorrect } from './questions.js'
+import { createQuestion, isCorrect, questionStep } from './questions.js'
 import { HINT_FRAME, SOLUTION_FRAME } from '../viz/scenes.js'
 
 /**
@@ -14,6 +14,11 @@ import { HINT_FRAME, SOLUTION_FRAME } from '../viz/scenes.js'
  * answer is given and starts again with the next question. `clockUsedMs`
  * is the time used by earlier questions and `clockRunningSince` when the
  * clock last started (null while paused).
+ *
+ * A question with `steps` is answered one choice at a time: `step` is
+ * the one being asked and `picked` the choices made so far. A right
+ * pick moves on to the next step; a wrong one, or the last step, ends
+ * the question, with the picks joined as the answer given.
  */
 
 const RECENT_LIMIT = 6
@@ -35,6 +40,8 @@ export function createSession(settings, now, rng = Math.random) {
     question,
     questionNumber: 1,
     input: '',
+    step: 0,
+    picked: [],
     phase: 'answering',
     vizStep: 0,
     hinted: false,
@@ -87,6 +94,8 @@ function nextQuestion(state, now) {
     question,
     questionNumber: state.questionNumber + 1,
     input: '',
+    step: 0,
+    picked: [],
     phase: 'answering',
     vizStep: 0,
     hinted: false,
@@ -131,10 +140,16 @@ export function sessionReducer(state, action) {
     }
 
     case 'choose': {
-      if (state.phase !== 'answering' || !state.question.choices?.includes(action.value)) {
+      const asked = questionStep(state.question, state.step)
+      if (state.phase !== 'answering' || !asked.choices?.includes(action.value)) {
         return state
       }
-      return sessionReducer({ ...state, input: String(action.value) }, { type: 'submit', now: action.now })
+      const picked = [...state.picked, action.value]
+      const lastStep = state.step >= (state.question.steps?.length ?? 1) - 1
+      if (!lastStep && action.value === asked.answer) {
+        return { ...state, step: state.step + 1, picked }
+      }
+      return sessionReducer({ ...state, picked, input: picked.join('') }, { type: 'submit', now: action.now })
     }
 
     case 'submit': {

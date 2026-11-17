@@ -14,6 +14,7 @@ import ShapeSeriesCard from '../components/ShapeSeriesCard.jsx'
 import TimeCard from '../components/TimeCard.jsx'
 import RoundProgress from '../components/RoundProgress.jsx'
 import { fractionWords, parseChoice, pictureFractions } from '../game/fractions.js'
+import { questionStep } from '../game/questions.js'
 import { showWord } from '../game/reading.js'
 import { SERIES_DOT_GRID } from '../game/series.js'
 import { createSession, isTimed, sessionReducer } from '../game/session.js'
@@ -128,7 +129,8 @@ function feedbackText(state, i18n) {
     // A figure has no short name; the gap and the buttons show it.
     return t('play.wrongShape')
   }
-  return t('play.wrong', { answer: formatAnswer(state.question, state.question.answer, i18n) })
+  // With steps, the answer to the step that went wrong, as the buttons show it.
+  return t('play.wrong', { answer: formatAnswer(state.question, questionStep(state.question, state.step).answer, i18n) })
 }
 
 /**
@@ -230,7 +232,8 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
   }
 
   const handleChoose = useCallback((value) => dispatch({ type: 'choose', value, now: Date.now() }), [])
-  const { choices } = state.question
+  const asked = questionStep(state.question, state.step)
+  const { choices } = asked
   const reading = isReading(state.question)
   const clock = Boolean(state.question.time)
   const letter = state.question.op === 'letter'
@@ -396,15 +399,15 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
       {choices ? (
         <div className="play-choices">
           <ChoiceAnswers
-            key={state.questionNumber}
+            key={`${state.questionNumber}-${state.step}`}
             choices={choices}
-            answer={state.question.answer}
-            chosen={state.phase === 'answering' ? null : typeof state.question.answer === 'string' ? state.input : Number(state.input)}
+            answer={asked.answer}
+            chosen={state.phase === 'answering' ? null : state.picked.at(-1)}
             revealed={state.phase !== 'answering'}
             onChoose={handleChoose}
             as={choicesAs(state.question)}
             wordCase={state.question.case}
-            removed={state.hinted ? state.question.hintRemoves : undefined}
+            removed={state.hinted ? asked.hintRemoves : undefined}
             clock={
               clock
                 ? { numbers: state.question.numbers, hint: state.vizStep >= HINT_FRAME ? 'minutes' : null }
