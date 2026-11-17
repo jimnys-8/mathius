@@ -64,26 +64,28 @@ const RADIUS = { big: [44, 13], small: [20, 7] }
 const RIM = { solid: 3.5, outline: 7 }
 
 /**
- * A spot tile (see src/game/shapes.js): small figures in the five spots
- * of a die, each in its own color. `dropped` spots (an array like
- * `spots`) are drawn faint and crossed out, for a hint.
+ * A spot tile (see src/game/shapes.js): small figures in the spots of a
+ * die's four (or, in keys from before, its five), each in its own color.
+ * `dropped` spots (an array like `spots`) are drawn faint and crossed
+ * out, for a hint.
  */
 function Spots({ spots, dropped, className }) {
   const drawn = spots.map((spot, index) => spot ?? dropped?.[index] ?? null)
+  const radius = SPOT_RADIUS[spots.length]
   return (
     <svg className={['figure', 'is-spots', className].filter(Boolean).join(' ')} viewBox="0 0 100 100" aria-hidden="true" focusable="false">
       {drawn.map((spot, index) => {
         if (!spot) {
           return null
         }
-        const [x, y] = DIE[5][index]
+        const [x, y] = DIE[spots.length][index]
         const gone = !spots[index]
         return (
           <g key={index} className={`figure-spot is-${spot.color}${gone ? ' is-dropped' : ''}`}>
-            <g className="figure-shape" transform={`translate(${x} ${y}) scale(${SPOT_RADIUS})`} strokeWidth={RIM.solid / SPOT_RADIUS}>
+            <g className="figure-shape" transform={`translate(${x} ${y}) scale(${radius})`} strokeWidth={RIM.solid / radius}>
               {SHAPE_PATHS[spot.shape]}
             </g>
-            {gone && <line className="figure-spot-cross" x1={x - SPOT_RADIUS} y1={y + SPOT_RADIUS} x2={x + SPOT_RADIUS} y2={y - SPOT_RADIUS} />}
+            {gone && <line className="figure-spot-cross" x1={x - radius} y1={y + radius} x2={x + radius} y2={y - radius} />}
           </g>
         )
       })}
@@ -91,7 +93,8 @@ function Spots({ spots, dropped, className }) {
   )
 }
 
-const SPOT_RADIUS = 14
+// A spot's radius, by how many spots: four as big as fits the corners, five leaving room for the middle one.
+const SPOT_RADIUS = { 4: 20, 5: 14 }
 
 /**
  * A figure (see src/game/shapes.js), drawn in a square: its shape in its

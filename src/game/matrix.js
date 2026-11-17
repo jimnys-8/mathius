@@ -288,7 +288,7 @@ const KINDS = {
     // The four top-left tiles hold one or two spots each; the rest are
     // put together from them, so it works along rows and down columns.
     const figures = spotFigures(rng)
-    const some = () => pickDistinct(rng, [0, 1, 2, 3, 4], rng() < 0.7 ? 1 : 2)
+    const some = () => pickDistinct(rng, SPOT_INDEXES, rng() < 0.7 ? 1 : 2)
     for (;;) {
       const corner = [some(), some(), some(), some()]
       const [a, b, c, d] = corner

@@ -65,13 +65,14 @@ export function isFigureKey(value) {
 }
 
 /**
- * Spot tiles, for matrices that put tiles together: up to five small
- * figures, each in its own spot (the corners and the middle, like the
- * five on a die), so two tiles combine into one by adding up what they
- * have. A spot tile's key is "spots:" and one entry per spot, a figure's
- * "shape.color" or "-" for an empty spot: "spots:circle.red|-|-|-|star.blue".
+ * Spot tiles, for matrices that put tiles together: up to four small
+ * figures, each in its own spot (the corners, like the four on a die),
+ * so two tiles combine into one by adding up what they have. A spot
+ * tile's key is "spots:" and one entry per spot, a figure's
+ * "shape.color" or "-" for an empty spot: "spots:circle.red|-|-|star.blue".
+ * (Keys from before had five spots, the fifth in the middle.)
  */
-export const SPOT_COUNT = 5
+export const SPOT_COUNT = 4
 
 const SPOTS_PREFIX = 'spots:'
 

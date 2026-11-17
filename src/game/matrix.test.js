@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { CATEGORIES } from './config.js'
 import { fitsAMatrix } from './matrix.js'
 import { createQuestion, isCorrect } from './questions.js'
-import { figureKey, isFigureKey, isSpotsKey, parseFigure, parseSpots, spotsKey } from './shapes.js'
+import { SPOT_COUNT, figureKey, isFigureKey, isSpotsKey, parseFigure, parseSpots, spotsKey } from './shapes.js'
 
 function seededRng(seed) {
   let state = seed
@@ -23,15 +23,14 @@ const SPOT_FIGURES = [
   { shape: 'square', color: 'blue' },
   { shape: 'star', color: 'green' },
   { shape: 'heart', color: 'yellow' },
-  { shape: 'diamond', color: 'purple' },
 ]
 const spots = (letters) =>
-  spotsKey(SPOT_FIGURES.map((figure, index) => (letters.includes('abcde'[index]) ? figure : null)))
+  spotsKey(SPOT_FIGURES.map((figure, index) => (letters.includes('abcd'[index]) ? figure : null)))
 
 describe('spot keys', () => {
   it('round-trip', () => {
-    const key = spots('ae')
-    expect(key).toBe('spots:circle.red|-|-|-|diamond.purple')
+    const key = spots('ad')
+    expect(key).toBe('spots:circle.red|-|-|heart.yellow')
     expect(isSpotsKey(key)).toBe(true)
     expect(isFigureKey(key)).toBe(false)
     expect(spotsKey(parseSpots(key))).toBe(key)
@@ -63,8 +62,8 @@ describe('the patterns a matrix can follow', () => {
       // Only what both have.
       ['abc', 'ab', 'ab', 'acd', 'ad', 'a', 'ac', 'a', 'a'].map(spots),
       // Along the rows only, each row its own; or down the columns only.
-      ['a', 'b', 'ab', 'cd', 'e', 'cde', 'b', 'c', 'bc'].map(spots),
-      ['a', 'cd', 'b', 'b', 'e', 'c', 'ab', 'cde', 'bc'].map(spots),
+      ['a', 'b', 'ab', 'cd', 'a', 'acd', 'b', 'c', 'bc'].map(spots),
+      ['a', 'cd', 'b', 'b', 'a', 'c', 'ab', 'acd', 'bc'].map(spots),
     ]) {
       expect(fitsAMatrix(tiles), tiles.join(' ')).toBe(true)
     }
@@ -75,9 +74,9 @@ describe('the patterns a matrix can follow', () => {
     const tryAt = (gap, letters) => fitsAMatrix(grid.map((tile, index) => (index === gap ? spots(letters) : tile)), gap)
     expect(tryAt(2, 'ab')).toBe(true)
     // Puts together down the column, but not along the row.
-    expect(tryAt(2, 'abe')).toBe(false)
+    expect(tryAt(2, 'abc')).toBe(false)
     // Without a gap, the rows alone are enough.
-    expect(fitsAMatrix(['a', 'b', 'ab', 'cd', 'e', 'cde', 'b', 'c', 'bc'].map(spots))).toBe(true)
+    expect(fitsAMatrix(['a', 'b', 'ab', 'cd', 'a', 'acd', 'b', 'c', 'bc'].map(spots))).toBe(true)
     // Spots that cancel: putting it all together is wrong.
     const cancels = ['ab', 'bc', 'ac', 'c', 'cd', 'd', 'abc', 'bd', 'acd'].map(spots)
     expect(fitsAMatrix(cancels.map((tile, index) => (index === 8 ? spots('abcd') : tile)), 8)).toBe(false)
@@ -93,7 +92,7 @@ describe('the patterns a matrix can follow', () => {
       [1, 2, 3, 2, 3, 4, 3, 4, 6].map((count) => fig('star', 'red', { count })),
       [1, 2, 3, 1, 1, 2, 2, 3, 4].map((count) => fig('circle', 'red', { count })),
       ['a', 'b', 'ab', 'c', 'd', 'cd', 'ac', 'bd', 'abc'].map(spots),
-      ['a', 'b', 'ab', 'c', 'd', 'cd', 'ac', 'bd', 'abcde'].map(spots),
+      ['a', 'b', 'ab', 'c', 'd', 'cd', 'ac', 'bd', 'bcd'].map(spots),
       // Cancelling on one row, not on the others.
       ['ab', 'bc', 'ac', 'c', 'cd', 'cd', 'b', 'c', 'bc'].map(spots),
       // An empty tile is no tile.
@@ -208,9 +207,9 @@ describe('matrix questions', () => {
     for (let seed = 1; seed <= 300; seed += 1) {
       const question = createQuestion({ category: 'matrix', level: 4, rng: seededRng(seed) })
       // Each spot's figure, from wherever it shows.
-      const figures = [0, 1, 2, 3, 4].map((spot) => question.terms.map(parseSpots).find((tile) => tile[spot])?.[spot] ?? null)
+      const figures = SPOT_FIGURES.map((_, spot) => question.terms.map(parseSpots).find((tile) => tile[spot])?.[spot] ?? null)
       const fitting = new Set()
-      for (let mask = 1; mask < 32; mask += 1) {
+      for (let mask = 1; mask < 2 ** SPOT_COUNT; mask += 1) {
         const key = spotsKey(figures.map((figure, spot) => ((mask >> spot) & 1 ? figure : null)))
         if (fitsAMatrix(question.terms.map((tile, index) => (index === question.unknown ? key : tile)), question.unknown)) {
           fitting.add(key)
