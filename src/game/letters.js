@@ -32,7 +32,8 @@ const ALPHABETS = {
 // Letters a beginner mixes up, by shape or by sound.
 const ALIKE_GROUPS = ['bdpq', 'mn', 'eiy', 'eä', 'aäå', 'oöåu', 'gkj', 'td', 'fv', 'szc', 'ck', 'lr', 'uv', 'hn']
 
-function alikeLetters(letter) {
+/** Letters that look or sound like `letter`, not counting itself. */
+export function alikeLetters(letter) {
   const alike = new Set()
   for (const group of ALIKE_GROUPS) {
     if (group.includes(letter)) {
