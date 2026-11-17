@@ -44,6 +44,34 @@
   stroke: color-mix(in srgb, var(--figure) 72%, #000);
 }
 
+/* A spot a hint shows left out: faint, with a line through. */
+.figure-spot.is-dropped {
+  animation: figure-spot-dropped 0.4s ease-out;
+}
+
+.figure-spot.is-dropped .figure-shape {
+  opacity: 0.3;
+}
+
+.figure-spot-cross {
+  stroke: var(--color-ink);
+  stroke-width: 5;
+  stroke-linecap: round;
+  opacity: 0.75;
+}
+
+@keyframes figure-spot-dropped {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .figure-spot.is-dropped {
+    animation: none;
+  }
+}
+
 .figure.is-outline .figure-shape {
   fill: var(--color-surface);
   stroke: var(--figure);

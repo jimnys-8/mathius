@@ -1,5 +1,5 @@
 import { SIDE } from '../game/matrix.js'
-import { parseFigure } from '../game/shapes.js'
+import { parseFigure, parseSpots } from '../game/shapes.js'
 import { useI18n } from '../i18n/i18n.js'
 import { HINT_FRAME } from '../viz/scenes.js'
 import Figure from './Figure.jsx'
@@ -43,7 +43,7 @@ const valueOf = (figure, attributes) => attributes.map((attribute) => figure[att
  *   same order on every row, with "?" where the gap's row misses one
  * - step: +1 or a turn between the tiles, waiting for the solution next to the gap
  * - sum / join: + and = between the tiles, along the rows and down the
- *   columns (or only one of them, for a join along one)
+ *   columns (or only one of them, for a join along one), and see dropped
  * - diagonal: a line through the diagonal, to the gap
  * - checker: (in the card) the tiles tinted in turn, all but the gap
  */
@@ -140,6 +140,34 @@ function hintMarks(question, figures, { hinted, solved }) {
 }
 
 /**
+ * For a join's hint, the spots each tile it makes leaves out: those its
+ * two tiles have (along a row or down a column) that it doesn't, as
+ * spot arrays like parseSpots gives, or null. Not in the gap until solved.
+ */
+function droppedSpots(question, solved) {
+  const join = question.rules.find((rule) => rule.type === 'join')
+  if (!join) {
+    return []
+  }
+  const tiles = question.terms.map(parseSpots)
+  return tiles.map((tile, index) => {
+    const [row, col] = [Math.floor(index / SIDE), index % SIDE]
+    // The two tiles before it, along a row or down a column; not a line
+    // through the unsolved gap, which would give the answer away.
+    const from = [
+      ...(join.lines.includes('rows') && col === SIDE - 1 ? [[index - 2, index - 1]] : []),
+      ...(join.lines.includes('cols') && row === SIDE - 1 ? [[index - 2 * SIDE, index - SIDE]] : []),
+    ]
+      .filter((pair) => solved || !pair.includes(question.unknown))
+      .flat()
+    if (from.length === 0 || (index === question.unknown && !solved)) {
+      return null
+    }
+    return tile.map((spot, at) => (spot ? null : (from.map((other) => tiles[other][at]).find(Boolean) ?? null)))
+  })
+}
+
+/**
  * A matrix: a 3×3 grid of tiles with one missing. 💡 draws the rules
  * (see hintMarks); the solution fills in the gap. Like Visualization,
  * calls `onSettled(step)` once the solution is shown.
@@ -157,6 +185,7 @@ export default function MatrixCard({ question, step, onSettled, status }) {
   const { terms, unknown: gap, rules, pips } = question
   const figures = terms.map((key) => (key.startsWith('spots:') ? null : parseFigure(key)))
   const marks = hintMarks(question, figures, { hinted, solved })
+  const dropped = hinted ? droppedSpots(question, solved) : []
 
   // Room for the labels, only where this question has them.
   const sideLines = Math.max(0, ...rules.map((rule) => (rule.type === 'latin' ? 3 : rule.type === 'rows' ? 1 : 0)))
@@ -192,7 +221,7 @@ export default function MatrixCard({ question, step, onSettled, status }) {
             className={`tile matrix-tile${index === gap ? ` is-gap is-${status}` : ''}${tint(index)}`}
             style={{ gridRow: tileTrack(Math.floor(index / SIDE)), gridColumn: tileTrack(index % SIDE) }}
           >
-            {index === gap && !solved ? <span className="matrix-gap">?</span> : <Figure figure={key} pips={pips} className="matrix-figure" />}
+            {index === gap && !solved ? <span className="matrix-gap">?</span> : <Figure figure={key} pips={pips} dropped={dropped[index]} className="matrix-figure" />}
           </span>
         ))}
         {[...spots.values()].map((group) => (

@@ -63,24 +63,30 @@ const RADIUS = { big: [44, 13], small: [20, 7] }
 // The rim, in box units, so big and small figures share one line width.
 const RIM = { solid: 3.5, outline: 7 }
 
-/** A spot tile (see src/game/shapes.js): small figures in the five spots of a die, each in its own color. */
-function Spots({ spots, className }) {
+/**
+ * A spot tile (see src/game/shapes.js): small figures in the five spots
+ * of a die, each in its own color. `dropped` spots (an array like
+ * `spots`) are drawn faint and crossed out, for a hint.
+ */
+function Spots({ spots, dropped, className }) {
+  const drawn = spots.map((spot, index) => spot ?? dropped?.[index] ?? null)
   return (
     <svg className={['figure', 'is-spots', className].filter(Boolean).join(' ')} viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-      {spots.map(
-        (spot, index) =>
-          spot && (
-            <g key={index} className={`figure-spot is-${spot.color}`}>
-              <g
-                className="figure-shape"
-                transform={`translate(${DIE[5][index].join(' ')}) scale(${SPOT_RADIUS})`}
-                strokeWidth={RIM.solid / SPOT_RADIUS}
-              >
-                {SHAPE_PATHS[spot.shape]}
-              </g>
+      {drawn.map((spot, index) => {
+        if (!spot) {
+          return null
+        }
+        const [x, y] = DIE[5][index]
+        const gone = !spots[index]
+        return (
+          <g key={index} className={`figure-spot is-${spot.color}${gone ? ' is-dropped' : ''}`}>
+            <g className="figure-shape" transform={`translate(${x} ${y}) scale(${SPOT_RADIUS})`} strokeWidth={RIM.solid / SPOT_RADIUS}>
+              {SHAPE_PATHS[spot.shape]}
             </g>
-          ),
-      )}
+            {gone && <line className="figure-spot-cross" x1={x - SPOT_RADIUS} y1={y + SPOT_RADIUS} x2={x + SPOT_RADIUS} y2={y - SPOT_RADIUS} />}
+          </g>
+        )
+      })}
     </svg>
   )
 }
@@ -95,11 +101,12 @@ const SPOT_RADIUS = 14
  *
  * With `plain`, the figure is drawn in gray: for hints that show only
  * an attribute other than color. With `pips`, a lone figure is drawn as
- * small as one of several, for grids where counts are added up.
+ * small as one of several, for grids where counts are added up. For a
+ * spot tile, `dropped` adds crossed-out spots (see Spots).
  */
-export default function Figure({ figure, className = '', plain = false, pips = false }) {
+export default function Figure({ figure, className = '', plain = false, pips = false, dropped = null }) {
   if (isSpotsKey(figure)) {
-    return <Spots spots={parseSpots(figure)} className={className} />
+    return <Spots spots={parseSpots(figure)} dropped={dropped} className={className} />
   }
   const { shape, color, size, fill, count, turn } = typeof figure === 'string' ? parseFigure(figure) : makeFigure(figure)
   const [alone, several] = RADIUS[size]
