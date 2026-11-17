@@ -27,7 +27,7 @@ export default function LetterCard({ question, filled = 0, step, onSettled }) {
   const gaps = chars.flatMap((char, index) => (char === '_' ? [index] : []))
 
   return (
-    <div className={`reading-card letter-card${solved ? ' is-solved' : ''}`}>
+    <div className={`reading-card letter-card${fill.length > 1 ? ' has-two-gaps' : ''}${solved ? ' is-solved' : ''}`}>
       <span className="reading-emoji" aria-hidden="true">
         {emoji}
       </span>

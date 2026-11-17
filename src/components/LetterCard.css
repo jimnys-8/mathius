@@ -38,10 +38,11 @@
   transform: none;
 }
 
-/* With two gaps, the one being asked: a thicker line that breathes, the
-   other a faint one. */
-.letter-card:has(.letter-gap.is-asked) .letter-gap:not(.is-asked, .is-filled)::after {
-  opacity: 0.35;
+/* With two gaps, the one being asked: a thicker line that breathes. The
+   other lines are gray, so a filled-in letter reaching down to its line
+   (g, j, p) stands out from it. */
+.letter-card.has-two-gaps .letter-gap:not(.is-asked)::after {
+  background: var(--color-muted);
 }
 
 .letter-gap.is-asked::after {
