@@ -1,10 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { alikeLetters } from './letters.js'
 import { MISSPELLINGS } from './misspellings.js'
+import { rudeIn } from './rudeWords.js'
 import { WORDS } from './words.js'
-
-// Not allowed anywhere in a misspelling.
-const RUDE = ['bajs', 'fan', 'fis', 'fitt', 'hora', 'kiss', 'kuk', 'piss', 'pung', 'röv', 'sket', 'skit', 'snopp']
 
 const SWEDISH_WORDS = new Set(WORDS.map((word) => word.sv))
 
@@ -57,11 +55,7 @@ describe('misspellings', () => {
       it('makes no other listed word and nothing rude', () => {
         for (const misspelled of [...far, ...near]) {
           expect(SWEDISH_WORDS.has(misspelled), misspelled).toBe(false)
-          expect(
-            // (one the word itself holds is fine: elefant has "fan")
-            RUDE.filter((rude) => misspelled.includes(rude) && !word.includes(rude)),
-            misspelled,
-          ).toEqual([])
+          expect(rudeIn(misspelled, word), misspelled).toEqual([])
         }
       })
     })
