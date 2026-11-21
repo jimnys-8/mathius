@@ -13,6 +13,7 @@ export const OPERATIONS = {
   picture: { id: 'picture', symbol: '🐈' },
   letter: { id: 'letter', symbol: 'A_C' },
   wrongLetter: { id: 'wrongLetter', symbol: 'ADC' },
+  translate: { id: 'translate', symbol: 'Aa' },
   fraction: { id: 'fraction', symbol: '½' },
   clockDigital: { id: 'clockDigital', symbol: '🕗' },
   clockWords: { id: 'clockWords', symbol: '🕗' },
@@ -149,6 +150,17 @@ const WRONG_LETTER_LEVELS = [
   { id: 1, wrongLetter: { maxLength: 4, list: 'far', case: 'upper', distractors: 'far' } },
   { id: 2, wrongLetter: { list: 'far', case: 'lower', distractors: 'far' } },
   { id: 3, wrongLetter: { list: 'near', case: 'lower', distractors: 'near' } },
+]
+
+/**
+ * English words (see src/game/translate.js): hear and read an English
+ * word and pick its picture, then pick its Swedish word, then pick it
+ * among words for the same kind of thing (dog, cat, horse, cow).
+ */
+const TRANSLATE_LEVELS = [
+  { id: 1, translate: { answer: 'emoji', distractors: 'any', case: 'upper' } },
+  { id: 2, translate: { answer: 'word', distractors: 'any', case: 'lower' } },
+  { id: 3, translate: { answer: 'word', distractors: 'kind', case: 'lower' } },
 ]
 
 const READING_LEVELS = [
@@ -305,6 +317,7 @@ export const CATEGORIES = [
   { id: 'picture', symbol: '🐈', ops: ['picture'], levels: READING_LEVELS },
   { id: 'letter', symbol: 'A_C', ops: ['letter'], levels: LETTER_LEVELS },
   { id: 'wrongLetter', symbol: 'ADC', ops: ['wrongLetter'], levels: WRONG_LETTER_LEVELS },
+  { id: 'translate', symbol: 'Aa', ops: ['translate'], levels: TRANSLATE_LEVELS },
   // Telling the time, from an analog clock or from a digital one.
   {
     id: 'clockDigital',
@@ -328,7 +341,7 @@ export const CATEGORIES = [
  */
 export const AREAS = [
   { id: 'math', categories: ['count', 'add', 'sub', 'mul', 'div', 'mix', 'sqrt', 'eq', 'fraction'] },
-  { id: 'reading', categories: ['word', 'picture', 'letter', 'wrongLetter'] },
+  { id: 'reading', categories: ['word', 'picture', 'letter', 'wrongLetter', 'translate'] },
   { id: 'time', categories: ['clockDigital', 'clockWords', 'digitalWords', 'digitalClock'] },
   { id: 'patterns', categories: ['odd', 'series', 'shapes', 'matrix'] },
 ]

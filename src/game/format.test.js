@@ -30,6 +30,11 @@ describe('formatFact', () => {
     expect(formatFact(fact('fox=🦊', 'picture', '🦊'))).toBe('fox 🦊')
   })
 
+  it('shows the emoji, the word and its translation for English words', () => {
+    expect(formatFact(fact('🐕=dog=hund', 'translate', '🐕'))).toBe('🐕 dog = hund')
+    expect(formatFact(fact('🐻‍❄️=polar bear=isbjörn', 'translate', 'isbjörn'))).toBe('🐻‍❄️ polar bear = isbjörn')
+  })
+
   it('shows the right word and the misspelling for a wrong letter', () => {
     expect(formatFact(fact('🐈=kött', 'wrongLetter', '1a'))).toBe('🐈 katt (kött)')
     expect(formatFact(fact('🦖=fyrannosaurus', 'wrongLetter', '0t'))).toBe('🦖 tyrannosaurus (fyrannosaurus)')

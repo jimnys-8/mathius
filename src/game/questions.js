@@ -8,6 +8,7 @@ import { createReadingQuestion } from './reading.js'
 import { createSeriesQuestion } from './series.js'
 import { createShapeSeriesQuestion } from './shapeSeries.js'
 import { createTimeQuestion } from './time.js'
+import { createTranslateQuestion } from './translate.js'
 import { DEFAULT_LANGUAGE } from '../i18n/strings.js'
 
 /**
@@ -28,7 +29,9 @@ import { DEFAULT_LANGUAGE } from '../i18n/strings.js'
  * Missing-letter questions ('letter', see letters.js) have the emoji,
  * the word with "_" for a letter, and that letter as terms; wrong-letter
  * ones ('wrongLetter', see wrongLetter.js) the emoji, the misspelled word
- * and the answer, with the right word in `word`, answered in steps. Fraction
+ * and the answer, with the right word in `word`, answered in steps.
+ * English-word questions ('translate', see translate.js) have the word
+ * and its emoji or translation as terms. Fraction
  * questions ('fraction', see fractions.js) have the picture ("1/4+1/2")
  * and the right choice ("stacked:3/4") as terms. Odd-one-out questions
  * ('odd', see oddOneOut.js) have the group and the odd one as terms, and
@@ -42,7 +45,7 @@ import { DEFAULT_LANGUAGE } from '../i18n/strings.js'
  *
  * @typedef {Object} Question
  * @property {string} op  'count', 'add', 'sub', 'mul', 'div', 'sqrt', 'eq',
- *   'word', 'picture', 'letter', 'wrongLetter', 'fraction', 'odd', 'series', 'shapes', 'matrix', 'clockDigital', 'clockWords', 'digitalWords' or 'digitalClock'
+ *   'word', 'picture', 'letter', 'wrongLetter', 'translate', 'fraction', 'odd', 'series', 'shapes', 'matrix', 'clockDigital', 'clockWords', 'digitalWords' or 'digitalClock'
  * @property {Array<number|string>} terms
  * @property {0|1|2} unknown
  * @property {number|string} answer   terms[unknown]
@@ -285,6 +288,8 @@ export function createQuestion({ category, level, avoid = [], lang = DEFAULT_LAN
       question = createLetterQuestion(levelConfig.letter, lang, rng)
     } else if (op === 'wrongLetter') {
       question = createWrongLetterQuestion(levelConfig.wrongLetter, rng)
+    } else if (op === 'translate') {
+      question = createTranslateQuestion(levelConfig.translate, lang, rng)
     } else if (op === 'fraction') {
       question = createFractionQuestion(levelConfig.fraction, rng)
     } else if (op === 'odd') {

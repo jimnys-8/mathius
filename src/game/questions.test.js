@@ -35,6 +35,9 @@ function check(question) {
       return WORDS.some((word) => word.emoji === a && word.sv === b) && question.choices.includes(b)
     case 'picture':
       return WORDS.some((word) => word.sv === a && word.emoji === b) && question.choices.includes(b)
+    case 'translate':
+      // An English word (for Swedish players, the default) and its emoji or Swedish word. Checked in detail in translate.test.js.
+      return WORDS.some((word) => word.en === a && (word.emoji === b || word.sv === b)) && question.choices.includes(b)
     case 'fraction':
       // Checked in detail in fractions.test.js.
       return b === question.answer && question.choices.includes(b) && typeof a === 'string'

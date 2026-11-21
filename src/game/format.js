@@ -12,7 +12,8 @@ import { fixWrongLetter } from './wrongLetter.js'
  * are drawn where they are listed (ShapeFact); as text they name each
  * different figure by a letter ("A B A B A (B)"), and matrices likewise,
  * row by row ("A B C / B C A / C A (B)"). Wrong-letter facts show the
- * right word and the misspelling in brackets ("🐈 katt (kött)").
+ * right word and the misspelling in brackets ("🐈 katt (kött)"), and
+ * English words the emoji, the word and its translation ("🐕 dog = hund").
  *
  * @param {{ key: string, op: string, answer: number|string }} fact
  *   `key` has '?' for the hidden term
@@ -21,6 +22,11 @@ import { fixWrongLetter } from './wrongLetter.js'
 export function formatFact({ key, op, answer }, formatNumber = String) {
   if (op === 'word' || op === 'picture') {
     return key.replace('=', ' ')
+  }
+  if (op === 'translate') {
+    // "🐕=dog=hund": the emoji, the word and its translation.
+    const [emoji, word, translation] = key.split('=')
+    return `${emoji} ${word} = ${translation}`
   }
   if (op === 'fraction') {
     // "3/6=1/2": the picture's fraction, and the answer when it differs.
