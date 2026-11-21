@@ -1,6 +1,7 @@
 import { OPERATIONS, getCategory, getLevel } from './config.js'
 import { createFractionQuestion } from './fractions.js'
 import { createLetterQuestion } from './letters.js'
+import { createWrongLetterQuestion } from './wrongLetter.js'
 import { createMatrixQuestion } from './matrix.js'
 import { createOddQuestion } from './oddOneOut.js'
 import { createReadingQuestion } from './reading.js'
@@ -25,7 +26,9 @@ import { DEFAULT_LANGUAGE } from '../i18n/strings.js'
  * Reading questions ('word' and 'picture', see reading.js) have a word
  * and an emoji as terms, and a string answer picked from `choices`.
  * Missing-letter questions ('letter', see letters.js) have the emoji,
- * the word with "_" for a letter, and that letter as terms. Fraction
+ * the word with "_" for a letter, and that letter as terms; wrong-letter
+ * ones ('wrongLetter', see wrongLetter.js) the emoji, the misspelled word
+ * and the answer, with the right word in `word`, answered in steps. Fraction
  * questions ('fraction', see fractions.js) have the picture ("1/4+1/2")
  * and the right choice ("stacked:3/4") as terms. Odd-one-out questions
  * ('odd', see oddOneOut.js) have the group and the odd one as terms, and
@@ -39,18 +42,21 @@ import { DEFAULT_LANGUAGE } from '../i18n/strings.js'
  *
  * @typedef {Object} Question
  * @property {string} op  'count', 'add', 'sub', 'mul', 'div', 'sqrt', 'eq',
- *   'word', 'picture', 'letter', 'fraction', 'odd', 'series', 'shapes', 'matrix', 'clockDigital', 'clockWords', 'digitalWords' or 'digitalClock'
+ *   'word', 'picture', 'letter', 'wrongLetter', 'fraction', 'odd', 'series', 'shapes', 'matrix', 'clockDigital', 'clockWords', 'digitalWords' or 'digitalClock'
  * @property {Array<number|string>} terms
  * @property {0|1|2} unknown
  * @property {number|string} answer   terms[unknown]
  * @property {string} key      stable identifier, e.g. "7+8=?"
  * @property {Array<number|string>} [choices]  possible answers; numbers smallest first
  * @property {string[]} [hintRemoves]  wrong choices a hint takes away
- * @property {Array<{ answer: string, choices: string[], hintRemoves: string[] }>} [steps]
+ * @property {Array<{ answer: string, choices: string[], hintRemoves: string[], inWord?: boolean }>} [steps]
  *   for an answer picked in steps (two missing letters, one at a time):
  *   each step's answer and choices, and `answer` is the steps' answers
- *   joined; `choices` and `hintRemoves` are the first step's
+ *   joined; `choices` and `hintRemoves` are the first step's. A step
+ *   `inWord` is answered by tapping a letter in the card's word, not with
+ *   answer buttons
  * @property {'upper'|'lower'} [case]  how reading questions show words
+ * @property {string} [word]  a wrong-letter question's right word
  * @property {{ hour: number, minute: number }} [time]  the time a clock question is about
  * @property {boolean} [numbers]  whether its analog clocks have numbers
  * @property {'dots'} [choicesAs]  show the choices as dots, not numerals
@@ -277,6 +283,8 @@ export function createQuestion({ category, level, avoid = [], lang = DEFAULT_LAN
       question = createReadingQuestion(op, levelConfig.read, lang, rng)
     } else if (op === 'letter') {
       question = createLetterQuestion(levelConfig.letter, lang, rng)
+    } else if (op === 'wrongLetter') {
+      question = createWrongLetterQuestion(levelConfig.wrongLetter, rng)
     } else if (op === 'fraction') {
       question = createFractionQuestion(levelConfig.fraction, rng)
     } else if (op === 'odd') {

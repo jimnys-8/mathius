@@ -12,6 +12,7 @@ export const OPERATIONS = {
   word: { id: 'word', symbol: 'Abc' },
   picture: { id: 'picture', symbol: '🐈' },
   letter: { id: 'letter', symbol: 'A_C' },
+  wrongLetter: { id: 'wrongLetter', symbol: 'ADC' },
   fraction: { id: 'fraction', symbol: '½' },
   clockDigital: { id: 'clockDigital', symbol: '🕗' },
   clockWords: { id: 'clockWords', symbol: '🕗' },
@@ -137,6 +138,17 @@ const LETTER_LEVELS = [
   { id: 3, letter: { maxLength: 6, position: 'any', case: 'lower', distractors: 'far' } },
   { id: 4, letter: { position: 'any', case: 'lower', distractors: 'near' } },
   { id: 5, letter: { minLength: 4, gaps: 2, position: 'any', case: 'lower', distractors: 'near' } },
+]
+
+/**
+ * Wrong letter: short words in capitals with easy-to-spot wrong letters,
+ * then all words in small letters, then wrong letters that look or sound
+ * like the right one (see src/game/misspellings.js).
+ */
+const WRONG_LETTER_LEVELS = [
+  { id: 1, wrongLetter: { maxLength: 4, list: 'far', case: 'upper', distractors: 'far' } },
+  { id: 2, wrongLetter: { list: 'far', case: 'lower', distractors: 'far' } },
+  { id: 3, wrongLetter: { list: 'near', case: 'lower', distractors: 'near' } },
 ]
 
 const READING_LEVELS = [
@@ -292,6 +304,7 @@ export const CATEGORIES = [
   { id: 'word', symbol: 'Abc', ops: ['word'], levels: READING_LEVELS },
   { id: 'picture', symbol: '🐈', ops: ['picture'], levels: READING_LEVELS },
   { id: 'letter', symbol: 'A_C', ops: ['letter'], levels: LETTER_LEVELS },
+  { id: 'wrongLetter', symbol: 'ADC', ops: ['wrongLetter'], levels: WRONG_LETTER_LEVELS },
   // Telling the time, from an analog clock or from a digital one.
   {
     id: 'clockDigital',
@@ -315,7 +328,7 @@ export const CATEGORIES = [
  */
 export const AREAS = [
   { id: 'math', categories: ['count', 'add', 'sub', 'mul', 'div', 'mix', 'sqrt', 'eq', 'fraction'] },
-  { id: 'reading', categories: ['word', 'picture', 'letter'] },
+  { id: 'reading', categories: ['word', 'picture', 'letter', 'wrongLetter'] },
   { id: 'time', categories: ['clockDigital', 'clockWords', 'digitalWords', 'digitalClock'] },
   { id: 'patterns', categories: ['odd', 'series', 'shapes', 'matrix'] },
 ]

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { CATEGORIES } from './config.js'
 import { createQuestion, isCorrect, makeQuestion } from './questions.js'
 import { fillGaps } from './letters.js'
+import { MISSPELLINGS } from './misspellings.js'
 import { WORDS } from './words.js'
 
 function seededRng(seed) {
@@ -40,6 +41,11 @@ function check(question) {
     case 'letter':
       // An emoji, its word with a gap (or two), and the letters that fill them.
       return WORDS.some((word) => word.emoji === a && word.sv === fillGaps(b, c)) && question.choices.includes(c[0])
+    case 'wrongLetter':
+      // An emoji and one of its word's misspellings. Checked in detail in wrongLetter.test.js.
+      return MISSPELLINGS.some(
+        (entry) => entry.emoji === a && entry.word === question.word && [...entry.far, ...entry.near].includes(b),
+      )
     case 'clockDigital':
     case 'clockWords':
     case 'digitalWords':

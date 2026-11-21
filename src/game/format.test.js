@@ -30,6 +30,11 @@ describe('formatFact', () => {
     expect(formatFact(fact('fox=🦊', 'picture', '🦊'))).toBe('fox 🦊')
   })
 
+  it('shows the right word and the misspelling for a wrong letter', () => {
+    expect(formatFact(fact('🐈=kött', 'wrongLetter', '1a'))).toBe('🐈 katt (kött)')
+    expect(formatFact(fact('🦖=fyrannosaurus', 'wrongLetter', '0t'))).toBe('🦖 tyrannosaurus (fyrannosaurus)')
+  })
+
   it('shows the clock or digital time and the answer for telling the time', () => {
     expect(formatFact(fact('clockDigital:8:20=20:20', 'clockDigital', '20:20'))).toBe('🕗 8:20 = 20:20')
     expect(formatFact(fact('clockWords:8:20=tjugo över åtta', 'clockWords', 'tjugo över åtta'))).toBe(

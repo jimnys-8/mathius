@@ -46,8 +46,12 @@ export function alikeLetters(letter) {
   return alike
 }
 
-function pickWrongLetters(answer, distractors, lang, rng) {
-  const alphabet = [...ALPHABETS[lang]].filter((letter) => letter !== answer)
+/**
+ * Three wrong letters to go with `answer`, never one in `exclude`.
+ * 'near' prefers ones that look or sound like it, 'far' leaves those out.
+ */
+export function pickWrongLetters(answer, distractors, lang, rng, exclude = []) {
+  const alphabet = [...ALPHABETS[lang]].filter((letter) => letter !== answer && !exclude.includes(letter))
   const alike = [...alikeLetters(answer)].filter((letter) => alphabet.includes(letter))
   const others = shuffle(
     alphabet.filter((letter) => !alike.includes(letter)),

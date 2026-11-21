@@ -1,4 +1,5 @@
 import { fillGaps } from './letters.js'
+import { fixWrongLetter } from './wrongLetter.js'
 
 /**
  * A solved fact as text, with the hidden term filled in: the key "7×?=56"
@@ -10,7 +11,8 @@ import { fillGaps } from './letters.js'
  * answer in brackets ("2 4 6 8 (10)", "7 10 (13) 16 19"). Shape series
  * are drawn where they are listed (ShapeFact); as text they name each
  * different figure by a letter ("A B A B A (B)"), and matrices likewise,
- * row by row ("A B C / B C A / C A (B)").
+ * row by row ("A B C / B C A / C A (B)"). Wrong-letter facts show the
+ * right word and the misspelling in brackets ("🐈 katt (kött)").
  *
  * @param {{ key: string, op: string, answer: number|string }} fact
  *   `key` has '?' for the hidden term
@@ -50,6 +52,11 @@ export function formatFact({ key, op, answer }, formatNumber = String) {
   if (op === 'letter') {
     // "🐈=k_tt" with answer "a" (or "🐈=k_t_" with "at"): the emoji and the whole word.
     return fillGaps(key.replace('=', ' '), answer)
+  }
+  if (op === 'wrongLetter') {
+    // "🐈=kött" with answer "1a": the emoji, the right word, the misspelling.
+    const [emoji, misspelled] = key.split('=')
+    return `${emoji} ${fixWrongLetter(misspelled, answer)} (${misspelled})`
   }
   if (op in CLOCK_FACTS) {
     // Keys are "op:shown=answer", e.g. "clockWords:8:20=tjugo över åtta".
