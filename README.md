@@ -36,7 +36,7 @@ solution.
   pick from four: first the first letter of short words, then any letter,
   then lowercase, then wrong letters that look or sound alike (b d p),
   then two letters missing, filled in one at a time.
-  *Which letter is wrong?* shows an emoji and its word with one wrong
+  *Find the mistake* shows an emoji and its word with one wrong
   letter, often making another real word (🐈 kött): tap the wrong letter,
   then pick the right one from four. Levels go from short words in
   capitals to all words, then mistakes that look nearly right (sebra).

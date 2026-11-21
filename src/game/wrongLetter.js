@@ -3,7 +3,7 @@ import { MISSPELLINGS } from './misspellings.js'
 import { shuffle } from './reading.js'
 
 /**
- * "Which letter is wrong?": an emoji and its word spelled with one wrong
+ * "Find the mistake": an emoji and its word spelled with one wrong
  * letter (🐈 kött). It's answered in two steps (see Question `steps`):
  * first the child taps the wrong letter in the word, then picks the right
  * one from four. terms = [emoji, the misspelled word, the answer], and

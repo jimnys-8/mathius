@@ -1,5 +1,5 @@
 /**
- * Misspelled words for "Vilken bokstav är fel?": the child taps the
+ * Misspelled words for "Hitta felet": the child taps the
  * wrong letter, then picks the right one.
  *
  * One row per word: its emoji and the Swedish word (as in words.js), then
