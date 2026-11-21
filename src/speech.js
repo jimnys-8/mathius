@@ -18,16 +18,27 @@ const RATE = 0.85
 
 const normalized = (lang) => lang.replace('_', '-').toLowerCase()
 
-/** The best voice for a locale like 'en-US': on the device, then any for it, then any for its language. */
+/**
+ * Voices known to sound natural, on Apple devices, in Chrome and on
+ * Windows. Macs and iPhones also have robotic novelty voices (Albert,
+ * Zarvox, Bubbles) for US English, whose names are translated with the
+ * system's language, so the good ones are picked by name instead.
+ */
+const GOOD_VOICES =
+  /^(Samantha|Ava|Allison|Susan|Nicky|Zoe|Evan|Nathan|Joelle|Noelle|Aaron|Tom|Alva|Klara|Oskar|Google|Microsoft (Aria|Jenny|Guy|Ana|Michelle|Sofie|Mattias|Hillevi))\b/
+// Downloaded higher-quality versions of the same voices.
+const BETTER_VOICES = /\((premium|enhanced|förbättrad)\)|natural|neural|online/i
+
+/**
+ * A natural voice for a locale like 'en-US', or none, so the device picks
+ * its own default for the language (Android names its voices by language).
+ */
 function voiceFor(locale) {
-  const voices = synth.getVoices()
-  const exact = voices.filter((voice) => normalized(voice.lang) === normalized(locale))
-  const language = locale.slice(0, 2).toLowerCase()
-  return (
-    exact.find((voice) => voice.localService) ??
-    exact[0] ??
-    voices.find((voice) => normalized(voice.lang).startsWith(language))
-  )
+  const score = (voice) => (BETTER_VOICES.test(voice.name) ? 2 : 0) + (voice.default ? 1 : 0)
+  return synth
+    .getVoices()
+    .filter((voice) => normalized(voice.lang) === normalized(locale) && GOOD_VOICES.test(voice.name))
+    .sort((a, b) => score(b) - score(a))[0]
 }
 
 /** Reads `text` aloud in a locale ('en-US', 'sv-SE'), cutting off whatever was being read. */
