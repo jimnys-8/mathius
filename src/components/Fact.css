@@ -44,3 +44,9 @@
 .fact-matrix-tile.is-answer {
   border: 0.1em dashed var(--color-b);
 }
+
+/* A wrong-letter fact's misspelling, after the right word. */
+.fact-misspelled {
+  color: var(--color-muted);
+  text-decoration-thickness: 0.08em;
+}

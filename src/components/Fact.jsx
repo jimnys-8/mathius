@@ -1,6 +1,7 @@
 import { formatFact } from '../game/format.js'
 import { fillGaps } from '../game/letters.js'
 import { isFigureKey, parseFigure } from '../game/shapes.js'
+import { fixWrongLetter, parseWrongLetterAnswer } from '../game/wrongLetter.js'
 import { useI18n } from '../i18n/i18n.js'
 import Figure from './Figure.jsx'
 import './Fact.css'
@@ -55,6 +56,15 @@ export default function Fact({ fact }) {
   if (fact.op === 'matrix') {
     return <MatrixFact fact={fact} text={text} />
   }
+  if (fact.op === 'wrongLetter') {
+    // "🐈 katt kött", the misspelling crossed out.
+    const [emoji, misspelled] = fact.key.split('=')
+    return (
+      <span aria-label={text}>
+        {emoji} {fixWrongLetter(misspelled, fact.answer)} <s className="fact-misspelled">{misspelled}</s>
+      </span>
+    )
+  }
   return fact.op === 'shapes' ? <ShapeFact fact={fact} text={text} /> : text
 }
 
@@ -66,6 +76,14 @@ export function GivenAnswer({ result }) {
   const { t, formatNumber } = useI18n()
   if (result.op === 'letter' && result.answer.length > 1) {
     return t('summary.youSaid', { given: fillGaps(result.key.split('=')[1], result.given) })
+  }
+  if (result.op === 'wrongLetter') {
+    // A right letter tapped ("du tryckte på t"), or the word with the letter picked ("du svarade kitt").
+    const misspelled = result.key.split('=')[1]
+    const { index, letter } = parseWrongLetterAnswer(result.given)
+    return letter
+      ? t('summary.youSaid', { given: fixWrongLetter(misspelled, result.given) })
+      : t('summary.youTapped', { given: [...misspelled][index] })
   }
   if (result.op !== 'shapes' && result.op !== 'matrix') {
     return t('summary.youSaid', { given: typeof result.given === 'string' ? result.given : formatNumber(result.given) })

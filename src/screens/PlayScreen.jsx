@@ -12,6 +12,7 @@ import ReadingCard from '../components/ReadingCard.jsx'
 import SeriesCard from '../components/SeriesCard.jsx'
 import ShapeSeriesCard from '../components/ShapeSeriesCard.jsx'
 import TimeCard from '../components/TimeCard.jsx'
+import WrongLetterCard from '../components/WrongLetterCard.jsx'
 import RoundProgress from '../components/RoundProgress.jsx'
 import { fractionWords, parseChoice, pictureFractions } from '../game/fractions.js'
 import { questionStep } from '../game/questions.js'
@@ -41,7 +42,7 @@ function choicesAs(question) {
   if (isReading(question)) {
     return question.op === 'word' ? 'words' : 'emoji'
   }
-  if (question.op === 'letter') {
+  if (question.op === 'letter' || question.op === 'wrongLetter') {
     return 'letters'
   }
   if (question.op === 'fraction') {
@@ -58,7 +59,7 @@ function choicesAs(question) {
 
 /** An answer as the question shows it: a number, a word, an emoji or a fraction. */
 function formatAnswer(question, value, { formatNumber, lang }) {
-  if (question.op === 'word' || question.op === 'letter' || question.show === 'words') {
+  if (question.op === 'word' || question.op === 'letter' || question.op === 'wrongLetter' || question.show === 'words') {
     return showWord(value, question.case)
   }
   if (question.op === 'fraction') {
@@ -68,12 +69,16 @@ function formatAnswer(question, value, { formatNumber, lang }) {
   return typeof value === 'string' ? value : formatNumber(value)
 }
 
-function hintText(question, t) {
+function hintText(question, t, step) {
   if (isReading(question)) {
     return t('play.hintHelpRead')
   }
   if (question.op === 'letter') {
     return t('play.hintHelpLetter')
+  }
+  if (question.op === 'wrongLetter') {
+    // Tapping the letter, right letters are greyed out; picking, wrong choices taken away.
+    return t(step === 0 ? 'play.hintHelpWrongLetter' : 'play.hintHelpWrongLetterPick')
   }
   if (question.op === 'odd') {
     return t('play.hintHelpOdd')
@@ -119,8 +124,15 @@ function hintText(question, t) {
 function feedbackText(state, i18n) {
   const { t } = i18n
   if (state.phase !== 'feedback') {
+    if (state.hinted) {
+      return hintText(state.question, t, state.step)
+    }
+    // A wrong-letter question says what each step asks: tap, then pick.
+    if (state.question.op === 'wrongLetter') {
+      return t(state.step === 0 ? 'play.promptWrongLetter.tap' : 'play.promptWrongLetter.pick')
+    }
     // A non-breaking space keeps the line's height when there is no text.
-    return state.hinted ? hintText(state.question, t) : '\u00a0'
+    return '\u00a0'
   }
   if (state.lastCorrect) {
     return t('play.praise', { index: state.questionNumber })
@@ -128,6 +140,11 @@ function feedbackText(state, i18n) {
   if (state.question.op === 'shapes' || state.question.op === 'matrix') {
     // A figure has no short name; the gap and the buttons show it.
     return t('play.wrongShape')
+  }
+  if (state.question.op === 'wrongLetter' && state.step === 0) {
+    // A right letter was tapped: say which one was wrong.
+    const letter = [...state.question.terms[1]][Number(state.question.steps[0].answer)]
+    return t('play.wrongLetterWas', { letter: showWord(letter, state.question.case) })
   }
   // With steps, the answer to the step that went wrong, as the buttons show it.
   return t('play.wrong', { answer: formatAnswer(state.question, questionStep(state.question, state.step).answer, i18n) })
@@ -234,9 +251,15 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
   const handleChoose = useCallback((value) => dispatch({ type: 'choose', value, now: Date.now() }), [])
   const asked = questionStep(state.question, state.step)
   const { choices } = asked
+  // A step answered in the card (a letter tapped in the word) shows the
+  // next step's buttons, hidden while it's asked so nothing moves, and
+  // with the answer marked if the question ends there.
+  const buttonsStep = asked.inWord ? state.step + 1 : state.step
+  const buttons = questionStep(state.question, buttonsStep)
   const reading = isReading(state.question)
   const clock = Boolean(state.question.time)
   const letter = state.question.op === 'letter'
+  const wrongLetter = state.question.op === 'wrongLetter'
   const fraction = state.question.op === 'fraction'
   const odd = state.question.op === 'odd'
   const series = state.question.op === 'series'
@@ -354,6 +377,18 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
             step={state.vizStep}
             onSettled={handleSettled}
           />
+        ) : wrongLetter ? (
+          <WrongLetterCard
+            key={`${state.questionNumber}-${state.question.key}`}
+            question={state.question}
+            answered={state.step}
+            picked={state.picked}
+            answering={answering}
+            removed={state.hinted && asked.inWord ? asked.hintRemoves : undefined}
+            onTap={handleChoose}
+            step={state.vizStep}
+            onSettled={handleSettled}
+          />
         ) : letter ? (
           <LetterCard
             key={`${state.questionNumber}-${state.question.key}`}
@@ -379,7 +414,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
         )}
       </section>
 
-      {!reading && !clock && !letter && !fraction && !odd && !series && !shapes && !matrix && (
+      {!reading && !clock && !letter && !wrongLetter && !fraction && !odd && !series && !shapes && !matrix && (
         <Equation
           key={state.questionNumber}
           question={state.question}
@@ -400,15 +435,16 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
       {choices ? (
         <div className="play-choices">
           <ChoiceAnswers
-            key={`${state.questionNumber}-${state.step}`}
-            choices={choices}
-            answer={asked.answer}
-            chosen={state.phase === 'answering' ? null : state.picked.at(-1)}
+            key={`${state.questionNumber}-${buttonsStep}`}
+            choices={buttons.choices}
+            answer={buttons.answer}
+            chosen={state.phase === 'answering' || buttonsStep !== state.step ? null : state.picked.at(-1)}
             revealed={state.phase !== 'answering'}
+            waiting={answering && buttonsStep !== state.step}
             onChoose={handleChoose}
             as={choicesAs(state.question)}
             wordCase={state.question.case}
-            removed={state.hinted ? asked.hintRemoves : undefined}
+            removed={state.hinted ? buttons.hintRemoves : undefined}
             clock={
               clock
                 ? { numbers: state.question.numbers, hint: state.vizStep >= HINT_FRAME ? 'minutes' : null }

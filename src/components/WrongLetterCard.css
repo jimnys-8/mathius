@@ -1,0 +1,89 @@
+/* A little smaller than a reading word, to make room for the letter
+   buttons' spacing, and the same size in every step so nothing jumps. */
+.wrong-letter-word {
+  font-size: min(5rem, calc(112cqi / var(--chars)));
+}
+
+/* Each letter a button: a soft tile, so it looks like something to tap. */
+.wrong-letter-tap {
+  margin: 0 0.03em;
+  padding: 0 0.04em;
+  border: 0;
+  border-radius: 0.14em;
+  background: color-mix(in srgb, var(--color-line) 55%, transparent);
+  font: inherit;
+  line-height: inherit;
+  color: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    background 0.15s ease,
+    opacity 0.2s ease,
+    transform 0.08s ease;
+}
+
+/* Only with a mouse: touch screens keep the last tapped spot hovered. */
+@media (hover: hover) {
+  .wrong-letter-tap:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--color-c) 22%, transparent);
+  }
+}
+
+.wrong-letter-tap:active:not(:disabled) {
+  transform: translateY(0.04em);
+  background: color-mix(in srgb, var(--color-c) 30%, transparent);
+}
+
+/* Greyed out by the hint: these letters are right. */
+.wrong-letter-tap.is-removed {
+  background: transparent;
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* Outside the tapping step, letters keep the buttons' spacing. */
+.wrong-letter-char,
+.wrong-letter-slot {
+  margin: 0 0.07em;
+}
+
+/* The wrong letter and the right one share the slot: the wrong one,
+   crossed out, gives way to the right one in the solution. */
+.wrong-letter-slot {
+  display: inline-grid;
+}
+
+.wrong-letter-slot > * {
+  grid-area: 1 / 1;
+}
+
+.wrong-letter-was {
+  color: var(--color-wrong);
+  text-decoration: line-through 0.09em;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.is-solved .wrong-letter-was {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+/* Solved, the line goes gray, so the letter put in stands out from it. */
+.wrong-letter-card.is-solved .letter-gap::after {
+  background: var(--color-muted);
+}
+
+/* A right letter tapped by mistake. */
+.wrong-letter-char.is-tapped {
+  text-decoration: underline 0.08em var(--color-wrong);
+  text-underline-offset: 0.12em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wrong-letter-tap,
+  .wrong-letter-was {
+    transition: none;
+  }
+}

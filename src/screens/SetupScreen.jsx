@@ -30,6 +30,7 @@ const CATEGORY_COLORS = {
   word: '#c26a1b',
   picture: '#5b6bd6',
   letter: '#2a9d8f',
+  wrongLetter: '#3a7bbf',
   clockDigital: '#d1495b',
   clockWords: '#d1495b',
   digitalWords: '#d1495b',
@@ -81,6 +82,13 @@ const PATTERNS_ICON = (
   </svg>
 )
 
+/** Wrong letter: ABC with a wrong D, underlined like a spelling mistake. */
+const WRONG_LETTER_ICON = (
+  <span className="setup-wrong-letter-icon">
+    A<span className="setup-wrong-letter">D</span>C
+  </span>
+)
+
 /** Odd one out: three fruits and a car, ringed. */
 const ODD_ICON = (
   <span className="setup-odd-icon">
@@ -122,6 +130,7 @@ const MATRIX_ICON = (
 )
 
 const CATEGORY_ICONS = {
+  wrongLetter: WRONG_LETTER_ICON,
   odd: ODD_ICON,
   series: SERIES_ICON,
   shapes: SHAPES_ICON,
