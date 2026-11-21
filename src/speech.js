@@ -45,14 +45,20 @@ const loadVoices = () => {
 }
 
 /**
- * A voice for a locale like 'en-US': a natural one if there is one, else
- * any for the locale or its language, since reading with the system's
- * voice gives it the wrong accent. None only if the device has none.
+ * A voice for a locale like 'en-US': a natural one on the device if there
+ * is one, else any for the locale or its language, since reading with the
+ * system's voice gives it the wrong accent. None only if the device has
+ * none. Desktop Chrome's online Google voices come after the device's:
+ * when one fails, Chrome reads with the system's voice instead, and they
+ * don't work offline.
  */
 function voiceFor(locale) {
   const forLocale = voices.filter((voice) => normalized(voice.lang) === normalized(locale))
   const score = (voice) =>
-    (GOOD_VOICES.test(voice.name) ? 4 : 0) + (BETTER_VOICES.test(voice.name) ? 2 : 0) + (voice.default ? 1 : 0)
+    (GOOD_VOICES.test(voice.name) ? 4 : 0) +
+    (voice.localService ? 3 : 0) +
+    (BETTER_VOICES.test(voice.name) ? 2 : 0) +
+    (voice.default ? 1 : 0)
   const best = [...forLocale].sort((a, b) => score(b) - score(a))[0]
   const language = locale.slice(0, 2).toLowerCase()
   return best ?? voices.find((voice) => normalized(voice.lang).startsWith(language))
