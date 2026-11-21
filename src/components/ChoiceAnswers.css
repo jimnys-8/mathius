@@ -274,3 +274,8 @@
 .choice-answers.is-phrases .choice-answer.is-wrong {
   color: var(--color-wrong);
 }
+
+/* Waiting for an earlier step: the room is kept, the buttons hidden. */
+.choice-answers.is-waiting {
+  visibility: hidden;
+}

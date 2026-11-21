@@ -66,6 +66,9 @@ function choiceForKey(key, choices, byValue) {
  * `as="fractions"` the choices are fractions ("stacked:3/4", see
  * fractions.js). With `as="figures"` they are figure keys (see shapes.js),
  * drawn, with `figurePips` for Figure's `pips`.
+ *
+ * `waiting` keeps the buttons' room but hides them, for a step answered
+ * elsewhere (a letter tapped in the word) before these are asked.
  */
 export default function ChoiceAnswers({
   choices,
@@ -80,6 +83,7 @@ export default function ChoiceAnswers({
   clock = undefined,
   dotGrid = undefined,
   figurePips = false,
+  waiting = false,
 }) {
   const { t, formatNumber } = useI18n()
   const byValue = choices.every((choice) => Number.isInteger(choice))
@@ -89,7 +93,7 @@ export default function ChoiceAnswers({
   const chars = as === 'words' ? Math.max(4, ...choices.map((choice) => [...choice].length)) : undefined
 
   useEffect(() => {
-    if (revealed) {
+    if (revealed || waiting) {
       return undefined
     }
     const handleKey = (event) => {
@@ -100,7 +104,7 @@ export default function ChoiceAnswers({
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [choices, byValue, revealed, onChoose, removed])
+  }, [choices, byValue, revealed, waiting, onChoose, removed])
 
   let label = formatNumber
   if (as === 'words' || as === 'letters') {
@@ -119,11 +123,13 @@ export default function ChoiceAnswers({
 
   return (
     <div
-      className={`choice-answers is-${as}`}
+      className={`choice-answers is-${as}${waiting ? ' is-waiting' : ''}`}
       // Capitals are wider than small letters.
       style={chars ? { '--chars': chars, '--char-width': wordCase === 'upper' ? 0.8 : 0.66 } : undefined}
       role="group"
       aria-label={t('play.chooseAnswer')}
+      aria-hidden={waiting || undefined}
+      inert={waiting || undefined}
     >
       {choices.map((choice, index) => {
         let state = ''
@@ -136,7 +142,7 @@ export default function ChoiceAnswers({
             key={choice}
             type="button"
             className={`choice-answer${state}${isRemoved ? ' is-removed' : ''}`}
-            disabled={revealed || isRemoved}
+            disabled={revealed || waiting || isRemoved}
             onClick={() => onChoose(choice)}
             aria-label={
               dots ? t('play.dotCount', { count: choice }) : as === 'clock' ? choice : as === 'figures' ? String(index + 1) : undefined
