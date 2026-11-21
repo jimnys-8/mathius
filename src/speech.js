@@ -6,6 +6,13 @@
  * something was spoken from within a tap, so `unlockSpeech()` speaks a
  * silent utterance on the first tap anywhere. After that, words can be
  * read as they appear, not just when a button is pressed.
+ *
+ * Chrome lists no voices the first time it is asked and loads them in
+ * the background (about half a second), and without a voice it reads
+ * with the system's, which gives English words a Swedish accent on a
+ * Swedish computer. So `unlockSpeech()`
+ * also starts loading them, and a word asked for before they are there
+ * waits for them.
  */
 
 const synth = typeof window !== 'undefined' ? window.speechSynthesis : undefined
@@ -15,6 +22,9 @@ export const canSpeak = Boolean(synth) && typeof SpeechSynthesisUtterance !== 'u
 
 // A bit slower than normal, for children learning the words.
 const RATE = 0.85
+
+// How long a word waits for the voices to load before it is read anyway.
+const VOICES_WAIT_MS = 1500
 
 const normalized = (lang) => lang.replace('_', '-').toLowerCase()
 
@@ -29,23 +39,26 @@ const GOOD_VOICES =
 // Downloaded higher-quality versions of the same voices.
 const BETTER_VOICES = /\((premium|enhanced|förbättrad)\)|natural|neural|online/i
 
-/**
- * A natural voice for a locale like 'en-US', or none, so the device picks
- * its own default for the language (Android names its voices by language).
- */
-function voiceFor(locale) {
-  const score = (voice) => (BETTER_VOICES.test(voice.name) ? 2 : 0) + (voice.default ? 1 : 0)
-  return synth
-    .getVoices()
-    .filter((voice) => normalized(voice.lang) === normalized(locale) && GOOD_VOICES.test(voice.name))
-    .sort((a, b) => score(b) - score(a))[0]
+let voices = []
+const loadVoices = () => {
+  voices = synth.getVoices()
 }
 
-/** Reads `text` aloud in a locale ('en-US', 'sv-SE'), cutting off whatever was being read. */
-export function speak(text, locale) {
-  if (!canSpeak) {
-    return
-  }
+/**
+ * A voice for a locale like 'en-US': a natural one if there is one, else
+ * any for the locale or its language, since reading with the system's
+ * voice gives it the wrong accent. None only if the device has none.
+ */
+function voiceFor(locale) {
+  const forLocale = voices.filter((voice) => normalized(voice.lang) === normalized(locale))
+  const score = (voice) =>
+    (GOOD_VOICES.test(voice.name) ? 4 : 0) + (BETTER_VOICES.test(voice.name) ? 2 : 0) + (voice.default ? 1 : 0)
+  const best = [...forLocale].sort((a, b) => score(b) - score(a))[0]
+  const language = locale.slice(0, 2).toLowerCase()
+  return best ?? voices.find((voice) => normalized(voice.lang).startsWith(language))
+}
+
+function speakNow(text, locale) {
   if (synth.speaking || synth.pending) {
     synth.cancel()
   }
@@ -59,20 +72,59 @@ export function speak(text, locale) {
   synth.speak(utterance)
 }
 
-/** Stops reading aloud. */
+// A word waiting for the voices to load, and its timeout.
+let waiting = null
+
+function stopWaiting() {
+  if (waiting) {
+    clearTimeout(waiting.timer)
+    synth.removeEventListener('voiceschanged', waiting.speak)
+    waiting = null
+  }
+}
+
+/** Reads `text` aloud in a locale ('en-US', 'sv-SE'), cutting off whatever was being read. */
+export function speak(text, locale) {
+  if (!canSpeak) {
+    return
+  }
+  stopWaiting()
+  if (voices.length === 0) {
+    loadVoices()
+  }
+  if (voices.length > 0) {
+    speakNow(text, locale)
+    return
+  }
+  const speakLater = () => {
+    stopWaiting()
+    loadVoices()
+    speakNow(text, locale)
+  }
+  waiting = { speak: speakLater, timer: setTimeout(speakLater, VOICES_WAIT_MS) }
+  synth.addEventListener('voiceschanged', speakLater)
+}
+
+/** Stops reading aloud, or a word from being read once the voices are in. */
 export function stopSpeaking() {
-  if (canSpeak && (synth.speaking || synth.pending)) {
+  if (!canSpeak) {
+    return
+  }
+  stopWaiting()
+  if (synth.speaking || synth.pending) {
     synth.cancel()
   }
 }
 
 const UNLOCK_EVENTS = ['touchend', 'click', 'keydown']
 
-/** Lets speech start without a tap later on, once the page has been tapped. */
+/** Starts loading the voices, and lets speech start without a tap later on, once the page has been tapped. */
 export function unlockSpeech() {
   if (!canSpeak) {
     return
   }
+  loadVoices()
+  synth.addEventListener('voiceschanged', loadVoices)
   const unlock = () => {
     for (const type of UNLOCK_EVENTS) {
       window.removeEventListener(type, unlock, true)
