@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Dictionary for scripts/find-misspellings.mjs, and its output
+so2009-ord.jsonl
+misspelling-candidates.txt
