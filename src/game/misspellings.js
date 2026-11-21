@@ -2,26 +2,23 @@
  * Misspelled words for "Vilken bokstav är fel?": the child taps the
  * wrong letter, then picks the right one.
  *
- * One row per word: the Swedish word (spelled as in words.js), then its
- * misspellings in two groups, separated by spaces:
- * - clearly wrong: a letter that neither looks nor sounds like the right
- *   one (katt → kamt), for the easier levels
- * - looks or sounds alike: b d p q, m n, e ä, o å u, i y, g k j, t d,
- *   f v, s c, l r (the ALIKE_GROUPS in letters.js), for the hardest level
+ * One row per word: its emoji and the Swedish word (as in words.js), then
+ * its misspellings in two groups, separated by spaces. Real words the
+ * kids know are the most fun (katt → kött, hatt), the picture shows
+ * they're wrong.
+ * - easier: a letter that's easy to spot, for the easier levels
+ * - harder: a letter that looks or sounds like the right one (e ä, o å,
+ *   b d, m n, g k j…), for the hardest level; may be empty
  *
- * Rules for a misspelling, checked by misspellings.test.js:
- * - the same length as the word, with exactly one letter changed
- * - in the right group (alike swaps only under "looks or sounds alike")
- * - not another word in words.js, and no rude words in it
- * Not checked, so keep an eye out: it shouldn't be some other real
- * Swedish word (kanin → kamin, kamel → kanel), since then it doesn't
- * look misspelled.
+ * Rules for a misspelling, checked by misspellings.test.js: the same
+ * length as the word with exactly one letter changed, none twice, and
+ * no rude words in it (src/game/rudeWords.js).
  *
  * Short words (at most 4 letters) are the ones the easiest level uses.
  */
 
 const TABLE = [
-  // emoji, word, clearly wrong, looks or sounds alike
+  // emoji, word, easier, harder
   ['🔴', 'röd', 'död nöd rad räd rök rön rör röj rid göd ', 'löd råd rod'],
   ['🟠', 'orange', 'oringe oranje', 'orangs oranse'],
   ['🟡', 'gul', 'ful gel gud gut gäl', 'göl jul kul'],
@@ -70,7 +67,7 @@ const TABLE = [
   ['🐇', 'kanin', 'kabin kanik kanon kinin', 'kamin'],
   ['🐿️', 'ekorre', 'skorre ekorpe okorre', 'ekårre'],
   ['🦫', 'bäver', 'näver läver räver', 'bever'],
-  ['🦔', 'igelkott', 'ögelkott igelkött igenkott', 'igelkått igälkott'],
+  ['🦔', 'igelkott', 'ögelkott igelkött igenkott', 'igälkott'],
   ['🦇', 'fladdermus', 'fladdermes fladdermys pladdermus', 'fladdermös'],
   ['🐻', 'björn', 'björk bjarn', 'bjurn'],
   ['🐻‍❄️', 'isbjörn', 'isbjörk asbjörn', 'isbjurn'],
@@ -127,7 +124,7 @@ const TABLE = [
   ['🦗', 'gräshoppa', 'gräsloppa grushoppa grishoppa', 'gräshåppa'],
   ['🪳', 'kackerlacka', 'vackerlacka kackerpacka sackerlacka', 'kackerläcka'],
   ['🕷️', 'spindel', 'svindel spandel', 'sqindel'],
-  ['🕸️', 'spindelnät', 'spindelnöt spindelnät', 'spindelnet spindälnät'],
+  ['🕸️', 'spindelnät', 'spindelnöt', 'spindelnet spindälnät'],
   ['🦂', 'skorpion', 'skarpion skärpion skorpian', 'skårpion'],
   ['🦟', 'mygga', 'bygga mygla rygga mugga', 'migga'],
   ['🪰', 'fluga', 'flaga flyga sluga', 'fruga'],
@@ -141,9 +138,9 @@ const TABLE = [
   ['🌲', 'gran', 'eran grad graf grav gren grin gryn grön tran uran', 'gram kran'],
   ['🌳', 'träd', 'träb träl', 'trad tred tråd'],
   ['🌴', 'palm', 'halm malm pall palp pals palt palä', 'paln qalm'],
-  ['🌵', 'kaktus', 'kakaos kaktum raktus maktus', 'kaktos'],
+  ['🌵', 'kaktus', 'kaktum raktus maktus', 'kaktos'],
   ['🍀', 'fyrklöver', 'fyrklövar fårklöver fyrklaver', 'fyrklövär'],
-  ['🍁', 'löv', 'döv lav lev liv löd lök🧅 lön löp lös löt', 'lov luv'],
+  ['🍁', 'löv', 'döv lav lev liv löd lök lön löp lös löt', 'lov luv'],
   ['🪺', 'fågelbo', 'fågelso fågelbä fygelbo', 'fogelbo fågeldo'],
   ['🍄', 'svamp', 'stamp svimp skamp', 'swamp svämp svamq'],
   ['🍇', 'vindruvor', 'vindrävor vindrevor findruvor lindruvor vingruvor', 'windruvor vinbruvor'],
