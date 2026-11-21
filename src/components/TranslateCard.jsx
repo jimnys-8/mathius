@@ -9,6 +9,9 @@ import './TranslateCard.css'
 
 const localeOf = (lang) => LANGUAGES.find((language) => language.id === lang).locale
 
+// The word is read as the card slides in.
+const SPEAK_DELAY_MS = 150
+
 /**
  * The picture for an English-words question: the word to translate, big,
  * with a button that reads it aloud. It is also read as it appears, and
@@ -34,9 +37,14 @@ export default function TranslateCard({ question, step, onSettled }) {
   const say = () => speak(word, localeOf(question.from))
 
   // Read the word as it appears (the card is remade for each question).
+  // After a moment, so a card set up twice in a row (React's strict mode,
+  // in development) doesn't start reading twice.
   useEffect(() => {
-    speak(word, localeOf(question.from))
-    return stopSpeaking
+    const timer = setTimeout(() => speak(word, localeOf(question.from)), SPEAK_DELAY_MS)
+    return () => {
+      clearTimeout(timer)
+      stopSpeaking()
+    }
   }, [word, question.from])
 
   // Once answered, the answer in the player's own language.
