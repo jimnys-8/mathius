@@ -1,0 +1,85 @@
+.translate-card {
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  width: 100%;
+  height: 100%;
+  animation: translate-card-in 0.3s ease-out;
+}
+
+.translate-given {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  max-width: 100%;
+}
+
+.translate-word {
+  /* The button beside the word takes about a fifth of the width. */
+  font-size: min(4.5rem, calc(105cqi / var(--chars)));
+  font-weight: 900;
+  line-height: 1.15;
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+
+.translate-say {
+  flex: none;
+  width: 3.5rem;
+  min-height: 3.5rem;
+  padding: 0;
+  font-size: 1.6rem;
+}
+
+.translate-emoji {
+  font-size: clamp(3rem, 22cqi, 6rem);
+  line-height: 1.1;
+}
+
+.translate-answer {
+  font-size: min(3rem, calc(110cqi / var(--chars)));
+  font-weight: 900;
+  line-height: 1.15;
+  color: var(--color-c);
+  white-space: nowrap;
+}
+
+/* The emoji and the translation keep their space until they are shown, so nothing moves. */
+.translate-emoji,
+.translate-answer {
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(0.5rem) scale(0.9);
+  transition:
+    opacity 0.4s ease,
+    transform 0.4s ease;
+}
+
+.translate-emoji.is-shown,
+.is-solved .translate-answer {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes translate-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .translate-card {
+    animation: none;
+  }
+
+  .translate-emoji,
+  .translate-answer {
+    transition: none;
+  }
+}

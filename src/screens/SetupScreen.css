@@ -170,6 +170,16 @@
   border-radius: 0.4em;
 }
 
+/* English words: a flag and a speaker. */
+.setup-translate-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1em;
+  height: 1.2em;
+  vertical-align: top;
+  font-size: 0.9em;
+}
+
 /* Number series: 2 4 6 and a dashed orange box for the gap. */
 .setup-series-icon {
   display: inline-flex;

@@ -15,6 +15,7 @@ import {
 } from '../game/config.js'
 import { PASS } from '../game/progress.js'
 import { levelText, useI18n } from '../i18n/i18n.js'
+import { LANGUAGES } from '../i18n/strings.js'
 import './SetupScreen.css'
 
 const CATEGORY_COLORS = {
@@ -31,6 +32,7 @@ const CATEGORY_COLORS = {
   picture: '#5b6bd6',
   letter: '#2a9d8f',
   wrongLetter: '#3a7bbf',
+  translate: '#b8432f',
   clockDigital: '#d1495b',
   clockWords: '#d1495b',
   digitalWords: '#d1495b',
@@ -89,6 +91,16 @@ const WRONG_LETTER_ICON = (
   </span>
 )
 
+/** English words: the flag of the language to learn, and a speaker, since the words are read aloud. */
+function TranslateIcon() {
+  const { lang } = useI18n()
+  return (
+    <span className="setup-translate-icon" aria-hidden="true">
+      {LANGUAGES.find((language) => language.id !== lang).flag}🔊
+    </span>
+  )
+}
+
 /** Odd one out: three fruits and a car, ringed. */
 const ODD_ICON = (
   <span className="setup-odd-icon">
@@ -131,6 +143,7 @@ const MATRIX_ICON = (
 
 const CATEGORY_ICONS = {
   wrongLetter: WRONG_LETTER_ICON,
+  translate: <TranslateIcon />,
   odd: ODD_ICON,
   series: SERIES_ICON,
   shapes: SHAPES_ICON,

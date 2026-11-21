@@ -42,7 +42,14 @@ solution.
   capitals to all words, then mistakes that look nearly right (sebra).
   The misspellings are hand-picked in `src/game/misspellings.js`, in
   Swedish whatever the app's language; `scripts/find-misspellings.mjs`
-  lists dictionary words one letter away from each word, to pick from
+  lists dictionary words one letter away from each word, to pick from.
+  *English words* (*Swedish words* in the English app) shows a word in
+  the other language and reads it aloud (Web Speech API, `src/speech.js`)
+  as it appears and on 🔊: first pick its picture, then its word from
+  four, then among words for the same kind of thing (dog, cat, cow).
+  Once answered, the translation is read too. A hint shows the picture
+  (takes two away when picking pictures). Words spelled the same in both
+  languages are left out
 - Telling the time, in four games: an analog clock to read as a digital
   time or in words ("fem i halv nio"), and a digital time to say in
   words or find the clock for. Levels go from whole hours to every five

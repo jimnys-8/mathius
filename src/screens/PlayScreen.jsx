@@ -12,6 +12,7 @@ import ReadingCard from '../components/ReadingCard.jsx'
 import SeriesCard from '../components/SeriesCard.jsx'
 import ShapeSeriesCard from '../components/ShapeSeriesCard.jsx'
 import TimeCard from '../components/TimeCard.jsx'
+import TranslateCard from '../components/TranslateCard.jsx'
 import WrongLetterCard from '../components/WrongLetterCard.jsx'
 import RoundProgress from '../components/RoundProgress.jsx'
 import { fractionWords, parseChoice, pictureFractions } from '../game/fractions.js'
@@ -51,6 +52,9 @@ function choicesAs(question) {
   if (question.op === 'odd') {
     return question.show
   }
+  if (question.op === 'translate') {
+    return question.as
+  }
   if (question.op === 'shapes' || question.op === 'matrix') {
     return 'figures'
   }
@@ -59,7 +63,13 @@ function choicesAs(question) {
 
 /** An answer as the question shows it: a number, a word, an emoji or a fraction. */
 function formatAnswer(question, value, { formatNumber, lang }) {
-  if (question.op === 'word' || question.op === 'letter' || question.op === 'wrongLetter' || question.show === 'words') {
+  if (
+    question.op === 'word' ||
+    question.op === 'letter' ||
+    question.op === 'wrongLetter' ||
+    question.show === 'words' ||
+    (question.op === 'translate' && question.as === 'words')
+  ) {
     return showWord(value, question.case)
   }
   if (question.op === 'fraction') {
@@ -72,6 +82,10 @@ function formatAnswer(question, value, { formatNumber, lang }) {
 function hintText(question, t, step) {
   if (isReading(question)) {
     return t('play.hintHelpRead')
+  }
+  if (question.op === 'translate') {
+    // With word answers, the picture shows what the word means; with pictures, two are gone.
+    return t(question.as === 'words' ? 'play.hintHelpTranslate' : 'play.hintHelpTranslatePicture')
   }
   if (question.op === 'letter') {
     return t('play.hintHelpLetter')
@@ -265,6 +279,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
   const series = state.question.op === 'series'
   const shapes = state.question.op === 'shapes'
   const matrix = state.question.op === 'matrix'
+  const translate = state.question.op === 'translate'
   const answering = state.phase === 'answering'
   const hintButton = (
     <button type="button" className="btn btn-large" onClick={handleHint} disabled={!answering || state.vizStep > 0}>
@@ -328,6 +343,13 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
       <section className="play-viz card">
         {reading ? (
           <ReadingCard
+            key={`${state.questionNumber}-${state.question.key}`}
+            question={state.question}
+            step={state.vizStep}
+            onSettled={handleSettled}
+          />
+        ) : translate ? (
+          <TranslateCard
             key={`${state.questionNumber}-${state.question.key}`}
             question={state.question}
             step={state.vizStep}
@@ -414,7 +436,7 @@ export default function PlayScreen({ settings, keypad = false, onKeypadChange, o
         )}
       </section>
 
-      {!reading && !clock && !letter && !wrongLetter && !fraction && !odd && !series && !shapes && !matrix && (
+      {!reading && !clock && !letter && !wrongLetter && !fraction && !odd && !series && !shapes && !matrix && !translate && (
         <Equation
           key={state.questionNumber}
           question={state.question}
